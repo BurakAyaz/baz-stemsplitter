@@ -756,8 +756,11 @@
         }
         
         function redirectToWixLogin() {
+            // Mevcut sayfanın URL'sini kullan (localhost veya production)
             var currentUrl = window.location.origin + window.location.pathname;
-            var loginUrl = WIX_LOGIN_URL + '?redirect=' + encodeURIComponent(currentUrl);
+            // Wix'te stem-redirect sayfası oluşturmanız gerekiyor
+            // Örnek: https://www.burakayaz.com/stem-redirect?redirect=...
+            var loginUrl = WIX_SITE_URL + '/stem-redirect?redirect=' + encodeURIComponent(currentUrl);
             window.location.href = loginUrl;
         }
         
