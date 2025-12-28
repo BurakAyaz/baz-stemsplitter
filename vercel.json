@@ -19,9 +19,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "KIE_API_KEY": "@kie_api_key"
-  }
+  ]
 }
