@@ -1,4 +1,5 @@
 // api/auth-sync.js - Vercel Serverless Function
+// Referans ile tam uyumlu + visuals dizisi desteği
 const { MongoClient } = require('mongodb');
 
 // MongoDB bağlantısı (singleton)
@@ -127,14 +128,28 @@ module.exports = async (req, res) => {
                 purchasedAt: null,
                 expiresAt: null,
                 totalSongsGenerated: 0,
+                totalImagesGenerated: 0,
+                visuals: [], // Görsel galerisi için boş dizi
                 tracks: [],
-                stemHistory: [],
+                generatedLyrics: [],
+                personas: [],
+                activityLog: [],
+                settings: {},
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
             
             const result = await usersCollection.insertOne(newUser);
             user = { ...newUser, _id: result.insertedId };
+        } else {
+            // Mevcut kullanıcıda visuals yoksa ekle
+            if (!Array.isArray(user.visuals)) {
+                await usersCollection.updateOne(
+                    { wixUserId: decoded.userId },
+                    { $set: { visuals: [] } }
+                );
+                user.visuals = [];
+            }
         }
         
         // Abonelik durumu kontrolü
@@ -162,7 +177,9 @@ module.exports = async (req, res) => {
                 expiresAt: user.expiresAt,
                 daysRemaining: getDaysRemaining(user.expiresAt),
                 isActive: isActive,
-                totalSongsGenerated: user.totalSongsGenerated || 0
+                totalSongsGenerated: user.totalSongsGenerated || 0,
+                totalImagesGenerated: user.totalImagesGenerated || 0,
+                visualsCount: (user.visuals || []).length
             }
         });
         

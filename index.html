@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAZ AI Stem Separator</title>
+    <title>BAZ AI Cover Designer - Nano Banana</title>
+    <link rel="icon" type="image/png" href="/baz-logo.png">
+    <link rel="apple-touch-icon" href="/baz-logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,576 +18,1637 @@
             --border: #262626; --border-focus: #2596be; --success: #22c55e; --error: #ef4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; }
-        .header { display: flex; justify-content: flex-end; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            min-height: 100vh; 
+            line-height: 1.4; 
+        }
+        
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px 20px; 
+            background: var(--bg-secondary); 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+        .logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
         .header-right { display: flex; align-items: center; gap: 10px; }
-        .lang-switcher { display: flex; background: var(--bg-tertiary); border-radius: 6px; padding: 2px; border: 1px solid var(--border); }
-        .lang-btn { padding: 4px 10px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
-        .lang-btn.active { background: var(--accent); color: var(--text-primary); }
-        .lang-btn:hover:not(.active) { color: var(--text-primary); }
-        .credit-display { display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05)); border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; margin-right: 12px; }
+        
+        /* Kredi Sistemi Stilleri */
+        .credit-display {
+            display: flex; align-items: center; gap: 12px; padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05));
+            border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; margin-right: 12px;
+        }
         .credit-info { display: flex; align-items: center; gap: 6px; }
         .credit-icon { font-size: 18px; }
         .credit-count { font-size: 20px; font-weight: 700; color: #2596be; min-width: 30px; text-align: center; }
+        .credit-label { font-size: 10px; color: #a0a0a0; text-transform: uppercase; }
         .credit-details { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
         .plan-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; background: #6b7280; color: white; border-radius: 4px; text-transform: uppercase; }
         .plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .plan-badge.none { background: #4b5563; }
+        .plan-badge.deneme { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .days-left { font-size: 9px; color: #6b7280; }
-        .days-left.warning { color: #f59e0b; }
-        .days-left.danger { color: #ef4444; }
-        .user-menu { position: relative; display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; }
-        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
-        .user-name { font-size: 12px; font-weight: 500; }
-        .main-container { display: flex; height: calc(100vh - 45px); overflow: hidden; }
-        .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; overflow-y: auto; flex-shrink: 0; }
-        .results-section { flex: 1; padding: 16px; background: var(--bg-primary); overflow-y: auto; position: relative; }
-        @media (max-width: 900px) { .main-container { flex-direction: column; } .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; } .results-section { max-height: 50vh; } }
-        .section-title { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .change-plan-btn { display: flex; align-items: center; gap: 4px; padding: 6px 10px; background: rgba(37, 150, 190, 0.2); border: 1px solid rgba(37, 150, 190, 0.4); color: #2596be; border-radius: 6px; font-size: 10px; font-weight: 500; text-decoration: none; transition: all 0.2s; margin-left: 8px; }
+        .change-plan-btn:hover { background: #2596be; color: white; }
+        
+        .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-right: 10px; }
+        .login-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); }
+        
+        .user-menu { position: relative; }
+        .user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; }
+        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
+        .user-dropdown.active { display: block; }
+        .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+        .user-dropdown-item:hover { background: var(--bg-hover); }
+        .user-dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+        
+        .lang-switcher { display: flex; background: var(--bg-tertiary); border-radius: 6px; padding: 2px; border: 1px solid var(--border); }
+        .lang-btn { padding: 4px 10px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
+        .lang-btn.active { background: var(--accent); color: var(--text-primary); }
+        
+        /* Main Layout */
+        .main-container { display: flex; min-height: calc(100vh - 50px); }
+        @media (max-width: 768px) { .main-container { flex-direction: column; } }
+        
+        .sidebar { 
+            width: 380px; 
+            background: var(--bg-secondary); 
+            border-right: 1px solid var(--border); 
+            padding: 20px; 
+            overflow-y: auto; 
+            flex-shrink: 0; 
+        }
+        @media (max-width: 768px) { .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); } }
+        
+        .preview-area { 
+            flex: 1; 
+            background: #050505; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 40px; 
+            min-height: 500px;
+            position: relative;
+        }
+        
+        /* Loading Container */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Form Elements */
         .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-select, .form-input { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: inherit; transition: all 0.2s; }
-        .form-select:focus, .form-input:focus { outline: none; border-color: var(--accent); }
-        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 36px; cursor: pointer; }
-        .form-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-        .tab-switcher { display: flex; background: var(--bg-tertiary); border-radius: 8px; padding: 3px; border: 1px solid var(--border); margin-bottom: 12px; }
-        .tab-btn { flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 6px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
-        .tab-btn.active { background: var(--accent); color: var(--text-primary); }
-        .tab-btn:hover:not(.active) { color: var(--text-primary); }
-        .info-box { padding: 12px; background: rgba(37, 150, 190, 0.1); border: 1px solid rgba(37, 150, 190, 0.3); border-radius: 8px; margin-bottom: 12px; }
-        .info-box strong { display: block; font-size: 11px; color: var(--accent); margin-bottom: 4px; }
-        .info-box p { font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
-        .submit-btn { width: 100%; padding: 12px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .submit-btn:hover { background: var(--accent-light); }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .results-title { font-size: 16px; font-weight: 600; color: var(--accent); }
-        .results-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; text-align: center; color: var(--text-muted); }
-        .results-empty svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.3; color: var(--accent); }
-        .results-empty p { font-size: 14px; max-width: 300px; }
-        .stems-container { display: flex; flex-direction: column; gap: 12px; }
-        .stem-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; transition: all 0.2s; }
-        .stem-item:hover { border-color: var(--accent); }
-        .stem-icon { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-        .stem-info { flex: 1; }
-        .stem-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-        .stem-audio { width: 100%; height: 36px; margin-top: 6px; }
-        .stem-actions { display: flex; gap: 8px; }
-        .stem-btn { padding: 8px 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-primary); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 4px; }
-        .stem-btn:hover { background: var(--bg-hover); border-color: var(--accent); }
-        .stem-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
-        .stem-btn.primary:hover { background: var(--accent-light); }
-        .history-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
-        .history-title { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
-        .history-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
-        .history-item:hover { border-color: var(--accent); }
-        .history-icon { font-size: 18px; }
-        .history-info { flex: 1; }
-        .history-name { font-size: 12px; font-weight: 500; }
-        .history-date { font-size: 10px; color: var(--text-muted); }
-        .history-type { font-size: 9px; padding: 2px 6px; background: var(--bg-tertiary); border-radius: 4px; color: var(--text-secondary); }
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; flex-direction: column; }
-        .loading-overlay.active { display: flex; }
-        .loader { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        .form-label { display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-input, .form-select, .form-textarea { 
+            width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border); 
+            border-radius: 10px; color: var(--text-primary); font-size: 13px; font-family: inherit; transition: all 0.2s; 
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
+        .form-textarea { resize: none; min-height: 80px; }
+        .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 36px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        /* Mode Tabs */
+        .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .mode-tab { 
+            flex: 1; padding: 10px 16px; border: 1px solid var(--border); background: transparent; 
+            color: var(--text-secondary); cursor: pointer; border-radius: 10px; font-size: 11px; 
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; 
+        }
+        .mode-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .mode-tab:hover:not(.active) { background: var(--bg-hover); color: var(--text-primary); }
+        
+        /* Font Options */
+        .font-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .font-option { 
+            padding: 10px; border: 1px solid var(--border); background: var(--bg-input); 
+            border-radius: 8px; cursor: pointer; text-align: center; font-size: 11px; transition: all 0.2s; 
+        }
+        .font-option.active { border-color: var(--accent); background: rgba(37, 150, 190, 0.1); }
+        .font-option:hover:not(.active) { border-color: var(--text-muted); }
+        
+        /* Reference Image */
+        .ref-section { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .ref-preview { display: flex; align-items: center; gap: 8px; }
+        .ref-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent); }
+        .ref-remove { color: var(--error); cursor: pointer; padding: 4px; }
+        .ref-upload-btn { padding: 8px 16px; background: var(--bg-input); border: 1px dashed var(--border); border-radius: 8px; cursor: pointer; font-size: 11px; color: var(--text-secondary); transition: all 0.2s; }
+        .ref-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        /* Generate Button */
+        .generate-btn { 
+            width: 100%; padding: 14px 20px; background: var(--accent); color: white; border: none; 
+            border-radius: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; 
+            letter-spacing: 1px; cursor: pointer; transition: all 0.2s; display: flex; 
+            align-items: center; justify-content: center; gap: 8px; margin-top: 20px;
+        }
+        .generate-btn:hover { background: var(--accent-light); }
+        .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-credit-info { font-size: 10px; opacity: 0.8; padding: 2px 8px; background: rgba(255,255,255,0.2); border-radius: 4px; }
+        
+        /* Credit Warning */
+        .credit-warning { 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05)); 
+            border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 14px; 
+            margin-bottom: 16px; display: none; 
+        }
+        .credit-warning.active { display: block; }
+        .credit-warning h4 { color: #ef4444; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .credit-warning p { color: #a0a0a0; font-size: 11px; }
+        .credit-warning-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500; }
+        
+        /* Preview */
+        .preview-placeholder { text-align: center; color: var(--text-muted); }
+        .preview-placeholder p { font-size: 13px; font-style: italic; max-width: 300px; }
+        .preview-image { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); cursor: zoom-in; }
+        
+        /* Loading */
+        .loading-spinner { 
+            width: 60px; height: 60px; border: 3px solid var(--border); 
+            border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { margin-top: 16px; font-size: 16px; font-weight: 500; }
-        .loading-status { margin-top: 8px; font-size: 13px; color: var(--accent); }
-        .loading-timer { margin-top: 12px; font-size: 24px; color: var(--accent); font-weight: 600; }
-        .loading-avg { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
-        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; display: none; }
+        .loading-text { margin-top: 16px; font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        .loading-sub { margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+        .loading-time { margin-top: 12px; font-size: 11px; color: var(--text-muted); }
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        .loading-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        .loading-elapsed {
+            margin-top: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: monospace;
+        }
+        
+        /* Download Button */
+        .download-btn { 
+            position: absolute; top: 20px; left: 20px; padding: 10px 20px; 
+            background: rgba(0,0,0,0.7); border: 1px solid var(--border); color: white; 
+            border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; 
+            backdrop-filter: blur(10px); transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .download-btn:hover { background: white; color: black; }
+        .download-btn:disabled { opacity: 0; pointer-events: none; }
+        
+        /* Gallery Styles */
+        .gallery-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 16px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+        .gallery-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .gallery-count {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            overflow-y: auto;
+            padding-right: 8px;
+            flex: 1;
+        }
+        .gallery-grid::-webkit-scrollbar { width: 6px; }
+        .gallery-grid::-webkit-scrollbar-track { background: transparent; }
+        .gallery-grid::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+        
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            background: var(--bg-card);
+        }
+        .gallery-item:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+        .gallery-item.latest {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(37, 150, 190, 0.3);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+        }
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+        .gallery-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .gallery-action-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .gallery-action-btn:hover {
+            background: var(--accent);
+        }
+        .gallery-item-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 4px 8px;
+            background: var(--accent);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .gallery-delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .gallery-item:hover .gallery-delete-btn {
+            opacity: 1;
+        }
+        .gallery-delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        /* Clear Gallery Button */
+        .clear-gallery-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .clear-gallery-btn:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
+        
+        /* Fullscreen Modal */
+        .fullscreen-modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            z-index: 5000; align-items: center; justify-content: center; padding: 20px; 
+        }
+        .fullscreen-modal.active { display: flex; }
+        .fullscreen-modal img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .fullscreen-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; cursor: pointer; opacity: 0.5; }
+        .fullscreen-close:hover { opacity: 1; }
+        
+        /* Login Modal */
+        .login-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 5000; align-items: center; justify-content: center; }
+        .login-modal-overlay.active { display: flex; }
+        .login-modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; text-align: center; }
+        .login-modal h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #2596be, #3ab4e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .login-modal p { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
+        .login-modal-btn { width: 100%; padding: 14px 24px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+        .login-modal-close { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+        
+        /* Messages */
+        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: none; }
         .message.error { display: block; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #ff6b6b; }
         .message.success { display: block; background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: #4ade80; }
-        .track-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
-        .track-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--border); }
-        .track-option:last-child { border-bottom: none; }
-        .track-option:hover { background: var(--bg-hover); }
-        .track-option.selected { background: rgba(37, 150, 190, 0.2); border-color: var(--accent); }
-        .track-option-icon { font-size: 16px; }
-        .track-option-info { flex: 1; }
-        .track-option-title { font-size: 12px; font-weight: 500; }
-        .track-option-meta { font-size: 10px; color: var(--text-muted); }
-        .track-option-check { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .track-option.selected .track-option-check { background: var(--accent); border-color: var(--accent); }
-        .track-option.selected .track-option-check::after { content: '✓'; color: white; font-size: 10px; }
-        .empty-tracks { padding: 24px; text-align: center; color: var(--text-muted); }
-        .empty-tracks svg { width: 40px; height: 40px; margin-bottom: 8px; opacity: 0.4; }
-        .empty-tracks p { font-size: 12px; }
-        .no-login-warning { padding: 16px; background: rgba(37, 150, 190, 0.1); border: 1px solid rgba(37, 150, 190, 0.3); border-radius: 8px; margin-bottom: 12px; text-align: center; }
-        .no-login-warning p { font-size: 12px; color: var(--accent); margin-bottom: 8px; }
-        .no-login-warning a { display: inline-block; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; text-decoration: none; }
-        .no-login-warning a:hover { background: var(--accent-light); }
-        .loading-tracks { padding: 20px; text-align: center; color: var(--text-muted); }
-        .loading-tracks .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 8px; }
-        .credit-badge { display: inline-block; padding: 2px 6px; background: rgba(37, 150, 190, 0.3); color: var(--accent); border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 6px; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loader"></div>
-        <p class="loading-text" id="loadingText">Stem Ayrıştırma</p>
-        <p class="loading-status" id="loadingStatus">İşleniyor...</p>
-        <p class="loading-timer" id="loadingTimer">00:00</p>
-        <p class="loading-avg" id="loadingAvg">Ortalama işlem süresi: 1-3 dk</p>
-    </div>
     <header class="header">
+        <div class="logo">
+            <img src="/baz-logo.png" alt="BAZ" style="width: 36px; height: 36px; border-radius: 50%;">
+        </div>
         <div class="header-right">
+            <!-- Kredi Göstergesi -->
             <div class="credit-display" id="creditDisplay" style="display: none;">
-                <div class="credit-info"><span class="credit-icon">⚡</span><span class="credit-count" id="creditCount">0</span></div>
-                <div class="credit-details"><span class="plan-badge none" id="planBadge">-</span><span class="days-left" id="daysLeft">-</span></div>
+                <div class="credit-info">
+                    <span class="credit-icon">K</span>
+                    <span class="credit-count" id="creditCount">0</span>
+                    <span class="credit-label">Kredi</span>
+                </div>
+                <div class="credit-details">
+                    <span class="plan-badge" id="planBadge">-</span>
+                    <span class="days-left" id="daysLeft"></span>
+                </div>
+                <a href="https://www.burakayaz.com/abonelik-sat%C4%B1n-al" class="change-plan-btn" id="changePlanBtn" title="Planı Değiştir">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    Planı Değiştir
+                </a>
             </div>
+            
+            <!-- Login Butonu -->
+            <button class="login-btn" id="loginBtn" onclick="showLoginModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span id="loginBtnText">Giriş Yap</span>
+            </button>
+            
+            <!-- Kullanıcı Menüsü -->
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <button class="user-btn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">Kullanıcı</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <button class="user-dropdown-item" onclick="showAccountInfo()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        Hesap Bilgileri
+                    </button>
+                    <div class="user-dropdown-divider"></div>
+                    <button class="user-dropdown-item" onclick="logout()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Çıkış Yap
+                    </button>
+                </div>
+            </div>
+            
             <div class="lang-switcher">
                 <button class="lang-btn active" id="langTR" onclick="setLanguage('tr')">TR</button>
                 <button class="lang-btn" id="langEN" onclick="setLanguage('en')">EN</button>
             </div>
-            <div id="userArea"></div>
         </div>
     </header>
+
     <div class="main-container">
-        <div class="sidebar">
-            <div class="section-title"><span>🎛️</span><span id="sidebarTitle">Stem Ayrıştırma</span></div>
+        <aside class="sidebar">
+            <!-- Kredi Uyarısı -->
+            <div class="credit-warning" id="creditWarning">
+                <h4 id="creditWarningTitle">Krediniz Yetersiz</h4>
+                <p id="creditWarningMsg">Görsel oluşturmak için giriş yapın veya paket satın alın.</p>
+                <a href="#" class="credit-warning-btn" id="creditWarningBtn" onclick="handleCreditWarningClick(); return false;">Paket Satın Al →</a>
+            </div>
+            
             <div class="message" id="errorMsg"></div>
             <div class="message" id="successMsg"></div>
-            <div class="no-login-warning" id="noLoginWarning" style="display: none;">
-                <p id="noLoginText">Şarkılarınıza erişmek için giriş yapın</p>
+            
+            <!-- Mode Tabs -->
+            <div class="mode-tabs">
+                <button class="mode-tab active" id="tabCover" onclick="switchMode('COVER')">
+                    <span id="tabCoverText">Albüm Kapağı</span>
+                </button>
+                <button class="mode-tab" id="tabPhoto" onclick="switchMode('PHOTO')">
+                    <span id="tabPhotoText">Sanatçı Fotosu</span>
+                </button>
             </div>
-            <form id="stemForm">
+            
+            <!-- Reference Image -->
+            <div class="ref-section">
+                <label class="form-label" style="margin-bottom: 0; color: var(--accent);" id="labelReference">Referans Foto</label>
+                <div class="ref-preview" id="refPreview" style="display: none;">
+                    <img src="" alt="Ref" class="ref-thumb" id="refThumb">
+                    <span class="ref-remove" onclick="removeReference()">✕</span>
+                </div>
+                <label class="ref-upload-btn" id="refUploadBtn">
+                    <input type="file" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                    <span id="uploadBtnText">+ Yükle</span>
+                </label>
+            </div>
+            
+            <!-- Text on Image (COVER only) -->
+            <div class="form-group" id="textOnImageGroup">
+                <label class="form-label" id="labelTextOnImage">Görsel Üzerindeki Yazı</label>
+                <input type="text" class="form-input" id="textOnImage" placeholder="Örn: Aşkın Ateşi - Hasan">
+            </div>
+            
+            <!-- Prompt -->
+            <div class="form-group">
+                <label class="form-label" id="labelPrompt">Kapak Konsepti / Tema</label>
+                <textarea class="form-textarea" id="promptInput" placeholder="Örn: Gece yarısı sisli bir şehirde yalnız bir radyo kulesi..."></textarea>
+            </div>
+            
+            <!-- Font Style (COVER only) -->
+            <div class="form-group" id="fontStyleGroup">
+                <label class="form-label" id="labelFontStyle">Font Stili</label>
+                <div class="font-grid" id="fontGrid">
+                    <div class="font-option active" data-font="Modern Sans" style="font-family: sans-serif; font-weight: bold;">Modern Sans</div>
+                    <div class="font-option" data-font="Classic Serif" style="font-family: serif; font-style: italic;">Classic Serif</div>
+                    <div class="font-option" data-font="Handwritten" style="font-family: cursive;">Handwritten</div>
+                    <div class="font-option" data-font="Cyber/Futuristic" style="font-family: monospace; text-transform: uppercase; letter-spacing: 1px;">Cyber</div>
+                    <div class="font-option" data-font="Gothic/Metal" style="font-family: serif; font-weight: 900; text-transform: uppercase;">Gothic</div>
+                    <div class="font-option" data-font="Minimalist" style="font-family: sans-serif; font-weight: 100; letter-spacing: 2px;">Minimalist</div>
+                </div>
+            </div>
+            
+            <!-- Style & Color -->
+            <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label" id="labelInputMode">Kaynak Seçimi</label>
-                    <div class="tab-switcher">
-                        <button type="button" class="tab-btn active" id="tabDatabase" onclick="switchInputMode('database')">Şarkılarım</button>
-                        <button type="button" class="tab-btn" id="tabManual" onclick="switchInputMode('manual')">Manuel Giriş</button>
-                    </div>
-                </div>
-                <div id="databaseSection">
-                    <div class="form-group">
-                        <label class="form-label" id="labelSelectTrack">Şarkı Seçin</label>
-                        <div class="track-list" id="trackList">
-                            <div class="empty-tracks" id="emptyTracks">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-                                <p id="emptyTracksText">Henüz şarkınız yok veya giriş yapmadınız</p>
-                            </div>
-                        </div>
-                        <p class="form-hint" id="hintSelectTrack">BAZ AI'da oluşturduğunuz şarkılar otomatik yüklenir</p>
-                    </div>
-                </div>
-                <div id="manualSection" style="display: none;">
-                    <div class="form-group"><label class="form-label">Task ID</label><input type="text" class="form-input" id="manualTaskId" placeholder="Örn: abc123..."></div>
-                    <div class="form-group"><label class="form-label">Audio ID</label><input type="text" class="form-input" id="manualAudioId" placeholder="Örn: xyz789..."></div>
-                    <div class="info-box"><strong id="infoManualTitle">Manuel Giriş Nasıl Yapılır?</strong><p id="infoManualDesc">BAZ AI'da oluşturduğunuz şarkının Task ID ve Audio ID bilgilerini girin.</p></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" id="labelSeparationType">Ayrıştırma Tipi</label>
-                    <select class="form-select" id="separationType">
-                        <option value="separate_vocal">Vokal & Enstrümantal (2 Stem) - 2 Kredi</option>
-                        <option value="split_stem">Detaylı Ayrıştırma (12 Stem) - 5 Kredi</option>
+                    <label class="form-label" id="labelStyle">Stil</label>
+                    <select class="form-select" id="styleSelect">
+                        <option value="Hiper Realistik">Hiper Realistik</option>
+                        <option value="Arabesk">Arabesk</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Minimalist">Minimalist</option>
+                        <option value="Futuristik">Futuristik</option>
+                        <option value="Retro">Retro</option>
                     </select>
-                    <p class="form-hint" id="hintSeparationType">Detaylı ayrıştırma daha uzun sürer</p>
                 </div>
-                <div class="info-box"><strong id="infoTitle">Stem Ayrıştırma Nedir?</strong><p id="infoDesc">Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır.</p></div>
-                <button type="submit" class="submit-btn" id="submitBtn"><span>🎵</span><span id="submitText">Ayrıştırmayı Başlat</span><span class="credit-badge" id="creditCost">2 Kredi</span></button>
-            </form>
-        </div>
-        <div class="results-section">
-            <div class="results-header"><h2 class="results-title" id="resultsTitle">Sonuçlar</h2></div>
-            <div class="results-empty" id="resultsEmpty">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-                <p id="emptyResultsText">Stem ayrıştırma sonuçlarınız burada görünecek.</p>
+                <div class="form-group">
+                    <label class="form-label" id="labelColor">Renk</label>
+                    <select class="form-select" id="colorSelect">
+                        <option value="Orijinal">Orijinal</option>
+                        <option value="Monokrom">Monokrom</option>
+                        <option value="Pastel">Pastel</option>
+                        <option value="Neon">Neon</option>
+                        <option value="Noir">Noir</option>
+                    </select>
+                </div>
             </div>
-            <div class="stems-container" id="stemsContainer" style="display: none;"></div>
-            <div class="history-section" id="historySection" style="display: none;"><h3 class="history-title" id="historyTitle">Geçmiş Ayrıştırmalar</h3><div id="historyList"></div></div>
+            
+            <!-- Aspect Ratio - Nano Banana supports: 1:1, 9:16, 16:9, 3:4, 4:3, 3:2, 2:3, 5:4, 4:5, 21:9, auto -->
+            <div class="form-group">
+                <label class="form-label" id="labelAspectRatio">En Boy Oranı</label>
+                <select class="form-select" id="aspectRatio">
+                    <option value="1:1">1:1 (Kare)</option>
+                    <option value="3:4">3:4 (Portre)</option>
+                    <option value="4:3">4:3 (Yatay)</option>
+                    <option value="9:16">9:16 (Dikey Story)</option>
+                    <option value="16:9">16:9 (Geniş Ekran)</option>
+                    <option value="3:2">3:2 (Fotoğraf)</option>
+                    <option value="2:3">2:3 (Portre Fotoğraf)</option>
+                    <option value="auto">Otomatik</option>
+                </select>
+            </div>
+            
+            <!-- Generate Button -->
+            <button class="generate-btn" id="generateBtn" onclick="handleGenerate()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span id="generateBtnText">Tasarımı Oluştur</span>
+                <span class="btn-credit-info">1 Kredi</span>
+            </button>
+        </aside>
+        
+        <main class="preview-area" id="previewArea">
+            <button class="download-btn" id="downloadBtn" onclick="downloadImage()" disabled>
+                Görseli İndir
+            </button>
+            
+            <div id="previewContent" style="width: 100%; height: 100%;">
+                <div class="gallery-container" id="galleryContainer">
+                    <div class="gallery-header">
+                        <span class="gallery-title" id="galleryTitle">Oluşturulan Görseller</span>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="gallery-count" id="galleryCount">0 görsel</span>
+                            <button class="clear-gallery-btn" id="clearGalleryBtn" onclick="clearGallery()" style="display: none;">Temizle</button>
+                        </div>
+                    </div>
+                    <div class="gallery-grid" id="galleryGrid">
+                        <!-- Görseller buraya gelecek -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Fullscreen Modal -->
+    <div class="fullscreen-modal" id="fullscreenModal" onclick="closeFullscreen()">
+        <span class="fullscreen-close">&times;</span>
+        <img src="" alt="Fullscreen" id="fullscreenImage" onclick="event.stopPropagation()">
+    </div>
+    
+    <!-- Login Modal -->
+    <div class="login-modal-overlay" id="loginModal">
+        <div class="login-modal">
+            <img src="/baz-logo.png" alt="BAZ" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px;">
+            <h2>BAZ AI Cover Designer</h2>
+            <p id="loginModalText">Görsel oluşturmak için hesabınıza giriş yapmanız gerekiyor.</p>
+            <button class="login-modal-btn" onclick="redirectToWixLogin()">
+                <span id="loginModalBtnText">Giriş Yap / Kayıt Ol</span>
+            </button>
+            <button class="login-modal-close" onclick="closeLoginModal()">
+                <span id="loginModalCloseText">Kapat</span>
+            </button>
         </div>
     </div>
+
     <script>
-        var currentLang = 'tr';
-        var currentInputMode = 'database';
-        var authToken = null;
-        var currentUser = null;
-        var userCredits = 0;
-        var userPlan = 'none';
-        var userTracks = [];
-        var selectedTrack = null;
-        var stemHistory = [];
-        var timerInterval = null;
-        var timerSeconds = 0;
-        var API_BASE_URL = window.location.origin;
-        var MAIN_APP_URL = 'https://baz-v1-studio.vercel.app';
+        // ==================== STATE ====================
+        let currentMode = 'COVER';
+        let currentLang = 'tr';
+        let selectedFont = 'Modern Sans';
+        let referenceImage = null;
+        let generatedImageUrl = null;
+        let isGenerating = false;
+        let generatedImages = []; // Galeri için tüm görseller
         
-        var translations = {
+        // ==================== TRANSLATIONS ====================
+        const translations = {
             tr: {
-                sidebarTitle: 'Stem Ayrıştırma', labelInputMode: 'Kaynak Seçimi', tabDatabase: 'Şarkılarım', tabManual: 'Manuel Giriş',
-                labelSelectTrack: 'Şarkı Seçin', emptyTracksText: 'Henüz şarkınız yok veya giriş yapmadınız',
-                hintSelectTrack: 'BAZ AI\'da oluşturduğunuz şarkılar otomatik yüklenir', infoManualTitle: 'Manuel Giriş Nasıl Yapılır?',
-                infoManualDesc: 'BAZ AI\'da oluşturduğunuz şarkının Task ID ve Audio ID bilgilerini girin.',
-                labelSeparationType: 'Ayrıştırma Tipi', optionVocal: 'Vokal & Enstrümantal (2 Stem) - 2 Kredi',
-                optionSplit: 'Detaylı Ayrıştırma (12 Stem) - 5 Kredi', hintSeparationType: 'Detaylı ayrıştırma daha uzun sürer',
-                infoTitle: 'Stem Ayrıştırma Nedir?', infoDesc: 'Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır.',
-                submitText: 'Ayrıştırmayı Başlat', resultsTitle: 'Sonuçlar',
-                emptyResultsText: 'Stem ayrıştırma sonuçlarınız burada görünecek.', historyTitle: 'Geçmiş Ayrıştırmalar',
-                loadingText: 'Stem Ayrıştırma', loadingStatus: 'İşleniyor...', loadingAvg: 'Ortalama işlem süresi: 1-3 dk',
-                noLoginText: 'Şarkılarınıza erişmek için giriş yapın',
-                btnDownload: 'İndir', stemVocal: 'Vokal', stemInstrumental: 'Enstrümantal', stemDrums: 'Davul', stemBass: 'Bas',
-                stemGuitar: 'Gitar', stemKeyboard: 'Klavye', stemStrings: 'Yaylılar', stemBrass: 'Bakır Üflemeli',
-                stemWoodwinds: 'Tahta Üflemeli', stemPercussion: 'Perküsyon', stemSynth: 'Synth', stemFX: 'Efektler',
-                stemBackingVocals: 'Arka Vokal', errorPrefix: 'Hata:', errorNoTrack: 'Lütfen bir şarkı seçin',
-                errorNoIds: 'Task ID ve Audio ID gerekli', successStem: 'Stem ayrıştırma tamamlandı!', loadingTracks: 'Şarkılar yükleniyor...',
-                creditCost2: '2 Kredi', creditCost5: '5 Kredi', insufficientCredits: 'Yetersiz kredi'
+                tabCover: 'Albüm Kapağı',
+                tabPhoto: 'Sanatçı Fotosu',
+                labelReference: 'Referans Foto',
+                uploadBtn: '+ Yükle',
+                labelTextOnImage: 'Görsel Üzerindeki Yazı',
+                labelPrompt: 'Kapak Konsepti / Tema',
+                labelPromptPhoto: 'Görsel Detayları',
+                placeholderPrompt: 'Örn: Gece yarısı sisli bir şehirde yalnız bir radyo kulesi...',
+                placeholderPromptPhoto: 'Örn: Uzun saçlı müzisyen, stüdyo ortamı...',
+                labelFontStyle: 'Font Stili',
+                labelStyle: 'Stil',
+                labelColor: 'Renk',
+                labelAspectRatio: 'En Boy Oranı',
+                generateBtn: 'Tasarımı Oluştur',
+                generatingBtn: 'Tasarlanıyor...',
+                downloadBtn: 'Görseli İndir',
+                placeholder: 'Ayarları tamamlayıp "Tasarımı Oluştur" butonuna basın.',
+                loadingText: 'Görsel oluşturuluyor',
+                loadingSub: 'Yapay zeka fırçalarını hazırlıyor...',
+                loadingTime: 'Tahmini süre: 1-2 dakika',
+                statusQueued: 'Sıraya alındı...',
+                statusGenerating: 'Görsel işleniyor...',
+                statusFinalizing: 'Tamamlanıyor...',
+                creditWarningTitle: 'Krediniz Yetersiz',
+                creditWarningMsg: 'Görsel oluşturmak için giriş yapın veya paket satın alın.',
+                creditWarningBtn: 'Paket Satın Al →',
+                galleryTitle: 'Oluşturulan Görseller',
+                galleryCount: 'görsel',
+                galleryClear: 'Temizle',
+                galleryNew: 'YENİ',
+                galleryDownload: 'İndir',
+                galleryView: 'Görüntüle',
+                loginBtn: 'Giriş Yap',
+                loginModalText: 'Görsel oluşturmak için hesabınıza giriş yapmanız gerekiyor.',
+                loginModalBtn: 'Giriş Yap / Kayıt Ol',
+                loginModalClose: 'Kapat',
+                errorNoPrompt: 'Lütfen bir konsept/tema girin.',
+                errorNoText: 'Lütfen görsel üzerindeki yazıyı girin.',
+                errorApi: 'Görsel oluşturulurken bir hata oluştu.'
             },
             en: {
-                sidebarTitle: 'Stem Separation', labelInputMode: 'Source Selection', tabDatabase: 'My Songs', tabManual: 'Manual Entry',
-                labelSelectTrack: 'Select Song', emptyTracksText: 'No songs yet or not logged in',
-                hintSelectTrack: 'Songs created in BAZ AI are loaded automatically', infoManualTitle: 'How to Enter Manually?',
-                infoManualDesc: 'Enter the Task ID and Audio ID of your song created in BAZ AI.',
-                labelSeparationType: 'Separation Type', optionVocal: 'Vocal & Instrumental (2 Stems) - 2 Credits',
-                optionSplit: 'Detailed Separation (12 Stems) - 5 Credits', hintSeparationType: 'Detailed separation takes longer',
-                infoTitle: 'What is Stem Separation?', infoDesc: 'Separates your song into individual parts like vocals, bass, drums, guitar.',
-                submitText: 'Start Separation', resultsTitle: 'Results',
-                emptyResultsText: 'Your stem separation results will appear here.', historyTitle: 'Previous Separations',
-                loadingText: 'Stem Separation', loadingStatus: 'Processing...', loadingAvg: 'Average processing time: 1-3 min',
-                noLoginText: 'Login to access your songs',
-                btnDownload: 'Download', stemVocal: 'Vocal', stemInstrumental: 'Instrumental', stemDrums: 'Drums', stemBass: 'Bass',
-                stemGuitar: 'Guitar', stemKeyboard: 'Keyboard', stemStrings: 'Strings', stemBrass: 'Brass',
-                stemWoodwinds: 'Woodwinds', stemPercussion: 'Percussion', stemSynth: 'Synth', stemFX: 'Effects',
-                stemBackingVocals: 'Backing Vocals', errorPrefix: 'Error:', errorNoTrack: 'Please select a song',
-                errorNoIds: 'Task ID and Audio ID required', successStem: 'Stem separation completed!', loadingTracks: 'Loading songs...',
-                creditCost2: '2 Credits', creditCost5: '5 Credits', insufficientCredits: 'Insufficient credits'
+                tabCover: 'Album Cover',
+                tabPhoto: 'Artist Photo',
+                labelReference: 'Reference Photo',
+                uploadBtn: '+ Upload',
+                labelTextOnImage: 'Text on Image',
+                labelPrompt: 'Cover Concept / Theme',
+                labelPromptPhoto: 'Visual Details',
+                placeholderPrompt: 'Ex: A lonely radio tower in a foggy city at midnight...',
+                placeholderPromptPhoto: 'Ex: Long-haired musician, studio environment...',
+                labelFontStyle: 'Font Style',
+                labelStyle: 'Style',
+                labelColor: 'Color',
+                labelAspectRatio: 'Aspect Ratio',
+                generateBtn: 'Create Design',
+                generatingBtn: 'Designing...',
+                downloadBtn: 'Download Image',
+                placeholder: 'Complete the settings and click "Create Design".',
+                loadingText: 'Generating image',
+                loadingSub: 'AI is preparing brushes...',
+                loadingTime: 'Estimated time: 1-2 minutes',
+                statusQueued: 'Queued...',
+                statusGenerating: 'Processing image...',
+                statusFinalizing: 'Finalizing...',
+                creditWarningTitle: 'Insufficient Credits',
+                creditWarningMsg: 'Please login or purchase a package to create images.',
+                creditWarningBtn: 'Buy Package →',
+                galleryTitle: 'Generated Images',
+                galleryCount: 'images',
+                galleryClear: 'Clear',
+                galleryNew: 'NEW',
+                galleryDownload: 'Download',
+                galleryView: 'View',
+                loginBtn: 'Login',
+                loginModalText: 'You need to login to create images.',
+                loginModalBtn: 'Login / Register',
+                loginModalClose: 'Close',
+                errorNoPrompt: 'Please enter a concept/theme.',
+                errorNoText: 'Please enter the text for the image.',
+                errorApi: 'An error occurred while creating the image.'
             }
         };
         
-        function updateCreditCost() {
-            var t = translations[currentLang];
-            var separationType = document.getElementById('separationType').value;
-            var creditBadge = document.getElementById('creditCost');
-            if (separationType === 'separate_vocal') {
-                creditBadge.textContent = t.creditCost2;
-            } else {
-                creditBadge.textContent = t.creditCost5;
-            }
-        }
-        
         function setLanguage(lang) {
             currentLang = lang;
-            var t = translations[lang];
+            const t = translations[lang];
+            
             document.getElementById('langTR').classList.toggle('active', lang === 'tr');
             document.getElementById('langEN').classList.toggle('active', lang === 'en');
-            document.getElementById('sidebarTitle').textContent = t.sidebarTitle;
-            document.getElementById('labelInputMode').textContent = t.labelInputMode;
-            document.getElementById('tabDatabase').textContent = t.tabDatabase;
-            document.getElementById('tabManual').textContent = t.tabManual;
-            document.getElementById('labelSelectTrack').textContent = t.labelSelectTrack;
-            document.getElementById('hintSelectTrack').textContent = t.hintSelectTrack;
-            document.getElementById('infoManualTitle').textContent = t.infoManualTitle;
-            document.getElementById('infoManualDesc').textContent = t.infoManualDesc;
-            document.getElementById('labelSeparationType').textContent = t.labelSeparationType;
-            document.getElementById('hintSeparationType').textContent = t.hintSeparationType;
-            document.getElementById('infoTitle').textContent = t.infoTitle;
-            document.getElementById('infoDesc').textContent = t.infoDesc;
-            document.getElementById('submitText').textContent = t.submitText;
-            document.getElementById('resultsTitle').textContent = t.resultsTitle;
-            document.getElementById('emptyResultsText').textContent = t.emptyResultsText;
-            document.getElementById('historyTitle').textContent = t.historyTitle;
-            document.getElementById('loadingText').textContent = t.loadingText;
-            document.getElementById('loadingStatus').textContent = t.loadingStatus;
-            document.getElementById('loadingAvg').textContent = t.loadingAvg;
-            document.getElementById('noLoginText').textContent = t.noLoginText;
-            var sepType = document.getElementById('separationType');
-            sepType.options[0].text = t.optionVocal;
-            sepType.options[1].text = t.optionSplit;
-            updateCreditCost();
-            renderTrackList();
+            
+            document.getElementById('tabCoverText').textContent = t.tabCover;
+            document.getElementById('tabPhotoText').textContent = t.tabPhoto;
+            document.getElementById('labelReference').textContent = t.labelReference;
+            document.getElementById('uploadBtnText').textContent = t.uploadBtn;
+            document.getElementById('labelTextOnImage').textContent = t.labelTextOnImage;
+            document.getElementById('labelFontStyle').textContent = t.labelFontStyle;
+            document.getElementById('labelStyle').textContent = t.labelStyle;
+            document.getElementById('labelColor').textContent = t.labelColor;
+            document.getElementById('labelAspectRatio').textContent = t.labelAspectRatio;
+            document.getElementById('generateBtnText').textContent = isGenerating ? t.generatingBtn : t.generateBtn;
+            document.getElementById('downloadBtn').textContent = t.downloadBtn;
+            document.getElementById('galleryTitle').textContent = t.galleryTitle;
+            document.getElementById('clearGalleryBtn').textContent = t.galleryClear;
+            updateGalleryCount();
+            document.getElementById('creditWarningTitle').textContent = t.creditWarningTitle;
+            document.getElementById('creditWarningMsg').textContent = t.creditWarningMsg;
+            document.getElementById('creditWarningBtn').textContent = t.creditWarningBtn;
+            document.getElementById('loginBtnText').textContent = t.loginBtn;
+            document.getElementById('loginModalText').textContent = t.loginModalText;
+            document.getElementById('loginModalBtnText').textContent = t.loginModalBtn;
+            document.getElementById('loginModalCloseText').textContent = t.loginModalClose;
+            
+            updateModeUI();
         }
         
-        document.getElementById('separationType').addEventListener('change', updateCreditCost);
-        
-        function switchInputMode(mode) {
-            currentInputMode = mode;
-            document.getElementById('tabDatabase').classList.toggle('active', mode === 'database');
-            document.getElementById('tabManual').classList.toggle('active', mode === 'manual');
-            document.getElementById('databaseSection').style.display = mode === 'database' ? 'block' : 'none';
-            document.getElementById('manualSection').style.display = mode === 'manual' ? 'block' : 'none';
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('tabCover').classList.toggle('active', mode === 'COVER');
+            document.getElementById('tabPhoto').classList.toggle('active', mode === 'PHOTO');
+            updateModeUI();
         }
         
-        function getTokenFromURL() {
-            var urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('token');
+        function updateModeUI() {
+            const t = translations[currentLang];
+            const isCover = currentMode === 'COVER';
+            
+            document.getElementById('textOnImageGroup').style.display = isCover ? 'block' : 'none';
+            document.getElementById('fontStyleGroup').style.display = isCover ? 'block' : 'none';
+            
+            document.getElementById('labelPrompt').textContent = isCover ? t.labelPrompt : t.labelPromptPhoto;
+            document.getElementById('promptInput').placeholder = isCover ? t.placeholderPrompt : t.placeholderPromptPhoto;
         }
+        
+        // ==================== FONT SELECTION ====================
+        document.querySelectorAll('.font-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                document.querySelectorAll('.font-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                selectedFont = this.dataset.font;
+            });
+        });
+        
+        // ==================== REFERENCE IMAGE ====================
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    referenceImage = reader.result;
+                    document.getElementById('refThumb').src = referenceImage;
+                    document.getElementById('refPreview').style.display = 'flex';
+                    document.getElementById('refUploadBtn').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function removeReference() {
+            referenceImage = null;
+            document.getElementById('refPreview').style.display = 'none';
+            document.getElementById('refUploadBtn').style.display = 'block';
+        }
+        
+        // ==================== MESSAGES ====================
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.add('error');
+            setTimeout(() => { el.classList.remove('error'); el.textContent = ''; }, 5000);
+        }
+        
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.classList.add('success');
+            setTimeout(() => { el.classList.remove('success'); el.textContent = ''; }, 3000);
+        }
+        
+        // ==================== GENERATE ====================
+        async function handleGenerate() {
+            const t = translations[currentLang];
+            
+            if (!canProcess()) return;
+            
+            const prompt = document.getElementById('promptInput').value.trim();
+            const textOnImage = document.getElementById('textOnImage').value.trim();
+            
+            if (!prompt) {
+                showError(t.errorNoPrompt);
+                return;
+            }
+            
+            if (currentMode === 'COVER' && !textOnImage) {
+                showError(t.errorNoText);
+                return;
+            }
+            
+            const style = document.getElementById('styleSelect').value;
+            const color = document.getElementById('colorSelect').value;
+            const aspectRatio = document.getElementById('aspectRatio').value;
+            
+            // Build the full prompt
+            let fullPrompt = '';
+            const colorPrompt = color === 'Orijinal' ? 'natural and original colors, realistic lighting' : color;
+            
+            if (currentMode === 'COVER') {
+                fullPrompt = `Professional album cover art. Artistic Style: ${style}. Typography/Font: ${selectedFont}. 
+                Core Theme: ${prompt}. 
+                STRICT TEXT RULE: Only include the exact text: "${textOnImage}". Do NOT add any other words, letters, dates, or placeholder text. 
+                The text "${textOnImage}" should be prominent and follow the ${selectedFont} style. 
+                Color Palette: ${colorPrompt}. High quality, artistic, 4k resolution.`;
+            } else {
+                fullPrompt = `Professional artist press photo/portrait. Style: ${style}. 
+                Subject description: ${prompt}. 
+                Cinematic, high-end photography, 8k resolution, realistic textures. Color Palette: ${colorPrompt}. No extra text.`;
+            }
+            
+            if (referenceImage) {
+                fullPrompt += ' Use the provided reference image as inspiration for composition and vibe.';
+            }
+            
+            // Start loading - overlay olarak göster
+            isGenerating = true;
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtnText').textContent = t.generatingBtn;
+            
+            // Loading overlay ekle - gelişmiş durum bilgisi ile
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loadingOverlay';
+            loadingOverlay.style.cssText = 'position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50;';
+            loadingOverlay.innerHTML = `
+                <div class="loading-spinner"></div>
+                <p class="loading-text" id="loadingStatusText">${t.loadingText}</p>
+                <p class="loading-sub" id="loadingStatusSub">${t.statusQueued}</p>
+                <p class="loading-time" id="loadingTime">${t.loadingTime}</p>
+                <div class="loading-progress">
+                    <div class="loading-progress-bar" id="loadingProgressBar"></div>
+                </div>
+                <p class="loading-elapsed" id="loadingElapsed">00:00</p>
+            `;
+            document.getElementById('previewArea').appendChild(loadingOverlay);
+            
+            // Süre sayacı başlat
+            const startTime = Date.now();
+            window.loadingTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const secs = (elapsed % 60).toString().padStart(2, '0');
+                const elapsedEl = document.getElementById('loadingElapsed');
+                if (elapsedEl) elapsedEl.textContent = `${mins}:${secs}`;
+            }, 1000);
+            
+            try {
+                // Call Nano Banana API
+                const response = await fetch('/api/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: fullPrompt,
+                        aspectRatio: aspectRatio,
+                        outputFormat: 'png'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || (data.code !== 200 && !data.taskId)) {
+                    throw new Error(data.msg || data.error || data.details || 'API Error');
+                }
+                
+                const taskId = data.data ? data.data.taskId : data.taskId;
+                
+                // Use credits
+                await useCreditsForDesign();
+                
+                // Poll for result
+                await pollImageStatus(taskId);
+                
+            } catch (error) {
+                console.error('Generate error:', error);
+                showError(t.errorApi + ' ' + error.message);
+                resetGenerateButton();
+            }
+        }
+        
+  // ==================== GÜNCELLENMİŞ DURUM SORGULAMA (index.html script içine) ====================
+        
+        async function pollImageStatus(taskId) {
+            const t = translations[currentLang];
+            let attempts = 0;
+            // Süreyi kısalttık ama kontrol sıklığını artırdık (Daha seri tepki için)
+            const maxAttempts = 60; 
+            
+            console.log("🔍 Durum takibi başladı. Task ID:", taskId);
+
+            const interval = setInterval(async () => {
+                attempts++;
+                
+                // Progress bar (Suni ilerleme)
+                const progress = Math.min((attempts / 20) * 100, 95);
+                const progressBar = document.getElementById('loadingProgressBar');
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                
+                if (attempts > maxAttempts) {
+                    clearInterval(interval);
+                    if (window.loadingTimer) clearInterval(window.loadingTimer);
+                    showError('Zaman aşımı. İşlem çok uzun sürdü.');
+                    resetGenerateButton();
+                    return;
+                }
+                
+                try {
+                    const res = await fetch(`/api/image-status?taskId=${taskId}`);
+                    const json = await res.json();
+                    
+                    // Konsola detaylı log basalım ki ne döndüğünü görelim
+                    console.log(`Poll Deneme #${attempts}:`, json);
+                    
+                    if (json.code === 200 && json.data) {
+                        const data = json.data;
+                        
+                        // Durumu küçük harfe çevirip temizleyelim
+                        // Kie bazen 'waiting', 'running', 'succeeded', 'success', 'finished' dönebilir.
+                        const rawStatus = data.status || data.state || '';
+                        const status = rawStatus.toLowerCase();
+                        
+                        console.log(`Güncel Durum: [${status}]`);
+
+                        // UI Güncelleme
+                        const statusSub = document.getElementById('loadingStatusSub');
+                        if (statusSub) {
+                            if (['queuing', 'queued', 'pending', 'waiting'].includes(status)) {
+                                statusSub.textContent = t.statusQueued;
+                            } else if (['generating', 'processing', 'running', 'working'].includes(status)) {
+                                statusSub.textContent = t.statusGenerating;
+                            }
+                        }
+                        
+                        // === BAŞARI KONTROLÜ (Genişletilmiş) ===
+                        // Burası kritik: 'succeeded' kelimesini de ekledik.
+                        if (['success', 'completed', 'succeeded', 'finished', 'done'].includes(status)) {
+                            
+                            console.log("✅ İŞLEM BAŞARILI! Görsel alınıyor...");
+                            clearInterval(interval);
+                            if (window.loadingTimer) clearInterval(window.loadingTimer);
+                            if (progressBar) progressBar.style.width = '100%';
+                            
+                            // Görsel URL'sini yakala
+                            const imageUrl = data.response?.images?.[0] || 
+                                           data.response?.imageUrl ||
+                                           data.resultJson?.images?.[0] || // Kie bazen buraya atar
+                                           data.output?.image_url ||
+                                           (data.images && data.images[0]);
+                            
+                            if (imageUrl) {
+                                console.log("Görsel URL bulundu:", imageUrl);
+                                generatedImageUrl = imageUrl;
+                                
+                                // 1. Ekrana Bas
+                                displayResult(imageUrl, taskId);
+                                
+                                // 2. MongoDB'ye Kaydet (Kritik Nokta)
+                                if (isLoggedIn) {
+                                    console.log("💾 MongoDB Kayıt İşlemi Tetikleniyor...");
+                                    const prompt = document.getElementById('promptInput').value;
+                                    // await kullanmıyoruz, arka planda yapsın
+                                    saveImageToServer(taskId, imageUrl, currentMode, prompt); 
+                                } else {
+                                    console.warn("Kullanıcı giriş yapmamış, kayıt atlanıyor.");
+                                }
+                                
+                                resetGenerateButton();
+                            } else {
+                                console.error("Durum başarılı ama URL bulunamadı!", data);
+                                showError("Görsel oluşturuldu ama URL alınamadı.");
+                                resetGenerateButton();
+                            }
+                        } 
+                        // HATA KONTROLÜ
+                        else if (['fail', 'failed', 'error'].includes(status)) {
+                            clearInterval(interval);
+                            if (window.loadingTimer) clearInterval(window.loadingTimer);
+                            const errorMsg = data.failReason || data.error || 'İşlem başarısız.';
+                            console.error("İşlem Hatası:", errorMsg);
+                            showError(errorMsg);
+                            resetGenerateButton();
+                        }
+                    }
+                } catch (e) {
+                    console.error('Poll döngüsünde hata:', e);
+                }
+            }, 2000); // 2 saniyede bir kontrol et (Daha hızlı)
+        }
+
+        // ==================== GÜNCELLENMİŞ KAYIT FONKSİYONU ====================
+        
+        async function saveImageToServer(taskId, imageUrl, mode, prompt) {
+            console.log("🚀 saveImageToServer ÇALIŞTI. Veriler:", { taskId, mode });
+            
+            if (!isLoggedIn || !authToken) {
+                console.error("❌ Kayıt başarısız: Token yok.");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/save-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        imageUrl: imageUrl,
+                        mode: mode,
+                        prompt: prompt
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('📡 MongoDB Yanıtı:', data);
+                
+                if (data.success) {
+                    console.log("✅ Görsel başarıyla visuals dizisine eklendi!");
+                    // Kullanıcıya bildirim verebiliriz (Opsiyonel)
+                    // showSuccess("Otomatik kaydedildi");
+                } else {
+                    console.error("⚠️ MongoDB kaydettiğini söylemedi:", data);
+                }
+            } catch (error) {
+                console.error('❌ Sunucuya kayıt sırasında hata:', error);
+            }
+        }
+        function displayResult(imageUrl, taskId) {
+            // Görseli galeriye ekle (en başa)
+            const imageData = {
+                url: imageUrl,
+                taskId: taskId || `local_${Date.now()}`,
+                timestamp: Date.now(),
+                mode: currentMode
+            };
+            
+            generatedImages.unshift(imageData);
+            
+            // Galeriyi localStorage'a kaydet
+            saveGalleryToStorage();
+            
+            // Sunucuya da kaydet (giriş yapılmışsa)
+            if (isLoggedIn && taskId) {
+                const prompt = document.getElementById('promptInput').value;
+                saveImageToServer(taskId, imageUrl, currentMode, prompt);
+            }
+            
+            // Galeriyi güncelle
+            renderGallery();
+            
+            document.getElementById('downloadBtn').disabled = false;
+        }
+        
+        // ==================== GALERİ FONKSİYONLARI ====================
+        function renderGallery() {
+            const t = translations[currentLang];
+            const grid = document.getElementById('galleryGrid');
+            const clearBtn = document.getElementById('clearGalleryBtn');
+            
+            // Geçersiz görselleri filtrele
+            generatedImages = generatedImages.filter(img => img && img.url && img.url.startsWith('http'));
+            
+            if (generatedImages.length === 0) {
+                grid.innerHTML = ''; // Boş bırak - mesaj yok
+                clearBtn.style.display = 'none';
+            } else {
+                clearBtn.style.display = 'block';
+                grid.innerHTML = generatedImages.map((img, index) => `
+                    <div class="gallery-item ${index === 0 ? 'latest' : ''}" onclick="selectGalleryImage(${index})">
+                        ${index === 0 ? `<span class="gallery-item-badge">${t.galleryNew}</span>` : ''}
+                        <button class="gallery-delete-btn" onclick="event.stopPropagation(); deleteSingleImage(${index})" title="${currentLang === 'tr' ? 'Sil' : 'Delete'}">×</button>
+                        <img src="${img.url}" alt="Generated ${index + 1}" loading="lazy" onerror="handleImageError(this, ${index})">
+                        <div class="gallery-item-overlay">
+                            <div class="gallery-item-actions">
+                                <button class="gallery-action-btn" onclick="event.stopPropagation(); viewGalleryImage(${index})">${t.galleryView}</button>
+                                <button class="gallery-action-btn" onclick="event.stopPropagation(); downloadGalleryImage(${index})">${t.galleryDownload}</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateGalleryCount();
+        }
+        
+        // Görsel yüklenemezse taskId ile yeniden dene
+        async function handleImageError(imgElement, index) {
+            const imageData = generatedImages[index];
+            if (!imageData || !imageData.taskId || imageData.taskId.startsWith('local_')) {
+                imgElement.style.display = 'none';
+                return;
+            }
+            
+            try {
+                // Kie.ai'den güncel URL'yi al
+                const response = await fetch(`/api/get-image?taskId=${imageData.taskId}`);
+                const data = await response.json();
+                
+                if (data.success && data.imageUrl) {
+                    imgElement.src = data.imageUrl;
+                    generatedImages[index].url = data.imageUrl;
+                    saveGalleryToStorage();
+                } else {
+                    imgElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Refresh image error:', error);
+                imgElement.style.display = 'none';
+            }
+        }
+        
+        // Tek görsel sil
+        async function deleteSingleImage(index) {
+            const confirmMsg = currentLang === 'tr' ? 'Bu görsel silinecek. Emin misiniz?' : 'This image will be deleted. Are you sure?';
+            if (!confirm(confirmMsg)) return;
+            
+            const imageData = generatedImages[index];
+            
+            // Sunucudan sil
+            if (isLoggedIn && imageData.taskId) {
+                await deleteImageFromServer(imageData.taskId);
+            }
+            
+            // Listeden çıkar
+            generatedImages.splice(index, 1);
+            
+            if (generatedImages.length > 0) {
+                generatedImageUrl = generatedImages[0].url;
+            } else {
+                generatedImageUrl = null;
+                document.getElementById('downloadBtn').disabled = true;
+            }
+            
+            saveGalleryToStorage();
+            renderGallery();
+        }
+        
+        function updateGalleryCount() {
+            const t = translations[currentLang];
+            const count = generatedImages.length;
+            document.getElementById('galleryCount').textContent = `${count} ${t.galleryCount}`;
+        }
+        
+        function selectGalleryImage(index) {
+            if (generatedImages[index]) {
+                generatedImageUrl = generatedImages[index].url;
+                document.getElementById('downloadBtn').disabled = false;
+                viewGalleryImage(index);
+            }
+        }
+        
+        function viewGalleryImage(index) {
+            if (generatedImages[index]) {
+                generatedImageUrl = generatedImages[index].url;
+                document.getElementById('fullscreenImage').src = generatedImages[index].url;
+                document.getElementById('fullscreenModal').classList.add('active');
+            }
+        }
+        
+        function downloadGalleryImage(index) {
+            if (generatedImages[index]) {
+                const link = document.createElement('a');
+                link.href = generatedImages[index].url;
+                link.download = `baz-design-${generatedImages[index].timestamp}.png`;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        async function clearGallery() {
+            const confirmMsg = currentLang === 'tr' ? 'Tüm görseller silinecek. Emin misiniz?' : 'All images will be deleted. Are you sure?';
+            if (!confirm(confirmMsg)) return;
+            
+            // Sunucudan tüm görselleri sil
+            if (isLoggedIn) {
+                for (const img of generatedImages) {
+                    if (img.taskId) {
+                        await deleteImageFromServer(img.taskId);
+                    }
+                }
+            }
+            
+            generatedImages = [];
+            generatedImageUrl = null;
+            
+            const storageKey = currentUser ? `baz_cover_gallery_${currentUser.wixUserId}` : 'baz_cover_gallery_guest';
+            localStorage.removeItem(storageKey);
+            
+            renderGallery();
+            document.getElementById('downloadBtn').disabled = true;
+        }
+        
+        function saveGalleryToStorage() {
+            // LocalStorage'a da kaydet (offline backup)
+            const toSave = generatedImages.slice(0, 20);
+            const storageKey = currentUser ? `baz_cover_gallery_${currentUser.wixUserId}` : 'baz_cover_gallery_guest';
+            localStorage.setItem(storageKey, JSON.stringify(toSave));
+        }
+        
+        // Sunucuya görsel kaydet (MongoDB visuals dizisine)
+        async function saveImageToServer(taskId, imageUrl, mode, prompt) {
+            console.log("🚀 MongoDB visuals dizisine kaydediliyor:", { taskId, mode });
+            
+            if (!isLoggedIn || !authToken) {
+                console.error("❌ Kayıt başarısız: Token yok.");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/save-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        imageUrl: imageUrl,
+                        mode: mode,
+                        prompt: prompt
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('📡 MongoDB Yanıtı:', data);
+                
+                if (data.success) {
+                    console.log("✅ Görsel başarıyla visuals dizisine eklendi!");
+                } else {
+                    console.error("⚠️ MongoDB kaydettiğini söylemedi:", data);
+                }
+            } catch (error) {
+                console.error('❌ Sunucuya kayıt sırasında hata:', error);
+            }
+        }
+        
+        // Sunucudan görselleri yükle (MongoDB visuals dizisinden)
+        async function loadImagesFromServer() {
+            if (!isLoggedIn || !authToken) {
+                loadGalleryFromLocalStorage();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/list-images', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                console.log('📥 MongoDB visuals dizisinden görseller yüklendi:', data);
+                
+                if (data.success && data.images && Array.isArray(data.images)) {
+                    // Sadece geçerli URL'leri olan görselleri al
+                    generatedImages = data.images.filter(img => 
+                        img && img.url && typeof img.url === 'string' && img.url.startsWith('http')
+                    );
+                    
+                    console.log('Valid images loaded:', generatedImages.length);
+                    
+                    if (generatedImages.length > 0) {
+                        generatedImageUrl = generatedImages[0].url;
+                        document.getElementById('downloadBtn').disabled = false;
+                    }
+                    
+                    // LocalStorage'a da kaydet
+                    saveGalleryToStorage();
+                    renderGallery();
+                } else {
+                    console.log('No images from server, loading from localStorage');
+                    loadGalleryFromLocalStorage();
+                }
+            } catch (error) {
+                console.error('Load from server error:', error);
+                loadGalleryFromLocalStorage();
+            }
+        }
+        
+        function loadGalleryFromLocalStorage() {
+            try {
+                const userKey = currentUser ? `baz_cover_gallery_${currentUser.wixUserId}` : null;
+                const guestKey = 'baz_cover_gallery_guest';
+                
+                let saved = null;
+                if (userKey) {
+                    saved = localStorage.getItem(userKey);
+                }
+                if (!saved) {
+                    saved = localStorage.getItem(guestKey);
+                }
+                
+                if (saved) {
+                    generatedImages = JSON.parse(saved);
+                    if (generatedImages.length > 0) {
+                        generatedImageUrl = generatedImages[0].url;
+                        document.getElementById('downloadBtn').disabled = false;
+                    }
+                }
+            } catch (e) {
+                console.error('Gallery load error:', e);
+                generatedImages = [];
+            }
+            renderGallery();
+        }
+        
+        function loadGalleryFromStorage() {
+            // Giriş yapılmışsa sunucudan, yapılmamışsa localStorage'dan yükle
+            if (isLoggedIn) {
+                loadImagesFromServer();
+            } else {
+                loadGalleryFromLocalStorage();
+            }
+        }
+        
+        // Sunucudan görsel sil
+        async function deleteImageFromServer(taskId) {
+            if (!isLoggedIn || !authToken) return false;
+            
+            try {
+                const response = await fetch(`/api/delete-image?taskId=${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                return data.success;
+            } catch (error) {
+                console.error('Delete from server error:', error);
+                return false;
+            }
+        }
+        
+        function resetGenerateButton() {
+            isGenerating = false;
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('generateBtnText').textContent = translations[currentLang].generateBtn;
+            
+            // Timer'ı temizle
+            if (window.loadingTimer) {
+                clearInterval(window.loadingTimer);
+                window.loadingTimer = null;
+            }
+            
+            // Loading overlay'i kaldır
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.remove();
+            
+            // Galeriyi güncelle
+            renderGallery();
+        }
+        
+        // ==================== DOWNLOAD ====================
+        function downloadImage() {
+            if (!generatedImageUrl) return;
+            
+            const link = document.createElement('a');
+            link.href = generatedImageUrl;
+            link.download = `baz-design-${Date.now()}.png`;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // ==================== FULLSCREEN ====================
+        function openFullscreen() {
+            if (!generatedImageUrl) return;
+            document.getElementById('fullscreenImage').src = generatedImageUrl;
+            document.getElementById('fullscreenModal').classList.add('active');
+        }
+        
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').classList.remove('active');
+        }
+        
+        // ==================== KREDİ SİSTEMİ ====================
+        let authToken = localStorage.getItem('bazai_token') || null;
+        let currentUser = null;
+        let userCredits = 0;
+        let userPlan = 'none';
+        let isLoggedIn = false;
+        
+        const WIX_SITE_URL = 'https://www.burakayaz.com';
+        const WIX_PRICING_URL = WIX_SITE_URL + '/abonelik-sat%C4%B1n-al';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            setLanguage('tr');
+            loadGalleryFromStorage(); // Galeriyi yükle
+        });
         
         async function checkAuthStatus() {
-            var urlToken = getTokenFromURL();
-            if (urlToken) {
-                authToken = urlToken;
-                localStorage.setItem('bazai_stem_token', urlToken);
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenFromUrl = urlParams.get('token');
+            
+            if (tokenFromUrl) {
+                authToken = tokenFromUrl;
+                localStorage.setItem('bazai_token', tokenFromUrl);
                 window.history.replaceState({}, document.title, window.location.pathname);
-            } else {
-                authToken = localStorage.getItem('bazai_token') || localStorage.getItem('bazai_auth_token') || localStorage.getItem('bazai_stem_token');
             }
-            if (authToken) { await syncUserDataFromMongoDB(); } else { showNoLoginState(); }
+            
+            if (authToken) {
+                await syncUserData();
+            } else {
+                showLoggedOutState();
+            }
         }
         
-        async function syncUserDataFromMongoDB() {
-            if (!authToken) { showNoLoginState(); return; }
-            showLoadingTracks();
+        async function syncUserData() {
             try {
-                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
+                const response = await fetch('/api/auth-sync', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    }
                 });
-                var data = await response.json();
+                
+                if (!response.ok) {
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error('Sync failed');
+                }
+                
+                const data = await response.json();
+                
                 if (data.success && data.user) {
                     currentUser = data.user;
                     userCredits = data.user.credits || 0;
-                    userPlan = data.user.planId || data.user.plan || 'none';
-                    localStorage.setItem('bazai_stem_token', authToken);
-                    updateUserUI();
-                    await loadUserTracksFromMongoDB();
-                    await loadStemHistory();
-                } else { showNoLoginState(); }
-            } catch (error) { console.error('MongoDB sync error:', error); tryLocalStorageSync(); }
+                    userPlan = data.user.plan || 'none';
+                    isLoggedIn = true;
+                    
+                    showLoggedInState();
+                    updateCreditDisplay();
+                    checkCreditWarning();
+                } else {
+                    showLoggedOutState();
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showLoggedOutState();
+            }
         }
         
-        async function loadUserTracksFromMongoDB() {
-            if (!authToken) { renderTrackList(); return; }
-            try {
-                var response = await fetch(API_BASE_URL + '/api/user-data', {
-                    method: 'GET',
-                    headers: { 'Authorization': 'Bearer ' + authToken }
-                });
-                var data = await response.json();
-                if (data.success && data.data) {
-                    userTracks = data.data.tracks || [];
-                    stemHistory = data.data.stemHistory || [];
-                    localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
-                    localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
-                    console.log('MongoDB\'den ' + userTracks.length + ' şarkı yüklendi');
-                } else { userTracks = []; }
-                renderTrackList();
-                renderHistory();
-            } catch (error) { console.error('Load tracks error:', error); tryLoadTracksFromLocalStorage(); }
-        }
-        
-        function showLoadingTracks() {
-            var t = translations[currentLang];
-            var container = document.getElementById('trackList');
-            container.innerHTML = '<div class="loading-tracks"><div class="spinner"></div><p>' + t.loadingTracks + '</p></div>';
-        }
-        
-        function tryLocalStorageSync() {
-            try {
-                var savedUser = localStorage.getItem('bazai_user');
-                var savedTracks = localStorage.getItem('bazai_tracks') || localStorage.getItem('savedTracks');
-                if (savedUser) { currentUser = JSON.parse(savedUser); userCredits = currentUser.credits || 0; userPlan = currentUser.planId || currentUser.plan || 'none'; updateUserUI(); }
-                if (savedTracks) { userTracks = JSON.parse(savedTracks); renderTrackList(); } else { showNoLoginState(); }
-                loadStemHistory();
-            } catch (e) { console.error('LocalStorage sync error:', e); showNoLoginState(); }
-        }
-        
-        function updateUserUI() {
-            var userArea = document.getElementById('userArea');
-            userArea.innerHTML = '<div class="user-menu"><div class="user-avatar">' + (currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U') + '</div><span class="user-name">' + (currentUser.displayName || currentUser.email || 'Kullanıcı') + '</span></div>';
+        function showLoggedInState() {
+            document.getElementById('loginBtn').style.display = 'none';
             document.getElementById('creditDisplay').style.display = 'flex';
-            document.getElementById('creditCount').textContent = userCredits;
-            var planBadge = document.getElementById('planBadge');
-            planBadge.textContent = userPlan.charAt(0).toUpperCase() + userPlan.slice(1);
-            planBadge.className = 'plan-badge ' + userPlan;
-            if (currentUser.daysRemaining !== undefined) {
-                var daysLeft = document.getElementById('daysLeft');
-                daysLeft.textContent = currentUser.daysRemaining + ' gün kaldı';
-                if (currentUser.daysRemaining <= 7) daysLeft.classList.add('danger');
-                else if (currentUser.daysRemaining <= 30) daysLeft.classList.add('warning');
+            document.getElementById('userMenu').style.display = 'block';
+            
+            if (currentUser) {
+                const name = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Kullanıcı');
+                document.getElementById('userName').textContent = name;
+                document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+                
+                // Kullanıcı giriş yaptığında sunucudan görselleri yükle
+                loadImagesFromServer();
             }
-            document.getElementById('noLoginWarning').style.display = 'none';
         }
         
-        function showNoLoginState() {
-            document.getElementById('noLoginWarning').style.display = 'block';
+        function showLoggedOutState() {
+            isLoggedIn = false;
+            document.getElementById('loginBtn').style.display = 'flex';
             document.getElementById('creditDisplay').style.display = 'none';
-            document.getElementById('userArea').innerHTML = '';
-            renderTrackList();
+            document.getElementById('userMenu').style.display = 'none';
+            checkCreditWarning();
         }
         
-        function tryLoadTracksFromLocalStorage() {
-            try { var savedTracks = localStorage.getItem('bazai_tracks') || localStorage.getItem('savedTracks'); if (savedTracks) { userTracks = JSON.parse(savedTracks); } else { userTracks = []; } } catch (e) { userTracks = []; }
-            renderTrackList();
+        function updateCreditDisplay() {
+            document.getElementById('creditCount').textContent = userCredits;
+            
+            const planBadge = document.getElementById('planBadge');
+            const planName = userPlan.toLowerCase();
+            
+            const planDisplayNames = { 'temel': 'TEMEL', 'uzman': 'UZMAN', 'pro': 'PRO', 'deneme': 'DENEME', 'none': '-' };
+            planBadge.textContent = planDisplayNames[planName] || userPlan.toUpperCase();
+            planBadge.className = 'plan-badge ' + planName;
         }
         
-        function renderTrackList() {
-            var container = document.getElementById('trackList');
-            var t = translations[currentLang];
-            if (!userTracks || userTracks.length === 0) {
-                container.innerHTML = '<div class="empty-tracks" id="emptyTracks"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg><p id="emptyTracksText">' + t.emptyTracksText + '</p></div>';
-                return;
+        function checkCreditWarning() {
+            const warning = document.getElementById('creditWarning');
+            const t = translations[currentLang];
+            
+            if (!isLoggedIn) {
+                warning.classList.add('active');
+                document.getElementById('creditWarningBtn').onclick = function() { showLoginModal(); return false; };
+                document.getElementById('creditWarningBtn').textContent = currentLang === 'tr' ? 'Giriş Yap →' : 'Login →';
+            } else if (userCredits < 1) {
+                warning.classList.add('active');
+                document.getElementById('creditWarningBtn').onclick = function() { window.location.href = WIX_PRICING_URL; return false; };
+                document.getElementById('creditWarningBtn').textContent = t.creditWarningBtn;
+            } else {
+                warning.classList.remove('active');
             }
-            var html = '';
-            userTracks.forEach(function(track, index) {
-                var isSelected = selectedTrack && selectedTrack.id === track.id;
-                var date = track.addedAt ? new Date(track.addedAt).toLocaleDateString() : '';
-                html += '<div class="track-option ' + (isSelected ? 'selected' : '') + '" onclick="selectTrack(' + index + ')"><span class="track-option-icon">🎵</span><div class="track-option-info"><div class="track-option-title">' + (track.title || 'Şarkı ' + (index + 1)) + '</div><div class="track-option-meta">' + (track.style || '') + (date ? ' • ' + date : '') + '</div></div><div class="track-option-check"></div></div>';
-            });
-            container.innerHTML = html;
         }
         
-        function selectTrack(index) { selectedTrack = userTracks[index]; renderTrackList(); }
-        
-        async function loadStemHistory() {
-            var saved = localStorage.getItem('bazai_stem_history');
-            if (saved) { try { stemHistory = JSON.parse(saved); } catch (e) { stemHistory = []; } }
-            renderHistory();
+        function canProcess() {
+            if (!isLoggedIn) {
+                showLoginModal();
+                return false;
+            }
+            if (userCredits < 1) {
+                showError(currentLang === 'tr' ? 'Yetersiz kredi!' : 'Insufficient credits!');
+                return false;
+            }
+            return true;
         }
         
-        function saveStemToHistory(stemData) {
-            var historyItem = { id: Date.now(), trackName: selectedTrack ? selectedTrack.title : 'Manuel Giriş', type: document.getElementById('separationType').value, date: new Date().toISOString(), stems: stemData };
-            stemHistory.unshift(historyItem);
-            if (stemHistory.length > 20) stemHistory = stemHistory.slice(0, 20);
-            localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
-            if (authToken) { saveStemHistoryToMongoDB(historyItem); }
-            renderHistory();
-        }
-        
-        async function saveStemHistoryToMongoDB(historyItem) {
-            try { await fetch(API_BASE_URL + '/api/user-data', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }, body: JSON.stringify({ action: 'add_stem_history', data: { stemResult: historyItem } }) }); } catch (e) { console.error('Stem history save error:', e); }
-        }
-        
-        function renderHistory() {
-            var container = document.getElementById('historyList');
-            var section = document.getElementById('historySection');
-            if (!stemHistory || stemHistory.length === 0) { section.style.display = 'none'; return; }
-            section.style.display = 'block';
-            var html = '';
-            stemHistory.forEach(function(item, index) {
-                var date = new Date(item.date).toLocaleDateString();
-                var typeLabel = item.type === 'separate_vocal' ? 'Vokal (2)' : 'Detaylı (12)';
-                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')"><span class="history-icon">🎛️</span><div class="history-info"><div class="history-name">' + item.trackName + '</div><div class="history-date">' + date + '</div></div><span class="history-type">' + typeLabel + '</span></div>';
-            });
-            container.innerHTML = html;
-        }
-        
-        function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type); } }
-        function startTimer() { timerSeconds = 0; updateTimerDisplay(); timerInterval = setInterval(function() { timerSeconds++; updateTimerDisplay(); }, 1000); }
-        function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
-        function updateTimerDisplay() { var minutes = Math.floor(timerSeconds / 60); var seconds = timerSeconds % 60; document.getElementById('loadingTimer').textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0'); }
-        function showError(message) { var el = document.getElementById('errorMsg'); el.textContent = message; el.classList.add('error'); el.style.display = 'block'; setTimeout(function() { el.style.display = 'none'; el.classList.remove('error'); }, 5000); }
-        function showSuccess(message) { var el = document.getElementById('successMsg'); el.textContent = message; el.classList.add('success'); el.style.display = 'block'; setTimeout(function() { el.style.display = 'none'; el.classList.remove('success'); }, 5000); }
-        
-        async function useCredits(amount, action) {
-            if (!authToken) return true;
+        async function useCreditsForDesign() {
+            if (!authToken) return;
+            
             try {
-                var response = await fetch(API_BASE_URL + '/api/use-credits', {
+                const response = await fetch('/api/use-credits', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                    body: JSON.stringify({ amount: amount, action: action })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({
+                        amount: 1,
+                        action: currentMode === 'COVER' ? 'cover_design' : 'photo_design'
+                    })
                 });
-                var data = await response.json();
+                
+                const data = await response.json();
+                
                 if (data.success) {
                     userCredits = data.data.remainingCredits;
-                    document.getElementById('creditCount').textContent = userCredits;
-                    return true;
-                } else {
-                    return false;
+                    updateCreditDisplay();
+                    checkCreditWarning();
                 }
-            } catch (e) { console.error('Use credits error:', e); return true; }
+            } catch (error) {
+                console.error('Credit error:', error);
+            }
         }
         
-        document.getElementById('stemForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            var t = translations[currentLang];
-            var taskId, audioId;
-            if (currentInputMode === 'database') {
-                if (!selectedTrack) { showError(t.errorPrefix + ' ' + t.errorNoTrack); return; }
-                taskId = selectedTrack.taskId;
-                audioId = selectedTrack.audioId || selectedTrack.id;
+        function handleCreditWarningClick() {
+            if (!isLoggedIn) {
+                showLoginModal();
             } else {
-                taskId = document.getElementById('manualTaskId').value.trim();
-                audioId = document.getElementById('manualAudioId').value.trim();
-                if (!taskId || !audioId) { showError(t.errorPrefix + ' ' + t.errorNoIds); return; }
+                window.location.href = WIX_PRICING_URL;
             }
-            var separationType = document.getElementById('separationType').value;
-            var creditCost = separationType === 'separate_vocal' ? 2 : 5;
-            
-            // Kredi kontrolü
-            if (userCredits < creditCost) {
-                showError(t.insufficientCredits + ' (' + userCredits + '/' + creditCost + ')');
-                return;
+            return false;
+        }
+        
+        // ==================== LOGIN ====================
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+        
+        function redirectToWixLogin() {
+            const currentUrl = window.location.origin + window.location.pathname;
+            const loginUrl = WIX_SITE_URL + '/cover-redirect?redirect=' + encodeURIComponent(currentUrl);
+            window.location.href = loginUrl;
+        }
+        
+        function toggleUserDropdown() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+        
+        function showAccountInfo() {
+            var info = 'Plan: ' + (userPlan || '-').toUpperCase() + '\n';
+            info += 'Kredi: ' + userCredits + '\n';
+            info += 'Email: ' + (currentUser && currentUser.email ? currentUser.email : '-');
+            alert(info);
+            document.getElementById('userDropdown').classList.remove('active');
+        }
+        
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            userCredits = 0;
+            userPlan = 'none';
+            isLoggedIn = false;
+            localStorage.removeItem('bazai_token');
+            showLoggedOutState();
+            document.getElementById('userDropdown').classList.remove('active');
+        }
+        
+        // Close dropdowns on outside click
+        window.onclick = function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const dropdown = document.getElementById('userDropdown');
+            if (userMenu && dropdown && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('active');
             }
             
-            // Krediyi harca
-            var creditSuccess = await useCredits(creditCost, separationType);
-            if (!creditSuccess) {
-                showError(t.insufficientCredits);
-                return;
+            const loginModal = document.getElementById('loginModal');
+            if (event.target === loginModal) {
+                closeLoginModal();
             }
-            
-            document.getElementById('loadingOverlay').classList.add('active');
-            document.getElementById('stemsContainer').style.display = 'none';
-            document.getElementById('resultsEmpty').style.display = 'flex';
-            startTimer();
-            try {
-                var headers = { 'Content-Type': 'application/json' };
-                if (authToken) { headers['Authorization'] = 'Bearer ' + authToken; }
-                var res = await fetch(API_BASE_URL + '/api/stem', { method: 'POST', headers: headers, body: JSON.stringify({ taskId: taskId, audioId: audioId, type: separationType, callBackUrl: API_BASE_URL + '/api/stem-webhook' }) });
-                var data = await res.json();
-                if (!res.ok || (data.code !== 200 && !data.taskId)) { throw new Error(data.msg || data.error || data.details || 'Hata'); }
-                var newTaskId = data.data ? data.data.taskId : data.taskId;
-                pollStemStatus(newTaskId, separationType);
-            } catch (err) { stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError(t.errorPrefix + ' ' + err.message); }
+        };
+        
+        // ESC key to close fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreen();
+                closeLoginModal();
+            }
         });
-        
-        async function pollStemStatus(taskId, separationType) {
-            var t = translations[currentLang];
-            var attempts = 0;
-            var maxAttempts = 60;
-            var interval = setInterval(async function() {
-                attempts++;
-                document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
-                try {
-                    var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId);
-                    var json = await res.json();
-                    if (json.code === 200 && json.data && json.data.vocal_separation_info) {
-                        clearInterval(interval);
-                        stopTimer();
-                        document.getElementById('loadingOverlay').classList.remove('active');
-                        var stemInfo = json.data.vocal_separation_info;
-                        displayStemResults(stemInfo, separationType);
-                        saveStemToHistory(stemInfo);
-                        showSuccess(t.successStem);
-                    }
-                    if (attempts >= maxAttempts) { clearInterval(interval); stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError('Zaman aşımı - lütfen tekrar deneyin'); }
-                } catch (e) { console.error('Poll error:', e); }
-            }, 5000);
-        }
-        
-        function displayStemResults(info, separationType) {
-            var t = translations[currentLang];
-            var container = document.getElementById('stemsContainer');
-            container.innerHTML = '';
-            var stems = [];
-            if (separationType === 'separate_vocal') {
-                if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-                if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
-            } else {
-                if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-                if (info.backing_vocals_url) stems.push({ name: t.stemBackingVocals, url: info.backing_vocals_url, icon: '🎙️' });
-                if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
-                if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
-                if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-                if (info.keyboard_url) stems.push({ name: t.stemKeyboard, url: info.keyboard_url, icon: '🎹' });
-                if (info.strings_url) stems.push({ name: t.stemStrings, url: info.strings_url, icon: '🎻' });
-                if (info.brass_url) stems.push({ name: t.stemBrass, url: info.brass_url, icon: '🎺' });
-                if (info.woodwinds_url) stems.push({ name: t.stemWoodwinds, url: info.woodwinds_url, icon: '🎷' });
-                if (info.percussion_url) stems.push({ name: t.stemPercussion, url: info.percussion_url, icon: '🪘' });
-                if (info.synth_url) stems.push({ name: t.stemSynth, url: info.synth_url, icon: '🎛️' });
-                if (info.fx_url) stems.push({ name: t.stemFX, url: info.fx_url, icon: '✨' });
-            }
-            stems.forEach(function(stem) {
-                var html = '<div class="stem-item"><div class="stem-icon">' + stem.icon + '</div><div class="stem-info"><div class="stem-name">' + stem.name + '</div><audio class="stem-audio" controls src="' + stem.url + '"></audio></div><div class="stem-actions"><a href="' + stem.url + '" download class="stem-btn primary">' + t.btnDownload + '</a></div></div>';
-                container.innerHTML += html;
-            });
-            document.getElementById('resultsEmpty').style.display = 'none';
-            container.style.display = 'flex';
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() { setLanguage('tr'); checkAuthStatus(); });
     </script>
 </body>
 </html>
