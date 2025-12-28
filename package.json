@@ -1,10 +1,11 @@
 {
-  "name": "baz-stem-separator",
-  "version": "1.0.0",
-  "description": "BAZ AI Stem Separator - Vokal ve Enstrüman Ayırıcı",
-  "main": "index.html",
+  "name": "baz-ai-stem-separator",
+  "version": "2.0.0",
+  "description": "BAZ AI Stem Separator - Vokal ve Enstrüman Ayrıştırıcı",
+  "main": "api/stem.js",
   "scripts": {
-    "start": "npx serve ."
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "mongodb": "^6.3.0"

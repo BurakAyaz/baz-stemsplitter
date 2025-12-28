@@ -19,8 +19,9 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; display: flex; flex-direction: column; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; }
         
+        /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
         .logo-icon { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
@@ -30,7 +31,7 @@
         .lang-btn.active { background: var(--accent); color: var(--text-primary); }
         .lang-btn:hover:not(.active) { color: var(--text-primary); }
         
-        /* ==================== KREDİ SİSTEMİ STİLLERİ ==================== */
+        /* Kredi Display */
         .credit-display {
             display: flex;
             align-items: center;
@@ -50,105 +51,138 @@
         .plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .plan-badge.deneme { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .plan-badge.test { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .plan-badge.none { background: #4b5563; }
         .days-left { font-size: 9px; color: #6b7280; }
         .days-left.warning { color: #f59e0b; }
         .days-left.danger { color: #ef4444; }
-        .change-plan-btn { display: flex; align-items: center; gap: 4px; padding: 6px 10px; background: rgba(37, 150, 190, 0.2); border: 1px solid rgba(37, 150, 190, 0.4); color: #2596be; border-radius: 6px; font-size: 10px; font-weight: 500; text-decoration: none; transition: all 0.2s; margin-left: 8px; }
-        .change-plan-btn:hover { background: #2596be; color: white; }
-        .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-right: 10px; }
-        .login-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); transform: translateY(-1px); }
-        .user-menu { position: relative; }
-        .user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
-        .user-btn:hover { background: var(--bg-hover); }
-        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
-        .user-dropdown.active { display: block; }
-        .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; transition: background 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
-        .user-dropdown-item:hover { background: var(--bg-hover); }
-        .user-dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
-        .login-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 5000; align-items: center; justify-content: center; }
-        .login-modal-overlay.active { display: flex; }
-        .login-modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; text-align: center; }
-        .login-modal h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #2596be, #3ab4e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .login-modal p { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
-        .login-modal-btn { width: 100%; padding: 14px 24px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-bottom: 12px; }
-        .login-modal-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); transform: translateY(-2px); }
-        .login-modal-close { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
-        .login-modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
-        /* ==================== KREDİ SİSTEMİ STİLLERİ BİTİŞ ==================== */
         
-        .main-container { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
-        .content-box { width: 100%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+        /* User Menu */
+        .user-menu { position: relative; display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+        .user-name { font-size: 12px; font-weight: 500; }
+        .login-btn { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .login-btn:hover { background: var(--accent-light); }
         
-        .form-group { margin-bottom: 20px; }
+        /* Main Layout - Sol Menü, Sağ Sonuçlar */
+        .main-container { display: flex; height: calc(100vh - 45px); overflow: hidden; }
+        .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; overflow-y: auto; flex-shrink: 0; }
+        .results-section { flex: 1; padding: 16px; background: var(--bg-primary); overflow-y: auto; position: relative; }
+        
+        @media (max-width: 900px) { 
+            .main-container { flex-direction: column; } 
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; } 
+            .results-section { max-height: 50vh; }
+        }
+        
+        /* Form Elements */
+        .section-title { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 16px; }
         .form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-select, .form-input { width: 100%; padding: 12px 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 14px; font-family: inherit; transition: all 0.2s; }
+        .form-select, .form-input { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: inherit; transition: all 0.2s; }
         .form-select:focus, .form-input:focus { outline: none; border-color: var(--accent); }
         .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 36px; cursor: pointer; }
-        .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .form-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
         
-        .credit-cost-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: rgba(37, 150, 190, 0.2); border: 1px solid rgba(37, 150, 190, 0.4); color: var(--accent-light); border-radius: 6px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+        /* Tab Switcher */
+        .tab-switcher { display: flex; background: var(--bg-tertiary); border-radius: 8px; padding: 3px; border: 1px solid var(--border); margin-bottom: 12px; }
+        .tab-btn { flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 6px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
+        .tab-btn.active { background: var(--accent); color: var(--text-primary); }
+        .tab-btn:hover:not(.active) { color: var(--text-primary); }
         
-        .submit-btn { width: 100%; padding: 14px 20px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; }
+        /* Info Box */
+        .info-box { padding: 12px; background: rgba(37, 150, 190, 0.1); border: 1px solid rgba(37, 150, 190, 0.3); border-radius: 8px; margin-bottom: 12px; }
+        .info-box strong { display: block; font-size: 11px; color: var(--accent); margin-bottom: 4px; }
+        .info-box p { font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+        
+        /* Submit Button */
+        .submit-btn { width: 100%; padding: 12px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .submit-btn:hover { background: var(--accent-light); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-credit-info { font-size: 10px; opacity: 0.8; margin-left: 6px; padding: 2px 6px; background: rgba(255,255,255,0.2); border-radius: 4px; }
         
-        /* Credit Warning */
-        .credit-warning { background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05)); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 14px; margin-bottom: 20px; display: none; }
-        .credit-warning.active { display: block; }
-        .credit-warning-content { display: flex; align-items: center; gap: 10px; }
-        .credit-warning-icon { font-size: 24px; }
-        .credit-warning-text h4 { color: #ef4444; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-        .credit-warning-text p { color: #a0a0a0; font-size: 11px; }
-        .credit-warning-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500; transition: background 0.2s; }
-        .credit-warning-btn:hover { background: #dc2626; }
+        /* Results Area */
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .results-title { font-size: 16px; font-weight: 600; color: var(--accent); }
+        .results-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; text-align: center; color: var(--text-muted); }
+        .results-empty svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.3; color: var(--accent); }
+        .results-empty p { font-size: 14px; max-width: 300px; }
         
-        /* Results Section */
-        .results-section { margin-top: 24px; display: none; }
-        .results-section.active { display: block; }
-        .results-title { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 16px; text-align: center; }
-        
-        .stem-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
-        .stem-icon { width: 40px; height: 40px; background: var(--bg-input); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        /* Stem Results */
+        .stems-container { display: flex; flex-direction: column; gap: 12px; }
+        .stem-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; transition: all 0.2s; }
+        .stem-item:hover { border-color: var(--accent); }
+        .stem-icon { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .stem-info { flex: 1; }
-        .stem-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .stem-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .stem-audio { width: 100%; height: 36px; margin-top: 6px; }
         .stem-actions { display: flex; gap: 8px; }
-        .stem-btn { padding: 8px 12px; border: 1px solid var(--border); background: var(--bg-input); color: var(--text-primary); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .stem-btn { padding: 8px 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-primary); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 4px; }
         .stem-btn:hover { background: var(--bg-hover); border-color: var(--accent); }
-        .stem-btn.primary { background: var(--accent); border-color: var(--accent); }
+        .stem-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
         .stem-btn.primary:hover { background: var(--accent-light); }
         
-        /* Loading */
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+        /* History Section */
+        .history-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+        .history-title { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
+        .history-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .history-item:hover { border-color: var(--accent); }
+        .history-icon { font-size: 18px; }
+        .history-info { flex: 1; }
+        .history-name { font-size: 12px; font-weight: 500; }
+        .history-date { font-size: 10px; color: var(--text-muted); }
+        .history-type { font-size: 9px; padding: 2px 6px; background: var(--bg-tertiary); border-radius: 4px; color: var(--text-secondary); }
+        
+        /* Loading Overlay */
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; flex-direction: column; }
         .loading-overlay.active { display: flex; }
-        .loader { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { margin-top: 16px; font-size: 16px; font-weight: 500; }
-        .loading-status { margin-top: 6px; font-size: 13px; color: var(--accent); }
-        .loading-timer { margin-top: 10px; font-size: 18px; color: var(--accent); font-weight: 600; }
+        .loading-status { margin-top: 8px; font-size: 13px; color: var(--accent); }
+        .loading-timer { margin-top: 12px; font-size: 24px; color: var(--accent); font-weight: 600; }
         .loading-avg { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
         
         /* Messages */
-        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: none; }
+        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; display: none; }
         .message.error { display: block; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #ff6b6b; }
         .message.success { display: block; background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: #4ade80; }
         
-        /* Info Box */
-        .info-box { margin-top: 12px; padding: 14px; background: rgba(37, 150, 190, 0.1); border: 1px solid rgba(37, 150, 190, 0.3); border-radius: 8px; }
-        .info-box strong { display: block; font-size: 12px; color: var(--accent); margin-bottom: 6px; }
-        .info-box p { font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+        /* Login Modal */
+        .login-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 300; align-items: center; justify-content: center; }
+        .login-modal-overlay.active { display: flex; }
+        .login-modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; width: 90%; text-align: center; }
+        .login-modal h2 { font-size: 20px; margin-bottom: 8px; }
+        .login-modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .login-modal-btn { width: 100%; padding: 14px 20px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+        .login-modal-btn:hover { background: var(--accent-light); }
+        .login-modal-close { width: 100%; padding: 12px 20px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; cursor: pointer; }
         
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        /* Şarkı Seçim Listesi */
+        .track-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+        .track-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--border); }
+        .track-option:last-child { border-bottom: none; }
+        .track-option:hover { background: var(--bg-hover); }
+        .track-option.selected { background: rgba(37, 150, 190, 0.2); border-color: var(--accent); }
+        .track-option-icon { font-size: 16px; }
+        .track-option-info { flex: 1; }
+        .track-option-title { font-size: 12px; font-weight: 500; }
+        .track-option-meta { font-size: 10px; color: var(--text-muted); }
+        .track-option-check { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .track-option.selected .track-option-check { background: var(--accent); border-color: var(--accent); }
+        .track-option.selected .track-option-check::after { content: '✓'; color: white; font-size: 10px; }
+        
+        /* Empty Track List */
+        .empty-tracks { padding: 24px; text-align: center; color: var(--text-muted); }
+        .empty-tracks svg { width: 40px; height: 40px; margin-bottom: 8px; opacity: 0.4; }
+        .empty-tracks p { font-size: 12px; }
+        
+        /* No Login Warning */
+        .no-login-warning { padding: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; margin-bottom: 12px; text-align: center; }
+        .no-login-warning p { font-size: 12px; color: #ff6b6b; margin-bottom: 8px; }
+        .no-login-warning button { padding: 8px 16px; background: var(--error); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loader"></div>
         <p class="loading-text" id="loadingText">Stem Ayrıştırma</p>
@@ -156,218 +190,265 @@
         <p class="loading-timer" id="loadingTimer">00:00</p>
         <p class="loading-avg" id="loadingAvg">Ortalama işlem süresi: 1-3 dk</p>
     </div>
+    
+    <!-- Login Modal -->
+    <div class="login-modal-overlay" id="loginModal">
+        <div class="login-modal">
+            <img src="/baz-logo.png" alt="BAZ" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px;" onerror="this.style.display='none'">
+            <h2 id="loginModalTitle">BAZ AI Stem Separator</h2>
+            <p id="loginModalDesc">Stem ayrıştırma için hesabınıza giriş yapmanız gerekiyor.</p>
+            <button class="login-modal-btn" onclick="redirectToWixLogin()" id="loginModalBtn">
+                Giriş Yap / Kayıt Ol
+            </button>
+            <button class="login-modal-close" onclick="closeLoginModal()" id="loginModalClose">
+                Kapat
+            </button>
+        </div>
+    </div>
 
+    <!-- Header -->
     <header class="header">
         <div class="logo">
-            <div class="logo-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v12M6 12h12"/>
-                </svg>
-            </div>
-            BAZ AI Stem Separator
+            <div class="logo-icon">🎵</div>
+            <span>BAZ AI Stem Separator</span>
         </div>
         <div class="header-right">
-            <!-- Kredi Göstergesi -->
+            <!-- Kredi Display (login sonrası görünür) -->
             <div class="credit-display" id="creditDisplay" style="display: none;">
                 <div class="credit-info">
-                    <span class="credit-icon">💎</span>
+                    <span class="credit-icon">⚡</span>
                     <span class="credit-count" id="creditCount">0</span>
-                    <span class="credit-label">Kredi</span>
                 </div>
                 <div class="credit-details">
-                    <span class="plan-badge" id="planBadge">-</span>
-                    <span class="days-left" id="daysLeft"></span>
-                </div>
-                <a href="https://www.burakayaz.com/abonelik-sat%C4%B1n-al" class="change-plan-btn" id="changePlanBtn" title="Planı Değiştir">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                    Planı Değiştir
-                </a>
-            </div>
-            
-            <!-- Login Butonu -->
-            <button class="login-btn" id="loginBtn" onclick="showLoginModal()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
-                <span id="loginBtnText">Giriş Yap</span>
-            </button>
-            
-            <!-- Kullanıcı Menüsü -->
-            <div class="user-menu" id="userMenu" style="display: none;">
-                <button class="user-btn" onclick="toggleUserDropdown()">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <span id="userName">Kullanıcı</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="user-dropdown" id="userDropdown">
-                    <a class="user-dropdown-item" href="https://baz-test-six.vercel.app">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                        AI Music Studio
-                    </a>
-                    <div class="user-dropdown-divider"></div>
-                    <button class="user-dropdown-item" onclick="logout()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        Çıkış Yap
-                    </button>
+                    <span class="plan-badge none" id="planBadge">-</span>
+                    <span class="days-left" id="daysLeft">-</span>
                 </div>
             </div>
             
+            <!-- Dil Değiştirici -->
             <div class="lang-switcher">
                 <button class="lang-btn active" id="langTR" onclick="setLanguage('tr')">TR</button>
                 <button class="lang-btn" id="langEN" onclick="setLanguage('en')">EN</button>
             </div>
+            
+            <!-- Kullanıcı Menüsü / Login Butonu -->
+            <div id="userArea">
+                <button class="login-btn" id="loginBtn" onclick="showLoginModal()">Giriş Yap</button>
+            </div>
         </div>
     </header>
 
+    <!-- Main Container -->
     <div class="main-container">
-        <div class="content-box">
-            <!-- Kredi Uyarısı -->
-            <div class="credit-warning" id="creditWarning">
-                <div class="credit-warning-content">
-                    <span class="credit-warning-icon">⚠️</span>
-                    <div class="credit-warning-text">
-                        <h4 id="creditWarningTitle">Krediniz Yetersiz</h4>
-                        <p id="creditWarningMsg">Stem ayırmak için giriş yapın veya paket satın alın.</p>
-                    </div>
-                </div>
-                <a href="#" id="creditWarningBtn" class="credit-warning-btn" onclick="handleCreditWarningClick()">
-                    Paket Satın Al →
-                </a>
+        <!-- Sol Sidebar - Yaratım Menüsü -->
+        <div class="sidebar">
+            <div class="section-title">
+                <span>🎛️</span>
+                <span id="sidebarTitle">Stem Ayrıştırma</span>
             </div>
             
             <div class="message" id="errorMsg"></div>
             <div class="message" id="successMsg"></div>
             
+            <!-- Giriş Yapılmamış Uyarısı -->
+            <div class="no-login-warning" id="noLoginWarning" style="display: none;">
+                <p id="noLoginText">Şarkılarınıza erişmek için giriş yapın</p>
+                <button onclick="showLoginModal()" id="noLoginBtn">Giriş Yap</button>
+            </div>
+            
             <form id="stemForm">
+                <!-- Kaynak Seçimi -->
                 <div class="form-group">
-                    <label class="form-label" id="labelAudioSource">Kaynak Şarkı</label>
-                    <select class="form-select" id="audioSource">
-                        <option value="">-- Şarkı Seçin --</option>
-                    </select>
-                    <p class="form-hint" id="hintAudioSource">Daha önce oluşturduğunuz şarkılardan birini seçin</p>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">
-                        <span id="labelSeparationType">Ayrıştırma Tipi</span>
-                    </label>
-                    <select class="form-select" id="separationType" onchange="updateCreditCost()">
-                        <option value="separate_vocal">Vokal + Enstrüman (2 parça)</option>
-                        <option value="split_stem">12 Enstrüman (Detaylı)</option>
-                    </select>
-                    <div class="info-box" id="separationInfo">
-                        <strong id="infoTitle">Vokal + Enstrüman</strong>
-                        <p id="infoDesc">Şarkınız vokal ve enstrümantal olarak 2 parçaya ayrılır.</p>
+                    <label class="form-label" id="labelInputMode">Kaynak Seçimi</label>
+                    <div class="tab-switcher">
+                        <button type="button" class="tab-btn active" id="tabDatabase" onclick="switchInputMode('database')">Şarkılarım</button>
+                        <button type="button" class="tab-btn" id="tabManual" onclick="switchInputMode('manual')">Manuel Giriş</button>
                     </div>
                 </div>
                 
+                <!-- Database'den Şarkı Seçimi -->
+                <div id="databaseSection">
+                    <div class="form-group">
+                        <label class="form-label" id="labelSelectTrack">Şarkı Seçin</label>
+                        <div class="track-list" id="trackList">
+                            <div class="empty-tracks" id="emptyTracks">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                                <p id="emptyTracksText">Henüz şarkınız yok veya giriş yapmadınız</p>
+                            </div>
+                        </div>
+                        <p class="form-hint" id="hintSelectTrack">BAZ AI'da oluşturduğunuz şarkılar otomatik yüklenir</p>
+                    </div>
+                </div>
+                
+                <!-- Manuel Giriş -->
+                <div id="manualSection" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Task ID</label>
+                        <input type="text" class="form-input" id="manualTaskId" placeholder="Örn: abc123...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Audio ID</label>
+                        <input type="text" class="form-input" id="manualAudioId" placeholder="Örn: xyz789...">
+                    </div>
+                    <div class="info-box">
+                        <strong id="infoManualTitle">Manuel Giriş Nasıl Yapılır?</strong>
+                        <p id="infoManualDesc">BAZ AI'da oluşturduğunuz şarkının Task ID ve Audio ID bilgilerini girin. Bu bilgiler şarkı detaylarında bulunabilir.</p>
+                    </div>
+                </div>
+                
+                <!-- Ayrıştırma Tipi -->
+                <div class="form-group">
+                    <label class="form-label" id="labelSeparationType">Ayrıştırma Tipi</label>
+                    <select class="form-select" id="separationType">
+                        <option value="separate_vocal">Vokal & Enstrümantal (2 Stem)</option>
+                        <option value="split_stem">Detaylı Ayrıştırma (Çoklu Stem)</option>
+                    </select>
+                    <p class="form-hint" id="hintSeparationType">Detaylı ayrıştırma daha uzun sürer</p>
+                </div>
+                
+                <!-- Info Box -->
+                <div class="info-box">
+                    <strong id="infoTitle">Stem Ayrıştırma Nedir?</strong>
+                    <p id="infoDesc">Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır. Remix, karaoke veya müzik prodüksiyonu için ideal.</p>
+                </div>
+                
+                <!-- Submit -->
                 <button type="submit" class="submit-btn" id="submitBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v12M6 12h12"/>
-                    </svg>
-                    <span id="submitBtnText">Stem Ayır</span>
-                    <span class="btn-credit-info" id="btnCreditInfo">2 Kredi</span>
+                    <span>🎵</span>
+                    <span id="submitText">Ayrıştırmayı Başlat</span>
                 </button>
             </form>
-            
-            <div class="results-section" id="resultsSection">
-                <h3 class="results-title" id="resultsTitle">Ayrıştırılan Parçalar</h3>
-                <div id="stemsContainer"></div>
-            </div>
         </div>
-    </div>
-    
-    <!-- Login Modal -->
-    <div class="login-modal-overlay" id="loginModal">
-        <div class="login-modal">
-            <img src="/baz-logo.png" alt="BAZ" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px;">
-            <h2>BAZ AI Stem Separator</h2>
-            <p id="loginModalText">Stem ayırmak için hesabınıza giriş yapmanız gerekiyor.</p>
-            <button class="login-modal-btn" onclick="redirectToWixLogin()">
-                <span id="loginModalBtnText">Giriş Yap / Kayıt Ol</span>
-            </button>
-            <button class="login-modal-close" onclick="closeLoginModal()">
-                <span id="loginModalCloseText">Kapat</span>
-            </button>
+        
+        <!-- Sağ Taraf - Sonuçlar -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title" id="resultsTitle">Sonuçlar</h2>
+            </div>
+            
+            <!-- Boş Durum -->
+            <div class="results-empty" id="resultsEmpty">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+                <p id="emptyResultsText">Stem ayrıştırma sonuçlarınız burada görünecek. Sol menüden bir şarkı seçip başlayın.</p>
+            </div>
+            
+            <!-- Stem Sonuçları -->
+            <div class="stems-container" id="stemsContainer" style="display: none;"></div>
+            
+            <!-- Geçmiş Ayrıştırmalar -->
+            <div class="history-section" id="historySection" style="display: none;">
+                <h3 class="history-title" id="historyTitle">Geçmiş Ayrıştırmalar</h3>
+                <div id="historyList"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ==================== ÇEVİRİ SİSTEMİ ====================
+        // ==================== GLOBAL DEĞİŞKENLER ====================
         var currentLang = 'tr';
+        var currentInputMode = 'database';
+        var authToken = null;
+        var currentUser = null;
+        var userCredits = 0;
+        var userPlan = 'none';
+        var userTracks = [];
+        var selectedTrack = null;
+        var stemHistory = [];
+        var timerInterval = null;
+        var timerSeconds = 0;
         
+        // API Base URL
+        var API_BASE_URL = window.location.origin;
+        
+        // ==================== ÇEVİRİLER ====================
         var translations = {
             tr: {
-                pageTitle: 'Vokal & Enstrüman Ayırıcı',
-                labelAudioSource: 'Kaynak Şarkı',
-                hintAudioSource: 'Daha önce oluşturduğunuz şarkılardan birini seçin',
-                selectTrack: '-- Şarkı Seçin --',
+                sidebarTitle: 'Stem Ayrıştırma',
+                labelInputMode: 'Kaynak Seçimi',
+                tabDatabase: 'Şarkılarım',
+                tabManual: 'Manuel Giriş',
+                labelSelectTrack: 'Şarkı Seçin',
+                emptyTracksText: 'Henüz şarkınız yok veya giriş yapmadınız',
+                hintSelectTrack: 'BAZ AI\'da oluşturduğunuz şarkılar otomatik yüklenir',
+                infoManualTitle: 'Manuel Giriş Nasıl Yapılır?',
+                infoManualDesc: 'BAZ AI\'da oluşturduğunuz şarkının Task ID ve Audio ID bilgilerini girin.',
                 labelSeparationType: 'Ayrıştırma Tipi',
-                typeVocalInst: 'Vokal + Enstrüman (2 parça)',
-                type12Stem: '12 Enstrüman (Detaylı)',
-                infoTitleVocal: 'Vokal + Enstrüman',
-                infoDescVocal: 'Şarkınız vokal ve enstrümantal olarak 2 parçaya ayrılır.',
-                infoTitle12: '12 Enstrüman',
-                infoDesc12: 'Vokal, backing vocals, davul, bas, gitar, klavye, yaylılar, nefesli sazlar, vurmalılar, synth ve FX olarak ayrılır.',
-                submitBtn: 'Stem Ayır',
-                resultsTitle: 'Ayrıştırılan Parçalar',
-                btnDownload: 'İndir',
+                optionVocal: 'Vokal & Enstrümantal (2 Stem)',
+                optionSplit: 'Detaylı Ayrıştırma (Çoklu Stem)',
+                hintSeparationType: 'Detaylı ayrıştırma daha uzun sürer',
+                infoTitle: 'Stem Ayrıştırma Nedir?',
+                infoDesc: 'Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır. Remix, karaoke veya müzik prodüksiyonu için ideal.',
+                submitText: 'Ayrıştırmayı Başlat',
+                resultsTitle: 'Sonuçlar',
+                emptyResultsText: 'Stem ayrıştırma sonuçlarınız burada görünecek. Sol menüden bir şarkı seçip başlayın.',
+                historyTitle: 'Geçmiş Ayrıştırmalar',
                 loadingText: 'Stem Ayrıştırma',
                 loadingStatus: 'İşleniyor...',
                 loadingAvg: 'Ortalama işlem süresi: 1-3 dk',
-                errorPrefix: 'Hata:',
-                errorNoTrack: 'Lütfen bir şarkı seçin.',
+                loginBtn: 'Giriş Yap',
+                loginModalTitle: 'BAZ AI Stem Separator',
+                loginModalDesc: 'Stem ayrıştırma için hesabınıza giriş yapmanız gerekiyor.',
+                loginModalBtn: 'Giriş Yap / Kayıt Ol',
+                loginModalClose: 'Kapat',
+                noLoginText: 'Şarkılarınıza erişmek için giriş yapın',
+                noLoginBtn: 'Giriş Yap',
+                btnDownload: 'İndir',
+                btnPlay: 'Oynat',
                 stemVocal: 'Vokal',
                 stemInstrumental: 'Enstrümantal',
-                stemBackingVocals: 'Backing Vocals',
                 stemDrums: 'Davul',
                 stemBass: 'Bas',
                 stemGuitar: 'Gitar',
                 stemKeyboard: 'Klavye',
                 stemStrings: 'Yaylılar',
-                stemBrass: 'Nefesli Bakır',
-                stemWoodwinds: 'Nefesli Tahta',
+                stemBrass: 'Bakır Üflemeli',
+                stemWoodwinds: 'Tahta Üflemeli',
                 stemPercussion: 'Perküsyon',
-                stemSynth: 'Synthesizer',
+                stemSynth: 'Synth',
                 stemFX: 'Efektler',
-                creditWarningTitle: 'Krediniz Yetersiz',
-                creditWarningMsg: 'Stem ayırmak için giriş yapın veya paket satın alın.',
-                creditWarningBtn: 'Paket Satın Al →',
-                loginModalText: 'Stem ayırmak için hesabınıza giriş yapmanız gerekiyor.',
-                loginModalBtn: 'Giriş Yap / Kayıt Ol',
-                loginModalClose: 'Kapat',
-                loginBtn: 'Giriş Yap'
+                stemBackingVocals: 'Arka Vokal',
+                errorPrefix: 'Hata:',
+                errorNoTrack: 'Lütfen bir şarkı seçin',
+                errorNoIds: 'Task ID ve Audio ID gerekli',
+                errorNoLogin: 'Bu işlem için giriş yapmalısınız',
+                successStem: 'Stem ayrıştırma tamamlandı!'
             },
             en: {
-                pageTitle: 'Vocal & Instrument Separator',
-                labelAudioSource: 'Source Track',
-                hintAudioSource: 'Select one of your previously created tracks',
-                selectTrack: '-- Select Track --',
+                sidebarTitle: 'Stem Separation',
+                labelInputMode: 'Source Selection',
+                tabDatabase: 'My Songs',
+                tabManual: 'Manual Entry',
+                labelSelectTrack: 'Select Song',
+                emptyTracksText: 'No songs yet or not logged in',
+                hintSelectTrack: 'Songs created in BAZ AI are loaded automatically',
+                infoManualTitle: 'How to Enter Manually?',
+                infoManualDesc: 'Enter the Task ID and Audio ID of your song created in BAZ AI.',
                 labelSeparationType: 'Separation Type',
-                typeVocalInst: 'Vocal + Instrumental (2 stems)',
-                type12Stem: '12 Instruments (Detailed)',
-                infoTitleVocal: 'Vocal + Instrumental',
-                infoDescVocal: 'Your track will be separated into vocal and instrumental stems.',
-                infoTitle12: '12 Instruments',
-                infoDesc12: 'Separated into vocal, backing vocals, drums, bass, guitar, keyboard, strings, brass, woodwinds, percussion, synth and FX.',
-                submitBtn: 'Separate Stems',
-                resultsTitle: 'Separated Stems',
-                btnDownload: 'Download',
+                optionVocal: 'Vocal & Instrumental (2 Stems)',
+                optionSplit: 'Detailed Separation (Multi Stem)',
+                hintSeparationType: 'Detailed separation takes longer',
+                infoTitle: 'What is Stem Separation?',
+                infoDesc: 'Separates your song into individual parts like vocals, bass, drums, guitar. Ideal for remixes, karaoke or music production.',
+                submitText: 'Start Separation',
+                resultsTitle: 'Results',
+                emptyResultsText: 'Your stem separation results will appear here. Select a song from the left menu to start.',
+                historyTitle: 'Previous Separations',
                 loadingText: 'Stem Separation',
                 loadingStatus: 'Processing...',
                 loadingAvg: 'Average processing time: 1-3 min',
-                errorPrefix: 'Error:',
-                errorNoTrack: 'Please select a track.',
+                loginBtn: 'Login',
+                loginModalTitle: 'BAZ AI Stem Separator',
+                loginModalDesc: 'Please login to use stem separation.',
+                loginModalBtn: 'Login / Register',
+                loginModalClose: 'Close',
+                noLoginText: 'Login to access your songs',
+                noLoginBtn: 'Login',
+                btnDownload: 'Download',
+                btnPlay: 'Play',
                 stemVocal: 'Vocal',
                 stemInstrumental: 'Instrumental',
-                stemBackingVocals: 'Backing Vocals',
                 stemDrums: 'Drums',
                 stemBass: 'Bass',
                 stemGuitar: 'Guitar',
@@ -376,212 +457,102 @@
                 stemBrass: 'Brass',
                 stemWoodwinds: 'Woodwinds',
                 stemPercussion: 'Percussion',
-                stemSynth: 'Synthesizer',
+                stemSynth: 'Synth',
                 stemFX: 'Effects',
-                creditWarningTitle: 'Insufficient Credits',
-                creditWarningMsg: 'Please login or purchase a package to separate stems.',
-                creditWarningBtn: 'Buy Package →',
-                loginModalText: 'You need to login to your account to separate stems.',
-                loginModalBtn: 'Login / Register',
-                loginModalClose: 'Close',
-                loginBtn: 'Login'
+                stemBackingVocals: 'Backing Vocals',
+                errorPrefix: 'Error:',
+                errorNoTrack: 'Please select a song',
+                errorNoIds: 'Task ID and Audio ID required',
+                errorNoLogin: 'Please login for this action',
+                successStem: 'Stem separation completed!'
             }
         };
         
+        // ==================== DİL DEĞİŞTİRME ====================
         function setLanguage(lang) {
             currentLang = lang;
             var t = translations[lang];
             
+            // Butonları güncelle
             document.getElementById('langTR').classList.toggle('active', lang === 'tr');
             document.getElementById('langEN').classList.toggle('active', lang === 'en');
-            document.documentElement.setAttribute('data-lang', lang);
             
-            document.getElementById('labelAudioSource').textContent = t.labelAudioSource;
-            document.getElementById('hintAudioSource').textContent = t.hintAudioSource;
+            // Tüm metinleri güncelle
+            document.getElementById('sidebarTitle').textContent = t.sidebarTitle;
+            document.getElementById('labelInputMode').textContent = t.labelInputMode;
+            document.getElementById('tabDatabase').textContent = t.tabDatabase;
+            document.getElementById('tabManual').textContent = t.tabManual;
+            document.getElementById('labelSelectTrack').textContent = t.labelSelectTrack;
+            document.getElementById('emptyTracksText').textContent = t.emptyTracksText;
+            document.getElementById('hintSelectTrack').textContent = t.hintSelectTrack;
+            document.getElementById('infoManualTitle').textContent = t.infoManualTitle;
+            document.getElementById('infoManualDesc').textContent = t.infoManualDesc;
             document.getElementById('labelSeparationType').textContent = t.labelSeparationType;
-            document.getElementById('submitBtnText').textContent = t.submitBtn;
+            document.getElementById('hintSeparationType').textContent = t.hintSeparationType;
+            document.getElementById('infoTitle').textContent = t.infoTitle;
+            document.getElementById('infoDesc').textContent = t.infoDesc;
+            document.getElementById('submitText').textContent = t.submitText;
             document.getElementById('resultsTitle').textContent = t.resultsTitle;
+            document.getElementById('emptyResultsText').textContent = t.emptyResultsText;
+            document.getElementById('historyTitle').textContent = t.historyTitle;
             document.getElementById('loadingText').textContent = t.loadingText;
             document.getElementById('loadingStatus').textContent = t.loadingStatus;
             document.getElementById('loadingAvg').textContent = t.loadingAvg;
-            document.getElementById('creditWarningTitle').textContent = t.creditWarningTitle;
-            document.getElementById('creditWarningMsg').textContent = t.creditWarningMsg;
-            document.getElementById('creditWarningBtn').textContent = t.creditWarningBtn;
-            document.getElementById('loginModalText').textContent = t.loginModalText;
-            document.getElementById('loginModalBtnText').textContent = t.loginModalBtn;
-            document.getElementById('loginModalCloseText').textContent = t.loginModalClose;
-            document.getElementById('loginBtnText').textContent = t.loginBtn;
+            document.getElementById('loginBtn').textContent = t.loginBtn;
+            document.getElementById('loginModalTitle').textContent = t.loginModalTitle;
+            document.getElementById('loginModalDesc').textContent = t.loginModalDesc;
+            document.getElementById('loginModalBtn').textContent = t.loginModalBtn;
+            document.getElementById('loginModalClose').textContent = t.loginModalClose;
+            document.getElementById('noLoginText').textContent = t.noLoginText;
+            document.getElementById('noLoginBtn').textContent = t.noLoginBtn;
             
-            // Update dropdown options
+            // Select options
             var sepType = document.getElementById('separationType');
-            sepType.options[0].text = t.typeVocalInst;
-            sepType.options[1].text = t.type12Stem;
+            sepType.options[0].text = t.optionVocal;
+            sepType.options[1].text = t.optionSplit;
+        }
+        
+        // ==================== INPUT MODE DEĞİŞTİRME ====================
+        function switchInputMode(mode) {
+            currentInputMode = mode;
             
-            updateSeparationInfo();
-            updateTrackDropdown();
+            document.getElementById('tabDatabase').classList.toggle('active', mode === 'database');
+            document.getElementById('tabManual').classList.toggle('active', mode === 'manual');
+            document.getElementById('databaseSection').style.display = mode === 'database' ? 'block' : 'none';
+            document.getElementById('manualSection').style.display = mode === 'manual' ? 'block' : 'none';
         }
         
-        function updateSeparationInfo() {
-            var t = translations[currentLang];
-            var type = document.getElementById('separationType').value;
-            var infoTitle = document.getElementById('infoTitle');
-            var infoDesc = document.getElementById('infoDesc');
-            
-            if (type === 'separate_vocal') {
-                infoTitle.textContent = t.infoTitleVocal;
-                infoDesc.textContent = t.infoDescVocal;
-            } else {
-                infoTitle.textContent = t.infoTitle12;
-                infoDesc.textContent = t.infoDesc12;
-            }
-        }
-        
-        // ==================== TIMER ====================
-        var timerInterval = null;
-        var timerSeconds = 0;
-        
-        function startTimer() {
-            timerSeconds = 0;
-            document.getElementById('loadingTimer').textContent = '00:00';
-            timerInterval = setInterval(function() {
-                timerSeconds++;
-                var mins = Math.floor(timerSeconds / 60);
-                var secs = timerSeconds % 60;
-                document.getElementById('loadingTimer').textContent = 
-                    String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-            }, 1000);
-        }
-        
-        function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
-        
-        // ==================== MESAJLAR ====================
-        function showError(msg) {
-            var el = document.getElementById('errorMsg');
-            el.textContent = msg;
-            el.classList.add('error');
-            setTimeout(function() { el.classList.remove('error'); el.textContent = ''; }, 5000);
-        }
-        
-        function showSuccess(msg) {
-            var el = document.getElementById('successMsg');
-            el.textContent = msg;
-            el.classList.add('success');
-            setTimeout(function() { el.classList.remove('success'); el.textContent = ''; }, 3000);
-        }
-        
-        // ==================== TRACK DROPDOWN ====================
-        function updateTrackDropdown() {
-            var t = translations[currentLang];
-            var select = document.getElementById('audioSource');
-            var savedTracks = JSON.parse(localStorage.getItem('bazai_tracks') || '[]');
-            
-            select.innerHTML = '<option value="">' + t.selectTrack + '</option>';
-            
-            savedTracks.forEach(function(track) {
-                var opt = document.createElement('option');
-                opt.value = JSON.stringify({ taskId: track.taskId, audioId: track.audioId });
-                opt.textContent = track.title || 'Track';
-                select.appendChild(opt);
-            });
-        }
-        
-        // ==================== KREDİ MALİYETİ ====================
-        function getCreditCost() {
-            var type = document.getElementById('separationType').value;
-            return type === 'separate_vocal' ? 2 : 5;
-        }
-        
-        function updateCreditCost() {
-            var cost = getCreditCost();
-            document.getElementById('btnCreditInfo').textContent = cost + ' Kredi';
-            updateSeparationInfo();
-            checkCreditWarning();
-        }
-        
-        // ==================== KREDİ SİSTEMİ ====================
-        let authToken = localStorage.getItem('bazai_token') || null;
-        let currentUser = null;
-        let userCredits = 0;
-        let userPlan = 'none';
-        let isLoggedIn = false;
-        
-        const WIX_SITE_URL = 'https://www.burakayaz.com';
-        const WIX_LOGIN_URL = WIX_SITE_URL + '/baz-redirect';
-        const WIX_PRICING_URL = WIX_SITE_URL + '/abonelik-sat%C4%B1n-al';
-        
-        let creditCheckInterval = null;
-        const CREDIT_CHECK_INTERVAL = 30000;
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
-            startCreditCheck();
-            updateCreditCost();
-        });
-        
-        function startCreditCheck() {
-            if (creditCheckInterval) clearInterval(creditCheckInterval);
-            creditCheckInterval = setInterval(function() {
-                if (isLoggedIn && authToken) refreshCredits();
-            }, CREDIT_CHECK_INTERVAL);
-        }
-        
-        async function refreshCredits() {
-            try {
-                var response = await fetch('/api/auth-sync', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + authToken
-                    }
-                });
-                
-                if (response.ok) {
-                    var data = await response.json();
-                    if (data.success && data.user) {
-                        var newCredits = data.user.credits || data.user.available || 0;
-                        var newPlan = data.user.plan || data.user.planId || 'none';
-                        
-                        if (newCredits !== userCredits || newPlan !== userPlan) {
-                            userCredits = newCredits;
-                            userPlan = newPlan;
-                            currentUser = data.user;
-                            updateCreditDisplay();
-                            checkCreditWarning();
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('Kredi yenileme hatası:', error);
-            }
+        // ==================== AUTH SİSTEMİ ====================
+        function getTokenFromURL() {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('token');
         }
         
         async function checkAuthStatus() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var tokenFromUrl = urlParams.get('token');
-            
-            if (tokenFromUrl) {
-                authToken = tokenFromUrl;
-                localStorage.setItem('bazai_token', tokenFromUrl);
+            // URL'den token al
+            var urlToken = getTokenFromURL();
+            if (urlToken) {
+                authToken = urlToken;
+                localStorage.setItem('bazai_stem_token', urlToken);
+                // URL'den token'ı temizle
                 window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                // localStorage'dan token al
+                authToken = localStorage.getItem('bazai_stem_token');
             }
             
             if (authToken) {
                 await syncUserData();
             } else {
-                showLoggedOutState();
+                showNoLoginState();
             }
-            
-            updateTrackDropdown();
         }
         
         async function syncUserData() {
+            if (!authToken) return;
+            
             try {
-                var response = await fetch('/api/auth-sync', {
+                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -589,161 +560,194 @@
                     }
                 });
                 
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        logout();
-                        return;
-                    }
-                    throw new Error('Sync failed');
-                }
-                
                 var data = await response.json();
                 
                 if (data.success && data.user) {
                     currentUser = data.user;
-                    userCredits = data.user.credits || data.user.available || 0;
-                    userPlan = data.user.plan || data.user.planId || 'none';
-                    isLoggedIn = true;
+                    userCredits = data.user.credits || 0;
+                    userPlan = data.user.planId || data.user.plan || 'none';
                     
-                    showLoggedInState();
-                    updateCreditDisplay();
-                    checkCreditWarning();
+                    updateUserUI();
+                    await loadUserTracks();
+                    await loadStemHistory();
                 } else {
-                    showLoggedOutState();
+                    // Token geçersiz
+                    localStorage.removeItem('bazai_stem_token');
+                    authToken = null;
+                    showNoLoginState();
                 }
             } catch (error) {
-                console.error('User sync error:', error);
-                showLoggedOutState();
+                console.error('Sync error:', error);
+                showNoLoginState();
             }
         }
         
-        function showLoggedInState() {
-            document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('creditDisplay').style.display = 'flex';
-            document.getElementById('userMenu').style.display = 'block';
+        function updateUserUI() {
+            // Login butonunu gizle, kullanıcı menüsünü göster
+            var userArea = document.getElementById('userArea');
+            userArea.innerHTML = '<div class="user-menu" onclick="toggleUserMenu()">' +
+                '<div class="user-avatar">' + (currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U') + '</div>' +
+                '<span class="user-name">' + (currentUser.displayName || currentUser.email || 'Kullanıcı') + '</span>' +
+            '</div>';
             
-            if (currentUser) {
-                var name = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Kullanıcı');
-                document.getElementById('userName').textContent = name;
-                document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-            }
-        }
-        
-        function showLoggedOutState() {
-            isLoggedIn = false;
-            document.getElementById('loginBtn').style.display = 'flex';
-            document.getElementById('creditDisplay').style.display = 'none';
-            document.getElementById('userMenu').style.display = 'none';
-            checkCreditWarning();
-        }
-        
-        function updateCreditDisplay() {
+            // Kredi display'i göster
+            document.getElementById('creditDisplay').style.display = 'flex';
             document.getElementById('creditCount').textContent = userCredits;
             
+            // Plan badge
             var planBadge = document.getElementById('planBadge');
-            var planName = userPlan.toLowerCase();
+            planBadge.textContent = userPlan.charAt(0).toUpperCase() + userPlan.slice(1);
+            planBadge.className = 'plan-badge ' + userPlan;
             
-            var planDisplayNames = {
-                'temel': 'TEMEL',
-                'uzman': 'UZMAN',
-                'pro': 'PRO',
-                'deneme': 'DENEME',
-                'test': 'TEST',
-                'none': '-'
+            // Kalan gün
+            if (currentUser.daysRemaining !== undefined) {
+                var daysLeft = document.getElementById('daysLeft');
+                daysLeft.textContent = currentUser.daysRemaining + ' gün kaldı';
+                if (currentUser.daysRemaining <= 7) daysLeft.classList.add('danger');
+                else if (currentUser.daysRemaining <= 30) daysLeft.classList.add('warning');
+            }
+            
+            // No login uyarısını gizle
+            document.getElementById('noLoginWarning').style.display = 'none';
+        }
+        
+        function showNoLoginState() {
+            document.getElementById('noLoginWarning').style.display = 'block';
+            document.getElementById('creditDisplay').style.display = 'none';
+            
+            var userArea = document.getElementById('userArea');
+            userArea.innerHTML = '<button class="login-btn" id="loginBtn" onclick="showLoginModal()">' + 
+                translations[currentLang].loginBtn + '</button>';
+        }
+        
+        // ==================== DATABASE'DEN ŞARKI YÜKLEME ====================
+        async function loadUserTracks() {
+            if (!authToken) {
+                userTracks = [];
+                renderTrackList();
+                return;
+            }
+            
+            try {
+                var response = await fetch(API_BASE_URL + '/api/user-data', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken
+                    }
+                });
+                
+                var data = await response.json();
+                
+                if (data.success && data.data && data.data.tracks) {
+                    userTracks = data.data.tracks;
+                } else {
+                    userTracks = [];
+                }
+                
+                renderTrackList();
+            } catch (error) {
+                console.error('Load tracks error:', error);
+                userTracks = [];
+                renderTrackList();
+            }
+        }
+        
+        function renderTrackList() {
+            var container = document.getElementById('trackList');
+            var t = translations[currentLang];
+            
+            if (!userTracks || userTracks.length === 0) {
+                container.innerHTML = '<div class="empty-tracks" id="emptyTracks">' +
+                    '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>' +
+                    '<p id="emptyTracksText">' + t.emptyTracksText + '</p>' +
+                '</div>';
+                return;
+            }
+            
+            var html = '';
+            userTracks.forEach(function(track, index) {
+                var isSelected = selectedTrack && selectedTrack.id === track.id;
+                var date = track.addedAt ? new Date(track.addedAt).toLocaleDateString() : '';
+                
+                html += '<div class="track-option ' + (isSelected ? 'selected' : '') + '" onclick="selectTrack(' + index + ')">' +
+                    '<span class="track-option-icon">🎵</span>' +
+                    '<div class="track-option-info">' +
+                        '<div class="track-option-title">' + (track.title || 'Şarkı ' + (index + 1)) + '</div>' +
+                        '<div class="track-option-meta">' + (track.style || '') + (date ? ' • ' + date : '') + '</div>' +
+                    '</div>' +
+                    '<div class="track-option-check"></div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectTrack(index) {
+            selectedTrack = userTracks[index];
+            renderTrackList();
+        }
+        
+        // ==================== STEM GEÇMİŞİ ====================
+        async function loadStemHistory() {
+            // LocalStorage'dan yükle (veya API'den)
+            var saved = localStorage.getItem('bazai_stem_history');
+            if (saved) {
+                stemHistory = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+        
+        function saveStemToHistory(stemData) {
+            var historyItem = {
+                id: Date.now(),
+                trackName: selectedTrack ? selectedTrack.title : 'Manuel Giriş',
+                type: document.getElementById('separationType').value,
+                date: new Date().toISOString(),
+                stems: stemData
             };
             
-            planBadge.textContent = planDisplayNames[planName] || userPlan.toUpperCase();
-            planBadge.className = 'plan-badge ' + planName;
+            stemHistory.unshift(historyItem);
+            if (stemHistory.length > 20) stemHistory = stemHistory.slice(0, 20);
             
-            if (currentUser && currentUser.planExpiry) {
-                var expiry = new Date(currentUser.planExpiry);
-                var now = new Date();
-                var daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+            localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            var container = document.getElementById('historyList');
+            var section = document.getElementById('historySection');
+            var t = translations[currentLang];
+            
+            if (!stemHistory || stemHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            var html = '';
+            stemHistory.forEach(function(item, index) {
+                var date = new Date(item.date).toLocaleDateString();
+                var typeLabel = item.type === 'separate_vocal' ? 'Vokal' : 'Detaylı';
                 
-                var daysLeftEl = document.getElementById('daysLeft');
-                if (daysLeft > 0) {
-                    daysLeftEl.textContent = daysLeft + ' gün kaldı';
-                    daysLeftEl.className = 'days-left' + (daysLeft <= 3 ? ' danger' : daysLeft <= 7 ? ' warning' : '');
-                } else {
-                    daysLeftEl.textContent = 'Süre doldu';
-                    daysLeftEl.className = 'days-left danger';
-                }
-            }
-        }
-        
-        function checkCreditWarning() {
-            var warning = document.getElementById('creditWarning');
-            var cost = getCreditCost();
+                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')">' +
+                    '<span class="history-icon">🎛️</span>' +
+                    '<div class="history-info">' +
+                        '<div class="history-name">' + item.trackName + '</div>' +
+                        '<div class="history-date">' + date + '</div>' +
+                    '</div>' +
+                    '<span class="history-type">' + typeLabel + '</span>' +
+                '</div>';
+            });
             
-            if (!isLoggedIn) {
-                warning.classList.add('active');
-                document.getElementById('creditWarningBtn').onclick = function() { showLoginModal(); return false; };
-                document.getElementById('creditWarningBtn').textContent = currentLang === 'tr' ? 'Giriş Yap →' : 'Login →';
-            } else if (userCredits < cost) {
-                warning.classList.add('active');
-                document.getElementById('creditWarningBtn').onclick = function() { window.location.href = WIX_PRICING_URL; return false; };
-                document.getElementById('creditWarningBtn').textContent = translations[currentLang].creditWarningBtn;
-            } else {
-                warning.classList.remove('active');
-            }
+            container.innerHTML = html;
         }
         
-        function handleCreditWarningClick() {
-            if (!isLoggedIn) {
-                showLoginModal();
-            } else {
-                window.location.href = WIX_PRICING_URL;
+        function showHistoryItem(index) {
+            var item = stemHistory[index];
+            if (item && item.stems) {
+                displayStemResults(item.stems, item.type);
             }
-            return false;
-        }
-        
-        function canProcess() {
-            var cost = getCreditCost();
-            if (!isLoggedIn) {
-                showLoginModal();
-                return false;
-            }
-            if (userCredits < cost) {
-                showError(currentLang === 'tr' ? 'Yetersiz kredi! (' + cost + ' kredi gerekli)' : 'Insufficient credits! (' + cost + ' credits required)');
-                return false;
-            }
-            return true;
-        }
-        
-        async function useCreditsForStem(amount, actionType) {
-            if (authToken) {
-                try {
-                    var response = await fetch('/api/use-credits', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + authToken
-                        },
-                        body: JSON.stringify({
-                            amount: amount,
-                            action: actionType
-                        })
-                    });
-                    
-                    var data = await response.json();
-                    
-                    if (data.success) {
-                        userCredits = data.data.remainingCredits;
-                        console.log('Kredi harcandı (' + actionType + '). Kalan:', userCredits);
-                    } else {
-                        console.error('Kredi kaydetme hatası:', data.error);
-                        userCredits = Math.max(0, userCredits - amount);
-                    }
-                } catch (error) {
-                    console.error('Kredi API hatası:', error);
-                    userCredits = Math.max(0, userCredits - amount);
-                }
-            } else {
-                userCredits = Math.max(0, userCredits - amount);
-            }
-            
-            updateCreditDisplay();
-            checkCreditWarning();
         }
         
         // ==================== LOGIN MODAL ====================
@@ -756,76 +760,104 @@
         }
         
         function redirectToWixLogin() {
-            // Mevcut sayfanın URL'sini kullan (localhost veya production)
-            var currentUrl = window.location.origin + window.location.pathname;
-            // Wix'te stem-redirect sayfası oluşturmanız gerekiyor
-            // Örnek: https://www.burakayaz.com/stem-redirect?redirect=...
-            var loginUrl = WIX_SITE_URL + '/stem-redirect?redirect=' + encodeURIComponent(currentUrl);
-            window.location.href = loginUrl;
+            // Wix login sayfasına yönlendir
+            var wixLoginUrl = 'https://www.bazaimuzik.com/_functions/login?redirect=' + 
+                encodeURIComponent(window.location.href);
+            window.location.href = wixLoginUrl;
         }
         
-        function toggleUserDropdown() {
-            document.getElementById('userDropdown').classList.toggle('active');
+        // ==================== TIMER ====================
+        function startTimer() {
+            timerSeconds = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(function() {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
         }
         
-        function logout() {
-            authToken = null;
-            currentUser = null;
-            userCredits = 0;
-            userPlan = 'none';
-            isLoggedIn = false;
-            localStorage.removeItem('bazai_token');
-            showLoggedOutState();
-            document.getElementById('userDropdown').classList.remove('active');
-        }
-        
-        // Close dropdown on outside click
-        window.onclick = function(event) {
-            var userMenu = document.getElementById('userMenu');
-            var dropdown = document.getElementById('userDropdown');
-            if (userMenu && dropdown && !userMenu.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
-            
-            var loginModal = document.getElementById('loginModal');
-            if (event.target === loginModal) {
-                closeLoginModal();
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
             }
         }
         
-        // ==================== FORM SUBMIT ====================
+        function updateTimerDisplay() {
+            var minutes = Math.floor(timerSeconds / 60);
+            var seconds = timerSeconds % 60;
+            document.getElementById('loadingTimer').textContent = 
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+        
+        // ==================== MESAJLAR ====================
+        function showError(message) {
+            var el = document.getElementById('errorMsg');
+            el.textContent = message;
+            el.classList.add('error');
+            el.style.display = 'block';
+            setTimeout(function() {
+                el.style.display = 'none';
+                el.classList.remove('error');
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            var el = document.getElementById('successMsg');
+            el.textContent = message;
+            el.classList.add('success');
+            el.style.display = 'block';
+            setTimeout(function() {
+                el.style.display = 'none';
+                el.classList.remove('success');
+            }, 5000);
+        }
+        
+        // ==================== STEM AYRIŞTIRMA ====================
         document.getElementById('stemForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             var t = translations[currentLang];
             
-            // Kredi kontrolü
-            if (!canProcess()) return;
+            var taskId, audioId;
             
-            var audioSourceValue = document.getElementById('audioSource').value;
-            if (!audioSourceValue) {
-                showError(t.errorPrefix + ' ' + t.errorNoTrack);
-                return;
+            if (currentInputMode === 'database') {
+                if (!selectedTrack) {
+                    showError(t.errorPrefix + ' ' + t.errorNoTrack);
+                    return;
+                }
+                taskId = selectedTrack.taskId;
+                audioId = selectedTrack.audioId || selectedTrack.id;
+            } else {
+                taskId = document.getElementById('manualTaskId').value.trim();
+                audioId = document.getElementById('manualAudioId').value.trim();
+                if (!taskId || !audioId) {
+                    showError(t.errorPrefix + ' ' + t.errorNoIds);
+                    return;
+                }
             }
             
-            var audioData = JSON.parse(audioSourceValue);
-            var taskId = audioData.taskId;
-            var audioId = audioData.audioId;
             var separationType = document.getElementById('separationType').value;
-            var creditCost = getCreditCost();
             
+            // Loading göster
             document.getElementById('loadingOverlay').classList.add('active');
-            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('stemsContainer').style.display = 'none';
+            document.getElementById('resultsEmpty').style.display = 'flex';
             startTimer();
             
             try {
-                var res = await fetch('/api/stem', {
+                var headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = 'Bearer ' + authToken;
+                }
+                
+                var res = await fetch(API_BASE_URL + '/api/stem', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({
                         taskId: taskId,
                         audioId: audioId,
                         type: separationType,
-                        callBackUrl: 'https://google.com'
+                        callBackUrl: API_BASE_URL + '/api/stem-webhook'
                     })
                 });
                 
@@ -835,11 +867,6 @@
                 }
                 
                 var newTaskId = data.data ? data.data.taskId : data.taskId;
-                
-                // Kredi harcama
-                var actionType = separationType === 'separate_vocal' ? 'stem_vocal' : 'stem_12';
-                await useCreditsForStem(creditCost, actionType);
-                
                 pollStemStatus(newTaskId, separationType);
                 
             } catch (err) {
@@ -852,20 +879,32 @@
         async function pollStemStatus(taskId, separationType) {
             var t = translations[currentLang];
             var attempts = 0;
+            var maxAttempts = 60;
             
             var interval = setInterval(async function() {
                 attempts++;
                 document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
                 
                 try {
-                    var res = await fetch('/api/stem-status?taskId=' + taskId);
+                    var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId);
                     var json = await res.json();
                     
                     if (json.code === 200 && json.data && json.data.vocal_separation_info) {
                         clearInterval(interval);
                         stopTimer();
                         document.getElementById('loadingOverlay').classList.remove('active');
-                        displayStemResults(json.data.vocal_separation_info, separationType);
+                        
+                        var stemInfo = json.data.vocal_separation_info;
+                        displayStemResults(stemInfo, separationType);
+                        saveStemToHistory(stemInfo);
+                        showSuccess(t.successStem);
+                    }
+                    
+                    if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        stopTimer();
+                        document.getElementById('loadingOverlay').classList.remove('active');
+                        showError('Zaman aşımı - lütfen tekrar deneyin');
                     }
                 } catch (e) {
                     console.error('Poll error:', e);
@@ -903,7 +942,7 @@
                     '<div class="stem-icon">' + stem.icon + '</div>' +
                     '<div class="stem-info">' +
                         '<div class="stem-name">' + stem.name + '</div>' +
-                        '<audio controls src="' + stem.url + '" style="width:100%; height:32px; margin-top:6px;"></audio>' +
+                        '<audio class="stem-audio" controls src="' + stem.url + '"></audio>' +
                     '</div>' +
                     '<div class="stem-actions">' +
                         '<a href="' + stem.url + '" download class="stem-btn primary">' + t.btnDownload + '</a>' +
@@ -912,11 +951,15 @@
                 container.innerHTML += html;
             });
             
-            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('resultsEmpty').style.display = 'none';
+            container.style.display = 'flex';
         }
         
-        // Initialize
-        setLanguage('tr');
+        // ==================== BAŞLATMA ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            setLanguage('tr');
+            checkAuthStatus();
+        });
     </script>
 </body>
 </html>
