@@ -63,14 +63,14 @@ module.exports = async (req, res) => {
             return res.status(401).json({ error: 'Geçersiz token' });
         }
         
-        // Harcama miktarı - stem işlemleri için özel: stem_vocal = 2, stem_12 = 5
+        // Harcama miktarı (varsayılan 1)
         const { amount = 1, action = 'song_generate', songId = null } = req.body;
         
         // Stem işlemleri için kredi miktarlarını otomatik ayarla
         let finalAmount = amount;
-        if (action === 'stem_vocal') {
+        if (action === 'stem_vocal' || action === 'separate_vocal') {
             finalAmount = 2; // Vokal + Enstrüman = 2 kredi
-        } else if (action === 'stem_12') {
+        } else if (action === 'stem_12' || action === 'split_stem') {
             finalAmount = 5; // 12 Enstrüman = 5 kredi
         }
         

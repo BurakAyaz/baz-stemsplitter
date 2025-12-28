@@ -1,4 +1,4 @@
-// api/user-data.js - Kullanıcı Verileri API'si (şarkılar, stem geçmişi)
+// api/user-data.js - Kullanıcı Verileri API'si (şarkılar, loglar, ayarlar)
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -58,10 +58,10 @@ module.exports = async (req, res) => {
         return res.status(401).json({ error: 'Geçersiz token' });
     }
     
+    const { db } = await connectToDatabase();
+    const usersCollection = db.collection('users');
+    
     try {
-        const { db } = await connectToDatabase();
-        const usersCollection = db.collection('users');
-        
         // GET - Kullanıcı verilerini getir
         if (req.method === 'GET') {
             const user = await usersCollection.findOne({ wixUserId: decoded.userId });
@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
                     success: true,
                     data: {
                         credits: 0,
-                        plan: 'none',
+                        plan: 'free',
                         planExpiry: null,
                         tracks: [],
                         stemHistory: [],
@@ -90,7 +90,7 @@ module.exports = async (req, res) => {
                 success: true,
                 data: {
                     credits: user.credits || 0,
-                    plan: user.planId || 'none',
+                    plan: user.planId || 'free',
                     planExpiry: user.expiresAt,
                     tracks: user.tracks || [],
                     stemHistory: user.stemHistory || [],
@@ -163,6 +163,28 @@ module.exports = async (req, res) => {
                     };
                     break;
                 
+                // Üretilen söz ekle
+                case 'add_lyrics':
+                    if (!data.lyrics) {
+                        return res.status(400).json({ error: 'Lyrics verisi gerekli' });
+                    }
+                    pushData.generatedLyrics = {
+                        ...data.lyrics,
+                        createdAt: new Date()
+                    };
+                    break;
+                
+                // Persona ekle
+                case 'add_persona':
+                    if (!data.persona) {
+                        return res.status(400).json({ error: 'Persona verisi gerekli' });
+                    }
+                    pushData.personas = {
+                        ...data.persona,
+                        createdAt: new Date()
+                    };
+                    break;
+                
                 // Activity log ekle
                 case 'add_activity':
                     if (!data.activity) {
@@ -182,10 +204,20 @@ module.exports = async (req, res) => {
                     updateData.activityLog = activityLog;
                     break;
                 
+                // Ayarları güncelle
+                case 'update_settings':
+                    if (!data.settings) {
+                        return res.status(400).json({ error: 'Settings verisi gerekli' });
+                    }
+                    updateData['settings'] = data.settings;
+                    break;
+                
                 // Tüm verileri senkronize et
                 case 'full_sync':
                     if (data.tracks) updateData.tracks = data.tracks;
                     if (data.stemHistory) updateData.stemHistory = data.stemHistory;
+                    if (data.generatedLyrics) updateData.generatedLyrics = data.generatedLyrics;
+                    if (data.personas) updateData.personas = data.personas;
                     if (data.settings) updateData.settings = data.settings;
                     break;
                 
@@ -202,8 +234,10 @@ module.exports = async (req, res) => {
             const result = await usersCollection.updateOne(
                 { wixUserId: decoded.userId },
                 updateQuery,
-                { upsert: true }
+                { upsert: true }  // Kullanıcı yoksa oluştur
             );
+            
+            console.log('User data update result:', result);
             
             // Güncel veriyi döndür
             const updatedUser = await usersCollection.findOne({ wixUserId: decoded.userId });
@@ -213,7 +247,10 @@ module.exports = async (req, res) => {
                 message: 'Veriler kaydedildi',
                 data: {
                     tracks: updatedUser.tracks || [],
-                    stemHistory: updatedUser.stemHistory || []
+                    stemHistory: updatedUser.stemHistory || [],
+                    generatedLyrics: updatedUser.generatedLyrics || [],
+                    personas: updatedUser.personas || [],
+                    activityLog: updatedUser.activityLog || []
                 }
             });
         }
