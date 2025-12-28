@@ -57,11 +57,11 @@
         .days-left.danger { color: #ef4444; }
         
         /* User Menu */
-        .user-menu { position: relative; display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+        .user-menu { position: relative; display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; }
         .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
         .user-name { font-size: 12px; font-weight: 500; }
-        .login-btn { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .login-btn:hover { background: var(--accent-light); }
+        .go-main-btn { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .go-main-btn:hover { background: var(--accent-light); }
         
         /* Main Layout - Sol Menü, Sağ Sonuçlar */
         .main-container { display: flex; height: calc(100vh - 45px); overflow: hidden; }
@@ -146,16 +146,6 @@
         .message.error { display: block; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #ff6b6b; }
         .message.success { display: block; background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: #4ade80; }
         
-        /* Login Modal */
-        .login-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 300; align-items: center; justify-content: center; }
-        .login-modal-overlay.active { display: flex; }
-        .login-modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; width: 90%; text-align: center; }
-        .login-modal h2 { font-size: 20px; margin-bottom: 8px; }
-        .login-modal p { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
-        .login-modal-btn { width: 100%; padding: 14px 20px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
-        .login-modal-btn:hover { background: var(--accent-light); }
-        .login-modal-close { width: 100%; padding: 12px 20px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; cursor: pointer; }
-        
         /* Şarkı Seçim Listesi */
         .track-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
         .track-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--border); }
@@ -175,10 +165,11 @@
         .empty-tracks svg { width: 40px; height: 40px; margin-bottom: 8px; opacity: 0.4; }
         .empty-tracks p { font-size: 12px; }
         
-        /* No Login Warning */
-        .no-login-warning { padding: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; margin-bottom: 12px; text-align: center; }
-        .no-login-warning p { font-size: 12px; color: #ff6b6b; margin-bottom: 8px; }
-        .no-login-warning button { padding: 8px 16px; background: var(--error); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; }
+        /* No Login Warning - Ana sayfaya yönlendirme */
+        .no-login-warning { padding: 16px; background: rgba(37, 150, 190, 0.1); border: 1px solid rgba(37, 150, 190, 0.3); border-radius: 8px; margin-bottom: 12px; text-align: center; }
+        .no-login-warning p { font-size: 12px; color: var(--accent); margin-bottom: 8px; }
+        .no-login-warning a { display: inline-block; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; text-decoration: none; }
+        .no-login-warning a:hover { background: var(--accent-light); }
     </style>
 </head>
 <body>
@@ -189,21 +180,6 @@
         <p class="loading-status" id="loadingStatus">İşleniyor...</p>
         <p class="loading-timer" id="loadingTimer">00:00</p>
         <p class="loading-avg" id="loadingAvg">Ortalama işlem süresi: 1-3 dk</p>
-    </div>
-    
-    <!-- Login Modal -->
-    <div class="login-modal-overlay" id="loginModal">
-        <div class="login-modal">
-            <img src="/baz-logo.png" alt="BAZ" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px;" onerror="this.style.display='none'">
-            <h2 id="loginModalTitle">BAZ AI Stem Separator</h2>
-            <p id="loginModalDesc">Stem ayrıştırma için hesabınıza giriş yapmanız gerekiyor.</p>
-            <button class="login-modal-btn" onclick="redirectToWixLogin()" id="loginModalBtn">
-                Giriş Yap / Kayıt Ol
-            </button>
-            <button class="login-modal-close" onclick="closeLoginModal()" id="loginModalClose">
-                Kapat
-            </button>
-        </div>
     </div>
 
     <!-- Header -->
@@ -231,9 +207,12 @@
                 <button class="lang-btn" id="langEN" onclick="setLanguage('en')">EN</button>
             </div>
             
-            <!-- Kullanıcı Menüsü / Login Butonu -->
+            <!-- Kullanıcı Menüsü / Ana Sayfa Butonu -->
             <div id="userArea">
-                <button class="login-btn" id="loginBtn" onclick="showLoginModal()">Giriş Yap</button>
+                <a href="https://baz-v1-studio.vercel.app/" class="go-main-btn" id="goMainBtn">
+                    <span>🏠</span>
+                    <span>Ana Sayfa</span>
+                </a>
             </div>
         </div>
     </header>
@@ -250,10 +229,10 @@
             <div class="message" id="errorMsg"></div>
             <div class="message" id="successMsg"></div>
             
-            <!-- Giriş Yapılmamış Uyarısı -->
+            <!-- Giriş Yapılmamış Uyarısı - Ana sayfaya yönlendirme -->
             <div class="no-login-warning" id="noLoginWarning" style="display: none;">
-                <p id="noLoginText">Şarkılarınıza erişmek için giriş yapın</p>
-                <button onclick="showLoginModal()" id="noLoginBtn">Giriş Yap</button>
+                <p id="noLoginText">Şarkılarınıza erişmek için ana sayfadan giriş yapın</p>
+                <a href="https://baz-v1-studio.vercel.app/" id="noLoginBtn">Ana Sayfaya Git</a>
             </div>
             
             <form id="stemForm">
@@ -359,8 +338,9 @@
         var timerInterval = null;
         var timerSeconds = 0;
         
-        // API Base URL
+        // API URLs
         var API_BASE_URL = window.location.origin;
+        var MAIN_APP_URL = 'https://baz-v1-studio.vercel.app';
         
         // ==================== ÇEVİRİLER ====================
         var translations = {
@@ -387,13 +367,8 @@
                 loadingText: 'Stem Ayrıştırma',
                 loadingStatus: 'İşleniyor...',
                 loadingAvg: 'Ortalama işlem süresi: 1-3 dk',
-                loginBtn: 'Giriş Yap',
-                loginModalTitle: 'BAZ AI Stem Separator',
-                loginModalDesc: 'Stem ayrıştırma için hesabınıza giriş yapmanız gerekiyor.',
-                loginModalBtn: 'Giriş Yap / Kayıt Ol',
-                loginModalClose: 'Kapat',
-                noLoginText: 'Şarkılarınıza erişmek için giriş yapın',
-                noLoginBtn: 'Giriş Yap',
+                noLoginText: 'Şarkılarınıza erişmek için ana sayfadan giriş yapın',
+                noLoginBtn: 'Ana Sayfaya Git',
                 btnDownload: 'İndir',
                 btnPlay: 'Oynat',
                 stemVocal: 'Vokal',
@@ -438,13 +413,8 @@
                 loadingText: 'Stem Separation',
                 loadingStatus: 'Processing...',
                 loadingAvg: 'Average processing time: 1-3 min',
-                loginBtn: 'Login',
-                loginModalTitle: 'BAZ AI Stem Separator',
-                loginModalDesc: 'Please login to use stem separation.',
-                loginModalBtn: 'Login / Register',
-                loginModalClose: 'Close',
-                noLoginText: 'Login to access your songs',
-                noLoginBtn: 'Login',
+                noLoginText: 'Login from main page to access your songs',
+                noLoginBtn: 'Go to Main Page',
                 btnDownload: 'Download',
                 btnPlay: 'Play',
                 stemVocal: 'Vocal',
@@ -522,7 +492,7 @@
             document.getElementById('manualSection').style.display = mode === 'manual' ? 'block' : 'none';
         }
         
-        // ==================== AUTH SİSTEMİ ====================
+        // ==================== AUTH SİSTEMİ - ANA SAYFADAN VERİ ÇEKME ====================
         function getTokenFromURL() {
             var urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('token');
@@ -542,8 +512,34 @@
             }
             
             if (authToken) {
-                await syncUserData();
+                // Önce ana sayfadan veri çekmeyi dene
+                await fetchFromMainApp();
             } else {
+                // Token yoksa ana sayfadan almayı dene
+                await fetchFromMainApp();
+            }
+        }
+        
+        async function fetchFromMainApp() {
+            try {
+                // Ana sayfadan kullanıcı ve şarkı verilerini çek
+                // localStorage üzerinden senkronizasyon
+                
+                // Ana sayfa token'ını kontrol et
+                var mainToken = localStorage.getItem('bazai_token') || localStorage.getItem('bazai_auth_token');
+                
+                if (mainToken) {
+                    authToken = mainToken;
+                    localStorage.setItem('bazai_stem_token', mainToken);
+                }
+                
+                if (authToken) {
+                    await syncUserData();
+                } else {
+                    showNoLoginState();
+                }
+            } catch (error) {
+                console.error('Fetch from main app error:', error);
                 showNoLoginState();
             }
         }
@@ -552,7 +548,8 @@
             if (!authToken) return;
             
             try {
-                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
+                // Ana uygulamanın API'sinden veri çek
+                var response = await fetch(MAIN_APP_URL + '/api/auth-sync', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -571,24 +568,53 @@
                     await loadUserTracks();
                     await loadStemHistory();
                 } else {
-                    // Token geçersiz
-                    localStorage.removeItem('bazai_stem_token');
-                    authToken = null;
+                    // Token geçersiz - ana sayfaya yönlendir
                     showNoLoginState();
                 }
             } catch (error) {
                 console.error('Sync error:', error);
+                // CORS hatası olabilir - local storage'dan okumayı dene
+                tryLocalStorageSync();
+            }
+        }
+        
+        function tryLocalStorageSync() {
+            // Ana sayfanın localStorage'ından veri okumayı dene
+            try {
+                var savedUser = localStorage.getItem('bazai_user');
+                var savedTracks = localStorage.getItem('bazai_tracks') || localStorage.getItem('savedTracks');
+                
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    userCredits = currentUser.credits || 0;
+                    userPlan = currentUser.planId || currentUser.plan || 'none';
+                    updateUserUI();
+                }
+                
+                if (savedTracks) {
+                    userTracks = JSON.parse(savedTracks);
+                    renderTrackList();
+                } else {
+                    showNoLoginState();
+                }
+                
+                loadStemHistory();
+            } catch (e) {
+                console.error('LocalStorage sync error:', e);
                 showNoLoginState();
             }
         }
         
         function updateUserUI() {
-            // Login butonunu gizle, kullanıcı menüsünü göster
+            // Kullanıcı menüsünü göster
             var userArea = document.getElementById('userArea');
-            userArea.innerHTML = '<div class="user-menu" onclick="toggleUserMenu()">' +
+            userArea.innerHTML = '<div class="user-menu">' +
                 '<div class="user-avatar">' + (currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U') + '</div>' +
                 '<span class="user-name">' + (currentUser.displayName || currentUser.email || 'Kullanıcı') + '</span>' +
-            '</div>';
+            '</div>' +
+            '<a href="' + MAIN_APP_URL + '" class="go-main-btn" style="margin-left: 8px;">' +
+                '<span>🏠</span>' +
+            '</a>';
             
             // Kredi display'i göster
             document.getElementById('creditDisplay').style.display = 'flex';
@@ -616,20 +642,23 @@
             document.getElementById('creditDisplay').style.display = 'none';
             
             var userArea = document.getElementById('userArea');
-            userArea.innerHTML = '<button class="login-btn" id="loginBtn" onclick="showLoginModal()">' + 
-                translations[currentLang].loginBtn + '</button>';
+            userArea.innerHTML = '<a href="' + MAIN_APP_URL + '" class="go-main-btn">' +
+                '<span>🏠</span>' +
+                '<span>Ana Sayfa</span>' +
+            '</a>';
         }
         
         // ==================== DATABASE'DEN ŞARKI YÜKLEME ====================
         async function loadUserTracks() {
             if (!authToken) {
-                userTracks = [];
-                renderTrackList();
+                // localStorage'dan dene
+                tryLoadTracksFromLocalStorage();
                 return;
             }
             
             try {
-                var response = await fetch(API_BASE_URL + '/api/user-data', {
+                // Ana uygulamanın API'sinden şarkıları çek
+                var response = await fetch(MAIN_APP_URL + '/api/user-data', {
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + authToken
@@ -640,6 +669,8 @@
                 
                 if (data.success && data.data && data.data.tracks) {
                     userTracks = data.data.tracks;
+                    // LocalStorage'a da kaydet
+                    localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
                 } else {
                     userTracks = [];
                 }
@@ -647,9 +678,23 @@
                 renderTrackList();
             } catch (error) {
                 console.error('Load tracks error:', error);
-                userTracks = [];
-                renderTrackList();
+                // Hata durumunda localStorage'dan dene
+                tryLoadTracksFromLocalStorage();
             }
+        }
+        
+        function tryLoadTracksFromLocalStorage() {
+            try {
+                var savedTracks = localStorage.getItem('bazai_tracks') || localStorage.getItem('savedTracks');
+                if (savedTracks) {
+                    userTracks = JSON.parse(savedTracks);
+                } else {
+                    userTracks = [];
+                }
+            } catch (e) {
+                userTracks = [];
+            }
+            renderTrackList();
         }
         
         function renderTrackList() {
@@ -748,22 +793,6 @@
             if (item && item.stems) {
                 displayStemResults(item.stems, item.type);
             }
-        }
-        
-        // ==================== LOGIN MODAL ====================
-        function showLoginModal() {
-            document.getElementById('loginModal').classList.add('active');
-        }
-        
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
-        }
-        
-        function redirectToWixLogin() {
-            // Wix login sayfasına yönlendir
-            var wixLoginUrl = 'https://www.burakayaz.com/_functions/login?redirect=' + 
-                encodeURIComponent(window.location.href);
-            window.location.href = wixLoginUrl;
         }
         
         // ==================== TIMER ====================
