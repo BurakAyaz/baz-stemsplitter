@@ -1,10 +1,11 @@
 {
-  "name": "baz-cover-designer",
+  "name": "baz-ai-stem-separator",
   "version": "2.0.0",
-  "description": "BAZ AI Cover Designer - Albüm Kapağı ve Sanatçı Fotosu Tasarımı (MongoDB Visuals Entegrasyonu)",
-  "main": "index.html",
+  "description": "BAZ AI Stem Separator - Vokal ve Enstrüman Ayrıştırıcı (MongoDB Entegreli)",
+  "main": "api/stem.js",
   "scripts": {
-    "start": "npx serve ."
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "mongodb": "^6.3.0"
