@@ -170,11 +170,9 @@ return res.status(200).json({
         email: user.email,
         displayName: user.displayName,
         plan: user.planId,
-        planId: user.planId,
         credits: user.credits || 0,
-        available: user.credits || 0,
-        // Frontend'in syncUserData içinde beklediği alanlar
-        tracks: user.tracks || [], 
+        // KRİTİK: Frontend'in listeleme yapması için bu iki alan şart
+        tracks: user.tracks || [],
         stemHistory: user.stemHistory || [],
         subscriptionStatus: user.subscriptionStatus || 'none',
         expiresAt: user.expiresAt,
@@ -182,7 +180,6 @@ return res.status(200).json({
         isActive: isActive
     }
 });
-
 // ... (Catch bloğu aynı kalacak)
         
     } catch (error) {
