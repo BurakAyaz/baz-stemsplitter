@@ -161,34 +161,27 @@ module.exports = async (req, res) => {
        // ... (Dosyanın üst kısmı aynı kalacak)
 
         // Başarılı response - Bu kısmı aşağıdaki ile değiştirin
-        return res.status(200).json({
-            success: true,
-            user: {
-                id: user._id.toString(),
-                wixUserId: user.wixUserId,
-                email: user.email,
-                displayName: user.displayName,
-                plan: user.planId,
-                planId: user.planId,
-                credits: user.credits || 0,
-                available: user.credits || 0,
-                totalCredits: user.totalCredits || 0,
-                used: user.totalUsed || 0,
-                // --- Stem Splitter için Kritik Eklemeler ---
-                tracks: user.tracks || [], // Frontend 'Şarkılarım' listesi için buraya bakar
-                stemHistory: user.stemHistory || [], // Geçmiş ayrıştırmalar için bu gerekli
-                // -------------------------------------------
-                features: user.features || [],
-                allowedModels: user.allowedModels || [],
-                subscriptionStatus: user.subscriptionStatus || 'none',
-                expiresAt: user.expiresAt,
-                daysRemaining: getDaysRemaining(user.expiresAt),
-                isActive: isActive,
-                totalSongsGenerated: user.totalSongsGenerated || 0,
-                totalImagesGenerated: user.totalImagesGenerated || 0,
-                visualsCount: (user.visuals || []).length
-            }
-        });
+        // api/auth-sync.js içindeki başarılı response kısmını bununla değiştir:
+return res.status(200).json({
+    success: true,
+    user: {
+        id: user._id.toString(),
+        wixUserId: user.wixUserId,
+        email: user.email,
+        displayName: user.displayName,
+        plan: user.planId,
+        planId: user.planId,
+        credits: user.credits || 0,
+        available: user.credits || 0,
+        // Frontend'in syncUserData içinde beklediği alanlar
+        tracks: user.tracks || [], 
+        stemHistory: user.stemHistory || [],
+        subscriptionStatus: user.subscriptionStatus || 'none',
+        expiresAt: user.expiresAt,
+        daysRemaining: getDaysRemaining(user.expiresAt),
+        isActive: isActive
+    }
+});
 
 // ... (Catch bloğu aynı kalacak)
         
