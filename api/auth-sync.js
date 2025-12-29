@@ -158,6 +158,9 @@ module.exports = async (req, res) => {
                          (!user.expiresAt || new Date(user.expiresAt) > new Date());
         
         // Başarılı response
+       // ... (Dosyanın üst kısmı aynı kalacak)
+
+        // Başarılı response - Bu kısmı aşağıdaki ile değiştirin
         return res.status(200).json({
             success: true,
             user: {
@@ -171,6 +174,10 @@ module.exports = async (req, res) => {
                 available: user.credits || 0,
                 totalCredits: user.totalCredits || 0,
                 used: user.totalUsed || 0,
+                // --- Stem Splitter için Kritik Eklemeler ---
+                tracks: user.tracks || [], // Frontend 'Şarkılarım' listesi için buraya bakar
+                stemHistory: user.stemHistory || [], // Geçmiş ayrıştırmalar için bu gerekli
+                // -------------------------------------------
                 features: user.features || [],
                 allowedModels: user.allowedModels || [],
                 subscriptionStatus: user.subscriptionStatus || 'none',
@@ -182,6 +189,8 @@ module.exports = async (req, res) => {
                 visualsCount: (user.visuals || []).length
             }
         });
+
+// ... (Catch bloğu aynı kalacak)
         
     } catch (error) {
         console.error('Auth sync error:', error);
