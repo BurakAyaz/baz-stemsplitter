@@ -1,4 +1,5 @@
 // api/use-credits.js - Kredi Harcama API'si
+// Referans ile tam uyumlu
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -64,7 +65,15 @@ module.exports = async (req, res) => {
         }
         
         // Harcama miktarı (varsayılan 1)
-        const { amount = 1, action = 'song_generate', songId = null } = req.body;
+        const { amount = 1, action = 'cover_design', songId = null } = req.body;
+        
+        // Action tipine göre kredi miktarını belirle
+        let finalAmount = amount;
+        if (action === 'cover_design' || action === 'photo_design') {
+            finalAmount = 1; // Görsel oluşturma = 1 kredi
+        } else if (action === 'song_generate') {
+            finalAmount = 1; // Şarkı oluşturma = 1 kredi
+        }
         
         const { db } = await connectToDatabase();
         const usersCollection = db.collection('users');
@@ -78,29 +87,34 @@ module.exports = async (req, res) => {
         }
         
         // Kredi kontrolü
-        if (user.credits < amount) {
+        if (user.credits < finalAmount) {
             return res.status(400).json({ 
                 error: 'Yetersiz kredi',
                 currentCredits: user.credits,
-                required: amount
+                required: finalAmount
             });
         }
         
         // Krediyi düş
-        const newCredits = user.credits - amount;
-        const newTotalUsed = (user.totalUsed || 0) + amount;
-        const newSongsGenerated = (user.totalSongsGenerated || 0) + 1;
+        const newCredits = user.credits - finalAmount;
+        const newTotalUsed = (user.totalUsed || 0) + finalAmount;
+        
+        // Action tipine göre sayaçları güncelle
+        let updateFields = {
+            credits: newCredits,
+            totalUsed: newTotalUsed,
+            updatedAt: new Date()
+        };
+        
+        if (action === 'cover_design' || action === 'photo_design') {
+            updateFields.totalImagesGenerated = (user.totalImagesGenerated || 0) + 1;
+        } else if (action === 'song_generate') {
+            updateFields.totalSongsGenerated = (user.totalSongsGenerated || 0) + 1;
+        }
         
         await usersCollection.updateOne(
             { wixUserId: decoded.userId },
-            { 
-                $set: {
-                    credits: newCredits,
-                    totalUsed: newTotalUsed,
-                    totalSongsGenerated: newSongsGenerated,
-                    updatedAt: new Date()
-                }
-            }
+            { $set: updateFields }
         );
         
         // İşlem kaydı oluştur
@@ -109,23 +123,24 @@ module.exports = async (req, res) => {
             type: 'usage',
             action: action,
             songId: songId,
-            credits: -amount,
+            credits: -finalAmount,
             balanceAfter: newCredits,
             createdAt: new Date()
         };
         
         await transactionsCollection.insertOne(transaction);
         
-        console.log('Kredi harcandı:', decoded.userId, 'Miktar:', amount, 'Kalan:', newCredits);
+        console.log('Kredi harcandı:', decoded.userId, 'Miktar:', finalAmount, 'Action:', action, 'Kalan:', newCredits);
         
         return res.status(200).json({
             success: true,
             message: 'Kredi harcandı',
             data: {
-                creditsUsed: amount,
+                creditsUsed: finalAmount,
                 remainingCredits: newCredits,
                 totalUsed: newTotalUsed,
-                totalSongsGenerated: newSongsGenerated
+                totalSongsGenerated: updateFields.totalSongsGenerated || user.totalSongsGenerated || 0,
+                totalImagesGenerated: updateFields.totalImagesGenerated || user.totalImagesGenerated || 0
             }
         });
         
