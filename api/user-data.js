@@ -75,7 +75,6 @@ module.exports = async (req, res) => {
                         plan: 'free',
                         planExpiry: null,
                         tracks: [],
-                        stemHistory: [],
                         generatedLyrics: [],
                         personas: [],
                         activityLog: [],
@@ -90,10 +89,9 @@ module.exports = async (req, res) => {
                 success: true,
                 data: {
                     credits: user.credits || 0,
-                    plan: user.planId || 'free',
-                    planExpiry: user.expiresAt,
+                    plan: user.plan || 'free',
+                    planExpiry: user.planExpiry,
                     tracks: user.tracks || [],
-                    stemHistory: user.stemHistory || [],
                     generatedLyrics: user.generatedLyrics || [],
                     personas: user.personas || [],
                     activityLog: user.activityLog || [],
@@ -152,17 +150,6 @@ module.exports = async (req, res) => {
                     }));
                     break;
                 
-                // Stem geçmişi ekle
-                case 'add_stem_history':
-                    if (!data.stemResult) {
-                        return res.status(400).json({ error: 'Stem result verisi gerekli' });
-                    }
-                    pushData.stemHistory = {
-                        ...data.stemResult,
-                        createdAt: new Date()
-                    };
-                    break;
-                
                 // Üretilen söz ekle
                 case 'add_lyrics':
                     if (!data.lyrics) {
@@ -215,7 +202,6 @@ module.exports = async (req, res) => {
                 // Tüm verileri senkronize et
                 case 'full_sync':
                     if (data.tracks) updateData.tracks = data.tracks;
-                    if (data.stemHistory) updateData.stemHistory = data.stemHistory;
                     if (data.generatedLyrics) updateData.generatedLyrics = data.generatedLyrics;
                     if (data.personas) updateData.personas = data.personas;
                     if (data.settings) updateData.settings = data.settings;
@@ -247,7 +233,6 @@ module.exports = async (req, res) => {
                 message: 'Veriler kaydedildi',
                 data: {
                     tracks: updatedUser.tracks || [],
-                    stemHistory: updatedUser.stemHistory || [],
                     generatedLyrics: updatedUser.generatedLyrics || [],
                     personas: updatedUser.personas || [],
                     activityLog: updatedUser.activityLog || []

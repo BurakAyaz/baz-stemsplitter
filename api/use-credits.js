@@ -66,14 +66,6 @@ module.exports = async (req, res) => {
         // Harcama miktarı (varsayılan 1)
         const { amount = 1, action = 'song_generate', songId = null } = req.body;
         
-        // Stem işlemleri için kredi miktarlarını otomatik ayarla
-        let finalAmount = amount;
-        if (action === 'stem_vocal' || action === 'separate_vocal') {
-            finalAmount = 2; // Vokal + Enstrüman = 2 kredi
-        } else if (action === 'stem_12' || action === 'split_stem') {
-            finalAmount = 5; // 12 Enstrüman = 5 kredi
-        }
-        
         const { db } = await connectToDatabase();
         const usersCollection = db.collection('users');
         const transactionsCollection = db.collection('transactions');
@@ -86,17 +78,17 @@ module.exports = async (req, res) => {
         }
         
         // Kredi kontrolü
-        if (user.credits < finalAmount) {
+        if (user.credits < amount) {
             return res.status(400).json({ 
                 error: 'Yetersiz kredi',
                 currentCredits: user.credits,
-                required: finalAmount
+                required: amount
             });
         }
         
         // Krediyi düş
-        const newCredits = user.credits - finalAmount;
-        const newTotalUsed = (user.totalUsed || 0) + finalAmount;
+        const newCredits = user.credits - amount;
+        const newTotalUsed = (user.totalUsed || 0) + amount;
         const newSongsGenerated = (user.totalSongsGenerated || 0) + 1;
         
         await usersCollection.updateOne(
@@ -117,20 +109,20 @@ module.exports = async (req, res) => {
             type: 'usage',
             action: action,
             songId: songId,
-            credits: -finalAmount,
+            credits: -amount,
             balanceAfter: newCredits,
             createdAt: new Date()
         };
         
         await transactionsCollection.insertOne(transaction);
         
-        console.log('Kredi harcandı:', decoded.userId, 'Miktar:', finalAmount, 'Action:', action, 'Kalan:', newCredits);
+        console.log('Kredi harcandı:', decoded.userId, 'Miktar:', amount, 'Kalan:', newCredits);
         
         return res.status(200).json({
             success: true,
             message: 'Kredi harcandı',
             data: {
-                creditsUsed: finalAmount,
+                creditsUsed: amount,
                 remainingCredits: newCredits,
                 totalUsed: newTotalUsed,
                 totalSongsGenerated: newSongsGenerated

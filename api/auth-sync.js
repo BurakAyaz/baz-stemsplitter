@@ -127,8 +127,6 @@ module.exports = async (req, res) => {
                 purchasedAt: null,
                 expiresAt: null,
                 totalSongsGenerated: 0,
-                tracks: [],
-                stemHistory: [],
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
