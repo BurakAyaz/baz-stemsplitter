@@ -28,20 +28,35 @@
         .lang-btn { padding: 4px 10px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
         .lang-btn.active { background: var(--accent); color: var(--text-primary); }
         .lang-btn:hover:not(.active) { color: var(--text-primary); }
+        /* Kredi ve Kullanıcı Menüsü Stilleri */
+.header-right { display: flex; align-items: center; gap: 10px; }
+.credit-display {
+    display: flex; align-items: center; gap: 12px; padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05));
+    border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; margin-right: 12px;
+}
+.credit-info { display: flex; align-items: center; gap: 6px; }
+.credit-count { font-size: 20px; font-weight: 700; color: #2596be; min-width: 30px; text-align: center; }
+.credit-label { font-size: 10px; color: #a0a0a0; text-transform: uppercase; }
+.plan-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; background: #6b7280; color: white; border-radius: 4px; text-transform: uppercase; }
+.plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+.login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.user-menu { position: relative; }
+.user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; }
+.user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+.user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
+.user-dropdown.active { display: block; }
+.user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
+.user-dropdown-item:hover { background: var(--bg-hover); }
         
         /* Kredi Sistemi */
         .credit-display { display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05)); border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; margin-right: 12px; }
-        .credit-info { display: flex; align-items: center; gap: 6px; }
         .credit-icon { font-size: 16px; font-weight: 700; color: var(--accent); }
-        .credit-count { font-size: 20px; font-weight: 700; color: #2596be; min-width: 30px; text-align: center; }
         .credit-label { font-size: 10px; color: #a0a0a0; text-transform: uppercase; }
         .credit-details { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-        .plan-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; background: #6b7280; color: white; border-radius: 4px; text-transform: uppercase; }
-        .plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .plan-badge.deneme { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .plan-badge.test { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .plan-badge.none { background: #4b5563; }
         .days-left { font-size: 9px; color: #6b7280; }
         .days-left.warning { color: #f59e0b; }
@@ -52,18 +67,7 @@
         /* Login Button */
         .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-right: 10px; text-decoration: none; }
         .login-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); transform: translateY(-1px); }
-        
-        /* User Menu */
-        .user-menu { position: relative; }
-        .user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
-        .user-btn:hover { background: var(--bg-hover); }
-        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
-        .user-dropdown.active { display: block; }
-        .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; transition: background 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
-        .user-dropdown-item:hover { background: var(--bg-hover); }
-        .user-dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
-        
+    
         /* Main Layout */
         .main-container { display: flex; height: calc(100vh - 45px); overflow: hidden; }
         .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; overflow-y: auto; flex-shrink: 0; }
@@ -175,27 +179,35 @@
         <div class="logo">
             <div class="logo-img">🎵</div>
         </div>
-        <div class="header-right">
-            <!-- Kredi Göstergesi -->
-            <div class="credit-display" id="creditDisplay" style="display: none;">
-                <div class="credit-info">
-                    <span class="credit-icon">K</span>
-                    <span class="credit-count" id="creditCount">0</span>
-                    <span class="credit-label">Kredi</span>
-                </div>
-                <div class="credit-details">
-                    <span class="plan-badge" id="planBadge">-</span>
-                    <span class="days-left" id="daysLeft"></span>
-                </div>
-                <a href="https://www.burakayaz.com/abonelik-sat%C4%B1n-al" class="change-plan-btn" id="changePlanBtn" title="Planı Değiştir" target="_blank">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                    Planı Değiştir
-                </a>
+    <div class="header-right">
+        <div class="credit-display" id="creditDisplay" style="display: none;">
+            <div class="credit-info">
+                <span class="credit-count" id="creditCount">0</span>
+                <span class="credit-label">Kredi</span>
             </div>
+            <span class="plan-badge" id="planBadge">-</span>
+        </div>
+        
+        <button class="login-btn" id="loginBtn" onclick="redirectToWixLogin()">
+            Giriş Yap
+        </button>
+        
+        <div class="user-menu" id="userMenu" style="display: none;">
+            <button class="user-btn" onclick="toggleUserDropdown()">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">Kullanıcı</span>
+            </button>
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-dropdown-item" onclick="logout()">Çıkış Yap</button>
+            </div>
+        </div>
+
+        <div class="lang-switcher">
+            <button class="lang-btn active" id="langTR" onclick="setLanguage('tr')">TR</button>
+            <button class="lang-btn" id="langEN" onclick="setLanguage('en')">EN</button>
+        </div>
+    </div>
+
             
             <!-- Login Butonu - Direkt Wix'e yönlendirir -->
             <a href="#" class="login-btn" id="loginBtn" onclick="redirectToWixLogin(); return false;">
