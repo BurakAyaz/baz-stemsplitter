@@ -275,8 +275,11 @@
                 </div>
                 
                 <div class="info-box"><strong id="infoTitle">Stem Ayrıştırma Nedir?</strong><p id="infoDesc">Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır.</p></div>
-                <button type="submit" class="submit-btn" id="submitBtn"><span>🎵</span><span id="submitText">Ayrıştırmayı Başlat</span><span class="credit-badge" id="creditCost">2 Kredi</span></button>
-            </form>
+<button type="submit" class="submit-btn" id="submitBtn">
+    <span>🎵</span>
+    <span id="submitText">Ayrıştırmayı Başlat</span>
+    <span class="credit-badge" id="creditCost">2 Kredi</span> 
+</button>            </form>
         </div>
         <div class="results-section">
             <div class="results-header"><h2 class="results-title" id="resultsTitle">Sonuçlar</h2></div>
@@ -523,11 +526,19 @@
         }
         
         // ==================== DİL DEĞİŞTİRME ====================
-        function updateCreditCost() {
-            var t = translations[currentLang];
-            var separationType = document.getElementById('separationType').value;
-            document.getElementById('creditCost').textContent = separationType === 'separate_vocal' ? t.creditCost2 : t.creditCost5;
-        }
+    function updateCreditCost() {
+    var t = translations[currentLang];
+    var separationType = document.getElementById('separationType').value;
+    
+    // Seçilen tipe göre maliyeti belirle
+    var costText = separationType === 'separate_vocal' ? t.creditCost2 : t.creditCost5;
+    
+    // Butonun yanındaki badge'i güncelle
+    var creditBadge = document.getElementById('creditCost');
+    if (creditBadge) {
+        creditBadge.textContent = costText;
+    }
+}
         
         function setLanguage(lang) {
             currentLang = lang;
