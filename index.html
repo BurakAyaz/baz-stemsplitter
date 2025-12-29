@@ -17,259 +17,300 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; display: flex; flex-direction: column; }
         
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
-        .logo-img { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-        .header-right { display: flex; align-items: center; gap: 10px; }
-        
-        /* Kredi ve Kullanıcı Menüsü */
-        .credit-display { display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05)); border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; }
-        .credit-info { display: flex; align-items: center; gap: 6px; }
-        .credit-count { font-size: 20px; font-weight: 700; color: #2596be; min-width: 30px; text-align: center; }
-        .credit-label { font-size: 10px; color: #a0a0a0; text-transform: uppercase; }
-        .credit-details { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-        .plan-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; background: #6b7280; color: white; border-radius: 4px; text-transform: uppercase; }
-        .plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .days-left { font-size: 9px; color: #6b7280; }
+        /* Header & Auth Styles */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .credit-display { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: rgba(37, 150, 190, 0.1); border: 1px solid var(--accent); border-radius: 8px; }
+        .credit-count { font-size: 18px; font-weight: 700; color: var(--accent); }
+        .plan-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 700; background: #4b5563; }
+        .plan-badge.pro { background: #8b5cf6; }
+        .plan-badge.uzman { background: #3b82f6; }
 
-        .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; }
-        .login-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); transform: translateY(-1px); }
-        
         .user-menu { position: relative; }
-        .user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; border: none; }
-        .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
+        .user-btn { background: var(--bg-tertiary); border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-top: 10px; display: none; z-index: 1000; min-width: 150px; }
         .user-dropdown.active { display: block; }
-        .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
-        .user-dropdown-item:hover { background: var(--bg-hover); }
+        .user-dropdown button { width: 100%; padding: 10px; background: none; border: none; color: white; cursor: pointer; text-align: left; }
+        .user-dropdown button:hover { background: var(--bg-hover); }
 
-        .lang-switcher { display: flex; background: var(--bg-tertiary); border-radius: 6px; padding: 2px; border: 1px solid var(--border); }
-        .lang-btn { padding: 4px 10px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 4px; font-size: 11px; font-weight: 500; transition: all 0.2s; }
-        .lang-btn.active { background: var(--accent); color: var(--text-primary); }
+        /* Main Content */
+        .main-container { flex: 1; display: flex; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .content-box { width: 100%; max-width: 600px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
         
-        /* Main Layout */
-        .main-container { display: flex; height: calc(100vh - 53px); overflow: hidden; }
-        .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; overflow-y: auto; flex-shrink: 0; }
-        .results-section { flex: 1; padding: 16px; background: var(--bg-primary); overflow-y: auto; position: relative; }
+        /* Tabs */
+        .tab-switcher { display: flex; background: var(--bg-tertiary); border-radius: 8px; padding: 4px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 6px; transition: 0.2s; }
+        .tab-btn.active { background: var(--accent); color: white; }
+
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; }
+        .form-select, .form-input { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: white; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 10px; }
         
-        /* UI Components */
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-select, .form-input { width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: inherit; }
-        .submit-btn { width: 100%; padding: 12px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; flex-direction: column; }
+        /* Results */
+        .stem-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+        .stem-icon { font-size: 24px; }
+        .stem-info { flex: 1; }
+        .stem-btn { padding: 8px 15px; background: var(--accent); color: white; border-radius: 6px; text-decoration: none; font-size: 12px; }
+
+        /* Loading Overlay */
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
         .loading-overlay.active { display: flex; }
-        .loader { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Track List Styles */
-        .track-list { max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
-        .track-option { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-        .track-option.selected { background: rgba(37, 150, 190, 0.2); }
-
-        /* Messages */
-        .message { padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; display: none; }
-        .message.error { display: block; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #ff6b6b; }
-        .message.success { display: block; background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: #4ade80; }
     </style>
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loader"></div>
-        <p class="loading-text" id="loadingText">Stem Ayrıştırma</p>
-        <p class="loading-status" id="loadingStatus">İşleniyor...</p>
-        <p class="loading-timer" id="loadingTimer">00:00</p>
+        <p style="margin-top: 20px; font-size: 18px;" id="loadingStatus">İşlem Hazırlanıyor...</p>
+        <p id="loadingTimer" style="font-size: 24px; color: var(--accent); font-weight: 700; margin-top: 10px;">00:00</p>
     </div>
-    
+
     <header class="header">
-        <div class="logo">
-            <div class="logo-img">🎵</div>
-            <span>BAZ AI</span>
-        </div>
+        <div class="logo">BAZ AI Stem Separator</div>
         <div class="header-right">
             <div class="credit-display" id="creditDisplay" style="display: none;">
-                <div class="credit-info">
-                    <span class="credit-count" id="creditCount">0</span>
-                    <span class="credit-label">Kredi</span>
-                </div>
-                <div class="credit-details">
-                    <span class="plan-badge" id="planBadge">-</span>
-                    <span class="days-left" id="daysLeft"></span>
-                </div>
+                <span class="credit-count" id="creditCount">0</span>
+                <span style="font-size: 10px; color: var(--text-secondary);">KREDİ</span>
+                <span class="plan-badge" id="planBadge">-</span>
             </div>
-            
-            <a href="#" class="login-btn" id="loginBtn" onclick="redirectToWixLogin(); return false;">Giriş Yap</a>
-            
+            <button class="user-btn" id="loginBtn" onclick="redirectToWixLogin()">Giriş Yap</button>
             <div class="user-menu" id="userMenu" style="display: none;">
                 <button class="user-btn" onclick="toggleUserDropdown()">
-                    <div class="user-avatar" id="userAvatar">U</div>
                     <span id="userName">Kullanıcı</span>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
-                    <button class="user-dropdown-item" onclick="logout()">Çıkış Yap</button>
+                    <button onclick="logout()">Çıkış Yap</button>
                 </div>
-            </div>
-
-            <div class="lang-switcher">
-                <button class="lang-btn active" id="langTR" onclick="setLanguage('tr')">TR</button>
-                <button class="lang-btn" id="langEN" onclick="setLanguage('en')">EN</button>
             </div>
         </div>
     </header>
-    
+
     <div class="main-container">
-        <div class="sidebar">
-            <div class="section-title"><span id="sidebarTitle">Stem Ayrıştırma</span></div>
-            <div class="message" id="errorMsg"></div>
-            <div class="message" id="successMsg"></div>
+        <div class="content-box">
+            <h2 style="text-align: center; margin-bottom: 20px;">Vokal & Enstrüman Ayırıcı</h2>
             
+            <div class="message" id="errorMsg" style="color: var(--error); margin-bottom: 10px; display: none;"></div>
+
             <form id="stemForm">
                 <div class="form-group">
-                    <label class="form-label" id="labelSelectTrack">Şarkılarım</label>
-                    <div class="track-list" id="trackList"></div>
+                    <label class="form-label">Kaynak Seçimi</label>
+                    <div class="tab-switcher">
+                        <button type="button" class="tab-btn active" onclick="switchInputMode('saved', this)">Kayıtlı Şarkılar</button>
+                        <button type="button" class="tab-btn" onclick="switchInputMode('manual', this)">Manuel Giriş</button>
+                    </div>
                 </div>
-                
+
+                <div id="savedInputSection">
+                    <div class="form-group">
+                        <label class="form-label">Şarkı Seçin</label>
+                        <select class="form-select" id="audioSource">
+                            <option value="">-- Şarkı Seçin --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="manualInputSection" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Task ID</label>
+                        <input type="text" class="form-input" id="manualTaskId" placeholder="Örn: 5c79...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Audio ID</label>
+                        <input type="text" class="form-input" id="manualAudioId" placeholder="Örn: e231...">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label class="form-label" id="labelSeparationType">Ayrıştırma Tipi</label>
+                    <label class="form-label">Ayırma Türü</label>
                     <select class="form-select" id="separationType">
-                        <option value="separate_vocal">Vokal & Enstrümantal (2 Stem)</option>
-                        <option value="split_stem">Detaylı Ayrıştırma (12 Stem)</option>
+                        <option value="separate_vocal">Vokal + Enstrümantal (2 Parça)</option>
+                        <option value="split_stem">Detaylı Ayrıştırma (12 Parça)</option>
                     </select>
                 </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span id="submitText">Ayrıştırmayı Başlat</span>
-                </button>
+
+                <button type="submit" class="submit-btn" id="submitBtn">AYRIŞTIRMAYI BAŞLAT (1 Kredi)</button>
             </form>
-        </div>
-        
-        <div class="results-section">
-            <div class="results-header"><h2 class="results-title" id="resultsTitle">Sonuçlar</h2></div>
-            <div id="resultsEmpty" class="results-empty">Ayrıştırma sonuçları burada görünecek.</div>
-            <div class="stems-container" id="stemsContainer" style="display: none;"></div>
+
+            <div id="resultsSection" style="margin-top: 30px; display: none;">
+                <h3 style="color: var(--accent); margin-bottom: 15px;">Sonuçlar</h3>
+                <div id="stemsContainer"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        var currentLang = 'tr';
-        var authToken = localStorage.getItem('bazai_token') || null;
-        var currentUser = null;
-        var userCredits = 0;
-        var userPlan = 'none';
-        var isLoggedIn = false;
-        var userTracks = [];
-        var selectedTrack = null;
+        // --- AUTH & STATE ---
+        let authToken = localStorage.getItem('bazai_token') || null;
+        let currentUser = null;
+        let userCredits = 0;
+        let isLoggedIn = false;
+        let timerInterval = null;
 
-        var API_BASE_URL = window.location.origin;
-        var WIX_SITE_URL = 'https://www.burakayaz.com';
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            loadTracksFromLocal();
+        });
 
         async function checkAuthStatus() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var tokenFromUrl = urlParams.get('token');
-            if (tokenFromUrl) {
-                authToken = tokenFromUrl;
-                localStorage.setItem('bazai_token', tokenFromUrl);
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                authToken = token;
+                localStorage.setItem('bazai_token', token);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
-            if (authToken) await syncUserData();
-            else showLoggedOutState();
+            if (authToken) await syncUser();
         }
 
-        async function syncUserData() {
+        async function syncUser() {
             try {
-                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
+                const res = await fetch('/api/auth-sync', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` }
                 });
-                var data = await response.json();
-                if (data.success && data.user) {
+                const data = await res.json();
+                if (data.success) {
                     currentUser = data.user;
                     userCredits = data.user.credits || 0;
-                    userPlan = data.user.plan || 'none';
                     isLoggedIn = true;
-                    showLoggedInState();
-                    loadUserTracks();
-                } else { logout(); }
-            } catch (e) { showLoggedOutState(); }
+                    updateUI();
+                }
+            } catch (e) { console.error("Sync Error", e); }
         }
 
-        function showLoggedInState() {
+        function updateUI() {
             document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('creditDisplay').style.display = 'flex';
             document.getElementById('userMenu').style.display = 'block';
+            document.getElementById('creditDisplay').style.display = 'flex';
             document.getElementById('creditCount').textContent = userCredits;
-            document.getElementById('planBadge').textContent = userPlan.toUpperCase();
+            document.getElementById('planBadge').textContent = currentUser.plan.toUpperCase();
+            document.getElementById('planBadge').className = 'plan-badge ' + currentUser.plan.toLowerCase();
             document.getElementById('userName').textContent = currentUser.displayName || 'Kullanıcı';
         }
 
-        function showLoggedOutState() {
-            isLoggedIn = false;
-            document.getElementById('loginBtn').style.display = 'flex';
-            document.getElementById('creditDisplay').style.display = 'none';
-            document.getElementById('userMenu').style.display = 'none';
-        }
-
         function redirectToWixLogin() {
-            window.location.href = WIX_SITE_URL + '/stem-redirect?returnUrl=' + encodeURIComponent(window.location.href);
+            window.location.href = 'https://www.burakayaz.com/kapak-redirect?redirect=' + encodeURIComponent(window.location.href);
         }
 
+        function logout() { localStorage.removeItem('bazai_token'); location.reload(); }
         function toggleUserDropdown() { document.getElementById('userDropdown').classList.toggle('active'); }
 
-        function logout() {
-            localStorage.removeItem('bazai_token');
-            location.reload();
+        // --- CORE FEATURES ---
+        function switchInputMode(mode, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('savedInputSection').style.display = mode === 'saved' ? 'block' : 'none';
+            document.getElementById('manualInputSection').style.display = mode === 'manual' ? 'block' : 'none';
         }
 
-        async function loadUserTracks() {
-            try {
-                var response = await fetch(API_BASE_URL + '/api/user-data', {
-                    headers: { 'Authorization': 'Bearer ' + authToken }
-                });
-                var data = await response.json();
-                if (data.success) {
-                    userTracks = data.data.tracks || [];
-                    renderTracks();
-                }
-            } catch (e) { console.error(e); }
+        function loadTracksFromLocal() {
+            const tracks = JSON.parse(localStorage.getItem('bazai_tracks') || '[]');
+            const select = document.getElementById('audioSource');
+            tracks.filter(t => t.taskId && t.audioId).forEach(track => {
+                const opt = document.createElement('option');
+                opt.value = JSON.stringify({ t: track.taskId, a: track.audioId });
+                opt.textContent = track.title || "Adsız Şarkı";
+                select.appendChild(opt);
+            });
         }
 
-        function renderTracks() {
-            var html = userTracks.map((t, i) => `
-                <div class="track-option" onclick="selectTrack(${i})">
-                    ${t.title || 'Adsız Şarkı'}
-                </div>
-            `).join('');
-            document.getElementById('trackList').innerHTML = html;
-        }
-
-        function selectTrack(i) {
-            selectedTrack = userTracks[i];
-            document.querySelectorAll('.track-option').forEach(el => el.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        }
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('lang' + lang.toUpperCase()).classList.add('active');
-        }
-
-        document.getElementById('stemForm').addEventListener('submit', async function(e) {
+        // --- SUBMISSION & POLLING ---
+        document.getElementById('stemForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!isLoggedIn) return redirectToWixLogin();
-            if(!selectedTrack) return alert("Lütfen şarkı seçin");
+            if (!isLoggedIn) return redirectToWixLogin();
+            if (userCredits < 1) return alert("Yetersiz Kredi!");
+
+            let taskId, audioId;
+            const mode = document.querySelector('.tab-btn.active').textContent;
+
+            if (mode === 'Kayıtlı Şarkılar') {
+                const val = document.getElementById('audioSource').value;
+                if (!val) return alert("Şarkı seçin!");
+                const parsed = JSON.parse(val);
+                taskId = parsed.t; audioId = parsed.a;
+            } else {
+                taskId = document.getElementById('manualTaskId').value;
+                audioId = document.getElementById('manualAudioId').value;
+                if (!taskId || !audioId) return alert("ID'leri girin!");
+            }
 
             document.getElementById('loadingOverlay').classList.add('active');
-            // Ayrıştırma API çağrısı ve Polling buraya gelecek...
+            startTimer();
+
+            try {
+                // Kredi düş
+                await fetch('/api/use-credits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ amount: 1, action: 'stem_separation' })
+                });
+
+                const res = await fetch('/api/stem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, audioId, type: document.getElementById('separationType').value })
+                });
+                const data = await res.json();
+                pollStatus(data.taskId || data.data.taskId);
+            } catch (err) { alert("Hata oluştu!"); resetUI(); }
         });
 
-        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+        async function pollStatus(id) {
+            const interval = setInterval(async () => {
+                const res = await fetch(`/api/stem-status?taskId=${id}`);
+                const data = await res.json();
+                if (data.code === 200 && data.data.vocal_separation_info) {
+                    clearInterval(interval);
+                    stopTimer();
+                    displayResults(data.data.vocal_separation_info);
+                }
+            }, 5000);
+        }
+
+        function displayResults(info) {
+            const container = document.getElementById('stemsContainer');
+            container.innerHTML = '';
+            document.getElementById('loadingOverlay').classList.remove('active');
+            document.getElementById('resultsSection').style.display = 'block';
+
+            const stems = [
+                { n: 'Vokal', u: info.vocal_url, i: '🎤' },
+                { n: 'Enstrümantal', u: info.instrumental_url, i: '🎸' },
+                { n: 'Davul', u: info.drums_url, i: '🥁' },
+                { n: 'Bas', u: info.bass_url, i: '🎸' }
+            ].filter(s => s.u);
+
+            stems.forEach(s => {
+                container.innerHTML += `
+                    <div class="stem-item">
+                        <span class="stem-icon">${s.i}</span>
+                        <div class="stem-info">
+                            <div style="font-weight:700;">${s.n}</div>
+                            <audio controls src="${s.u}" style="width:100%; height:30px; margin-top:5px;"></audio>
+                        </div>
+                        <a href="${s.u}" download class="stem-btn">İNDİR</a>
+                    </div>
+                `;
+            });
+        }
+
+        function startTimer() {
+            let sec = 0;
+            timerInterval = setInterval(() => {
+                sec++;
+                const m = Math.floor(sec / 60).toString().padStart(2, '0');
+                const s = (sec % 60).toString().padStart(2, '0');
+                document.getElementById('loadingTimer').textContent = `${m}:${s}`;
+            }, 1000);
+        }
+        function stopTimer() { clearInterval(timerInterval); }
+        function resetUI() { document.getElementById('loadingOverlay').classList.remove('active'); stopTimer(); }
     </script>
 </body>
 </html>
