@@ -18,6 +18,99 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; }
+        // ==================== AUTH & KREDİ SİSTEMİ ====================
+let authToken = localStorage.getItem('bazai_token') || null;
+let currentUser = null;
+let userCredits = 0;
+let userPlan = 'none';
+let isLoggedIn = false;
+
+const WIX_SITE_URL = 'https://www.burakayaz.com';
+
+// Sayfa yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthStatus();
+});
+
+async function checkAuthStatus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+    if (tokenFromUrl) {
+        authToken = tokenFromUrl;
+        localStorage.setItem('bazai_token', tokenFromUrl);
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    if (authToken) await syncUserData();
+    else showLoggedOutState();
+}
+
+async function syncUserData() {
+    try {
+        const response = await fetch('/api/auth-sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
+        });
+        const data = await response.json();
+        if (data.success) {
+            currentUser = data.user;
+            userCredits = data.user.credits || 0;
+            userPlan = data.user.plan || 'none';
+            isLoggedIn = true;
+            showLoggedInState();
+        } else { logout(); }
+    } catch (e) { showLoggedOutState(); }
+}
+
+function showLoggedInState() {
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('creditDisplay').style.display = 'flex';
+    document.getElementById('userMenu').style.display = 'block';
+    document.getElementById('creditCount').textContent = userCredits;
+    document.getElementById('planBadge').textContent = userPlan.toUpperCase();
+    document.getElementById('planBadge').className = 'plan-badge ' + userPlan.toLowerCase();
+    if(currentUser) {
+        document.getElementById('userName').textContent = currentUser.displayName || 'Kullanıcı';
+        document.getElementById('userAvatar').textContent = (currentUser.displayName || 'U').charAt(0).toUpperCase();
+    }
+}
+
+function showLoggedOutState() {
+    isLoggedIn = false;
+    document.getElementById('loginBtn').style.display = 'flex';
+    document.getElementById('creditDisplay').style.display = 'none';
+    document.getElementById('userMenu').style.display = 'none';
+}
+
+function redirectToWixLogin() {
+    const currentUrl = window.location.origin + window.location.pathname;
+    window.location.href = WIX_SITE_URL + '/kapak-redirect?redirect=' + encodeURIComponent(currentUrl);
+}
+
+function toggleUserDropdown() { document.getElementById('userDropdown').classList.toggle('active'); }
+
+function logout() {
+    localStorage.removeItem('bazai_token');
+    location.reload();
+}
+
+// Kredi Düşme Fonksiyonu
+async function useCredits() {
+    if (!authToken) return false;
+    try {
+        const res = await fetch('/api/use-credits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+            body: JSON.stringify({ amount: 1, action: 'stem_separation' })
+        });
+        const data = await res.json();
+        if (data.success) {
+            userCredits = data.data.remainingCredits;
+            document.getElementById('creditCount').textContent = userCredits;
+            return true;
+        }
+        return false;
+    } catch (e) { return false; }
+}
         
         /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
