@@ -595,15 +595,17 @@
         if (json.success) {
             var actualData = json.data || json; 
             userTracks = actualData.tracks || [];
-            stemHistory = actualData.stemHistory || [];
+            stemHistory = data.data.stems || []; 
             
             // LocalStorage güncel tut
             localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
             localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
             
-            renderTrackList();
-            renderHistory();
+        renderTrackList();
+        renderHistory(); // Artık kalıcı veriden render edilecek
             checkCreditWarning(); // Şarkı seçimi için butonu aktif et
+
+
         } else {
             userTracks = [];
             renderTrackList();
@@ -734,15 +736,15 @@
                 attempts++;
                 document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
                 try {
-                    var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId);
-                    var json = await res.json();
-                    if (json.code === 200 && json.data && json.data.vocal_separation_info) {
-                        clearInterval(interval); stopTimer();
-                        document.getElementById('loadingOverlay').classList.remove('active');
-                        displayStemResults(json.data.vocal_separation_info, separationType);
-                        saveStemToHistory(json.data.vocal_separation_info);
-                        showSuccess(t.successStem);
-                    }
+                   var res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${taskId}&wixUserId=${currentUser.wixUserId}`);
+    var json = await res.json();
+    
+    if (json.code === 200 && json.data && json.data.status === 'success') {
+        clearInterval(interval);
+        // Sayfayı yenilemeden listeyi güncellemek için:
+        loadUserTracksFromMongoDB(); 
+        displayStemResults(json.data.vocal_separation_info, separationType);
+    }
                     if (attempts >= maxAttempts) { clearInterval(interval); stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError('Zaman aşımı'); }
                 } catch (e) { console.error('Poll error:', e); }
             }, 5000);
