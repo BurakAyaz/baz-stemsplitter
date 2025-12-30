@@ -63,32 +63,13 @@ module.exports = async (req, res) => {
     
     try {
         // GET - Kullanıcı verilerini getir
-        if (req.method === 'GET') {
-
-            // api/user-data.js içindeki GET bloğunu şu şekilde güncelleyin:
+      if (req.method === 'GET') {
             const user = await usersCollection.findOne({ wixUserId: decoded.userId });
             
-            // Kullanıcı yoksa boş veri döndür (hata değil)
             if (!user) {
                 return res.status(200).json({
                     success: true,
-                    data: {
-                        credits: 0,
-                        plan: 'free',
-                        planExpiry: null,
-                        tracks: [],
-                        generatedLyrics: [],
-                        personas: [],
-                        activityLog: [],
-                        visuals: [], // Görsel galerisi
-                        tracks: user.tracks || [],
-            stems: user.stems || [], // Bu satırı ekleyin
-            visuals: user.visuals || [],
-                        totalSongsGenerated: 0,
-                        totalImagesGenerated: 0,
-                        totalCreditsUsed: 0,
-                        settings: {}
-                    }
+                    data: { credits: 0, tracks: [], stems: [], visuals: [] }
                 });
             }
             
@@ -97,16 +78,12 @@ module.exports = async (req, res) => {
                 data: {
                     credits: user.credits || 0,
                     plan: user.planId || 'free',
-                    planExpiry: user.expiresAt,
                     tracks: user.tracks || [],
-                    generatedLyrics: user.generatedLyrics || [],
-                    personas: user.personas || [],
+                    stems: user.stems || [], // BURASI KRİTİK: Frontend bunu bekliyor
+                    visuals: user.visuals || [],
                     activityLog: user.activityLog || [],
-                    visuals: user.visuals || [], // Görsel galerisi
                     totalSongsGenerated: user.totalSongsGenerated || 0,
-                    totalImagesGenerated: user.totalImagesGenerated || 0,
-                    totalCreditsUsed: user.totalUsed || 0,
-                    settings: user.settings || {}
+                    totalUsed: user.totalUsed || 0
                 }
             });
         }
