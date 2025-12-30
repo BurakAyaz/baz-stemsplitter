@@ -20,37 +20,33 @@ module.exports = async (req, res) => {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    try {
-        const { taskId, wixUserId } = req.query; // wixUserId'yi sorguya ekliyoruz
+   try {
+        const { taskId, wixUserId } = req.query; 
 
         const response = await fetch(`https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`, {
             headers: { 'Authorization': `Bearer ${process.env.KIE_API_KEY}` }
         });
         const data = await response.json();
 
-        // KRİTİK NOKTA: Eğer işlem tamamlandıysa MongoDB'ye kaydet
+        // MongoDB Kayıt Mantığı
         if (data.code === 200 && data.data && data.data.status === 'success' && wixUserId) {
             const { db } = await connectToDatabase();
             
-            // Bu taskId daha önce kaydedilmiş mi kontrol et (mükerrer kaydı önlemek için)
-            const user = await db.collection('users').findOne({ wixUserId: wixUserId });
-            const alreadyExists = user.stems?.some(s => s.taskId === taskId);
+            // Veri yapısını standartlaştırıyoruz
+            const stemEntry = {
+                taskId: taskId,
+                type: data.data.type,
+                results: data.data.vocal_separation_info, // Kie.ai'den gelen linkler burada
+                createdAt: new Date()
+            };
 
-            if (!alreadyExists) {
-                await db.collection('users').updateOne(
-                    { wixUserId: wixUserId },
-                    { 
-                        $push: { 
-                            stems: {
-                                taskId: taskId,
-                                type: data.data.type,
-                                results: data.data.vocal_separation_info,
-                                createdAt: new Date()
-                            } 
-                        } 
-                    }
-                );
-            }
+            await db.collection('users').updateOne(
+                { wixUserId: wixUserId },
+                { 
+                    $addToSet: { stems: stemEntry } // push yerine addToSet mükerrer kaydı önler
+                }
+            );
+            console.log(`✅ Stem MongoDB'ye kaydedildi: ${taskId}`);
         }
 
         return res.status(200).json(data);
