@@ -579,7 +579,7 @@
         document.getElementById('separationType').addEventListener('change', updateCreditCost);
         
         // ==================== ŞARKI YÖNETİMİ ====================
-        async function loadUserTracksFromMongoDB() {
+async function loadUserTracksFromMongoDB() {
     if (!authToken) return;
     showLoadingTracks();
     
@@ -591,21 +591,18 @@
         
         var json = await response.json();
         
-        // MongoDB'den gelen veri yapısını kontrol et: data.data.tracks veya data.tracks
         if (json.success) {
             var actualData = json.data || json; 
             userTracks = actualData.tracks || [];
-            stemHistory = data.data.stems || []; 
+            // KRİTİK DÜZELTME: 'data' değil 'actualData' kullanılmalı
+            stemHistory = actualData.stems || []; 
             
-            // LocalStorage güncel tut
             localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
             localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
             
-        renderTrackList();
-        renderHistory(); // Artık kalıcı veriden render edilecek
-            checkCreditWarning(); // Şarkı seçimi için butonu aktif et
-
-
+            renderTrackList();
+            renderHistory(); 
+            checkCreditWarning();
         } else {
             userTracks = [];
             renderTrackList();
@@ -655,20 +652,36 @@
             renderHistory();
         }
         
-        function renderHistory() {
-            var container = document.getElementById('historyList');
-            var section = document.getElementById('historySection');
-            if (!stemHistory || stemHistory.length === 0) { section.style.display = 'none'; return; }
-            section.style.display = 'block';
-            var html = '';
-            stemHistory.forEach(function(item, index) {
-                var date = new Date(item.date).toLocaleDateString();
-                var typeLabel = item.type === 'separate_vocal' ? 'Vokal (2)' : 'Detaylı (12)';
-                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')"><span class="history-icon">🎛️</span><div class="history-info"><div class="history-name">' + item.trackName + '</div><div class="history-date">' + date + '</div></div><span class="history-type">' + typeLabel + '</span></div>';
-            });
-            container.innerHTML = html;
-        }
+       function renderHistory() {
+    var container = document.getElementById('historyList');
+    var section = document.getElementById('historySection');
+    
+    if (!stemHistory || stemHistory.length === 0) { 
+        section.style.display = 'none'; 
+        return; 
+    }
+    
+    section.style.display = 'block';
+    var html = '';
+    
+    stemHistory.forEach(function(item, index) {
+        // DB'den gelen veri 'createdAt' kullanıyor olabilir, Local 'date' kullanıyor
+        var dateVal = item.createdAt || item.date;
+        var date = dateVal ? new Date(dateVal).toLocaleDateString() : '-';
         
+        // Veri yapısını kontrol ederek isim ata
+        var name = item.trackName || (selectedTrack ? selectedTrack.title : 'Şarkı');
+        var typeLabel = item.type === 'separate_vocal' ? 'Vokal (2)' : 'Detaylı (12)';
+        
+        html += '<div class="history-item" onclick="showHistoryItem(' + index + ')">' +
+                '<span class="history-icon">🎛️</span>' +
+                '<div class="history-info">' +
+                '<div class="history-name">' + name + '</div>' +
+                '<div class="history-date">' + date + '</div>' +
+                '</div><span class="history-type">' + typeLabel + '</span></div>';
+    });
+    container.innerHTML = html;
+}
         function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type); } }
         
         // ==================== YARDIMCI FONKSİYONLAR ====================
@@ -736,8 +749,9 @@
                 attempts++;
                 document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
                 try {
-                   var res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${taskId}&wixUserId=${currentUser.wixUserId}`);
-    var json = await res.json();
+// pollStemStatus içinde fetch satırı şu şekilde olmalı:
+var res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${taskId}&wixUserId=${currentUser.wixUserId || currentUser.id}`);
+                    var json = await res.json();
     
     if (json.code === 200 && json.data && json.data.status === 'success') {
         clearInterval(interval);
