@@ -64,6 +64,8 @@ module.exports = async (req, res) => {
     try {
         // GET - Kullanıcı verilerini getir
         if (req.method === 'GET') {
+
+            // api/user-data.js içindeki GET bloğunu şu şekilde güncelleyin:
             const user = await usersCollection.findOne({ wixUserId: decoded.userId });
             
             // Kullanıcı yoksa boş veri döndür (hata değil)
@@ -79,6 +81,9 @@ module.exports = async (req, res) => {
                         personas: [],
                         activityLog: [],
                         visuals: [], // Görsel galerisi
+                        tracks: user.tracks || [],
+            stems: user.stems || [], // Bu satırı ekleyin
+            visuals: user.visuals || [],
                         totalSongsGenerated: 0,
                         totalImagesGenerated: 0,
                         totalCreditsUsed: 0,
