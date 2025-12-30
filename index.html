@@ -392,38 +392,37 @@
         }
         
         async function syncUserData() {
-            try {
-                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 401) { logout(); return; }
-                    throw new Error('Sync failed');
-                }
-                
-                var data = await response.json();
-                
-                if (data.success && data.user) {
-                    currentUser = data.user;
-                    userCredits = data.user.credits || data.user.available || 0;
-                    userPlan = data.user.plan || data.user.planId || 'none';
-                    isLoggedIn = true;
-                    
-                    showLoggedInState();
-                    updateCreditDisplay();
-                    checkCreditWarning();
-                    await loadUserTracksFromMongoDB();
-                    loadStemHistory();
-                } else {
-                    showLoggedOutState();
-                }
-            } catch (error) {
-                console.error('User sync error:', error);
-                showLoggedOutState();
+    try {
+        var response = await fetch(API_BASE_URL + '/api/auth-sync', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': 'Bearer ' + authToken 
             }
+        });
+        
+        var data = await response.json();
+        
+        if (data.success && data.user) {
+            currentUser = data.user;
+            // Bazı API'lerde krediler 'available' veya 'credits' olarak gelebilir
+            userCredits = data.user.credits !== undefined ? data.user.credits : (data.user.available || 0);
+            userPlan = data.user.planId || data.user.plan || 'none';
+            isLoggedIn = true;
+            
+            showLoggedInState();
+            updateCreditDisplay();
+            
+            // Kullanıcı senkronize olduktan sonra parçaları yükle
+            await loadUserTracksFromMongoDB();
+        } else {
+            logout();
         }
+    } catch (error) {
+        console.error('User sync error:', error);
+        showLoggedOutState();
+    }
+}
         
         function showLoggedInState() {
             document.getElementById('loginBtn').style.display = 'none';
@@ -581,23 +580,40 @@
         
         // ==================== ŞARKI YÖNETİMİ ====================
         async function loadUserTracksFromMongoDB() {
-            if (!authToken) { renderTrackList(); return; }
-            showLoadingTracks();
-            try {
-                var response = await fetch(API_BASE_URL + '/api/user-data', {
-                    method: 'GET',
-                    headers: { 'Authorization': 'Bearer ' + authToken }
-                });
-                var data = await response.json();
-                if (data.success && data.data) {
-                    userTracks = data.data.tracks || [];
-                    stemHistory = data.data.stemHistory || [];
-                    localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
-                } else { userTracks = []; }
-                renderTrackList();
-                renderHistory();
-            } catch (error) { console.error('Load tracks error:', error); userTracks = []; renderTrackList(); }
+    if (!authToken) return;
+    showLoadingTracks();
+    
+    try {
+        var response = await fetch(API_BASE_URL + '/api/user-data', {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        
+        var json = await response.json();
+        
+        // MongoDB'den gelen veri yapısını kontrol et: data.data.tracks veya data.tracks
+        if (json.success) {
+            var actualData = json.data || json; 
+            userTracks = actualData.tracks || [];
+            stemHistory = actualData.stemHistory || [];
+            
+            // LocalStorage güncel tut
+            localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
+            localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
+            
+            renderTrackList();
+            renderHistory();
+            checkCreditWarning(); // Şarkı seçimi için butonu aktif et
+        } else {
+            userTracks = [];
+            renderTrackList();
         }
+    } catch (error) {
+        console.error('MongoDB veri yükleme hatası:', error);
+        userTracks = [];
+        renderTrackList();
+    }
+}
         
         function showLoadingTracks() {
             var t = translations[currentLang];
@@ -762,10 +778,27 @@
         }
         
         // ==================== BAŞLATMA ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            setLanguage('tr');
-            checkAuthStatus();
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Dil ayarla
+    setLanguage('tr');
+    
+    // 2. Token kontrolü ve Login durumunu başlat
+    var urlParams = new URLSearchParams(window.location.search);
+    var tokenFromUrl = urlParams.get('token');
+    
+    if (tokenFromUrl) {
+        authToken = tokenFromUrl;
+        localStorage.setItem('bazai_token', tokenFromUrl);
+        // URL'den token'ı temizle (güvenlik için)
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    if (authToken) {
+        syncUserData(); // Bu fonksiyon içinden loadUserTracks çağrılıyor
+    } else {
+        showLoggedOutState();
+    }
+});
         
         // Dropdown dışına tıklanınca kapat
         document.addEventListener('click', function(e) {
