@@ -717,25 +717,42 @@
 
 async function pollStemStatus(tid, type) {
     let attempts = 0;
+    const t = translations[currentLang];
+    const overlay = document.getElementById('loadingOverlay');
+    
     const interval = setInterval(async function() {
         attempts++;
-        document.getElementById('loadingStatus').innerText = translations[currentLang].loadingStatus + ' (' + attempts + ')';
+        document.getElementById('loadingStatus').innerText = `${t.loadingStatus} (${attempts})`;
+        
         try {
-            // CURRENTUSER'dan wixUserId alındığından emin olun
+            // WixUserId'nin doğru alındığından emin olun
             const uId = currentUser.wixUserId || currentUser.id;
             const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${uId}`);
             const json = await res.json();
             
+            // Eğer status success ise ve veri geldiyse durdur ve göster
             if (json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
                 clearInterval(interval);
                 stopTimer();
-                document.getElementById('loadingOverlay').classList.remove('active');
+                overlay.classList.remove('active');
+                
+                // Normalize edilmiş veriyi göster
                 displayStemResults(json.data.vocal_separation_info, type);
-                showSuccess(translations[currentLang].successStem);
-                loadUserTracksFromMongoDB(); // Listeyi yenile
+                showSuccess(t.successStem);
+                
+                // MongoDB'den yeni stemHistory dizisini çekmek için verileri tazele
+                await syncUserData(); 
             }
-        } catch (e) { console.error("Poll error", e); }
-        if (attempts > 120) clearInterval(interval);
+        } catch (e) {
+            console.error("Polling Hatası:", e);
+        }
+        
+        if (attempts > 120) { // 10 dakika sınırı
+            clearInterval(interval);
+            stopTimer();
+            overlay.classList.remove('active');
+            showError("Zaman aşımı: İşlem beklenenden uzun sürdü.");
+        }
     }, 5000);
 }
         
