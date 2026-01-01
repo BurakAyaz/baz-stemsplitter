@@ -560,37 +560,55 @@
             }
         }
 
-        // ==================== STEM İŞLEMLERİ ====================
-        document.getElementById('stemForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!isLoggedIn) { redirectToWixLogin(); return; }
-            if (!selectedTrack) { showError(translations[currentLang].errorNoTrack); return; }
-            
-            var type = document.getElementById('separationType').value;
-            var cost = type === 'separate_vocal' ? 2 : 5;
-            if (userCredits < cost) { showError(translations[currentLang].insufficientCredits); return; }
+// index.html içerisindeki stemForm submit eventini bu şekilde güncelleyin:
+document.getElementById('stemForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!isLoggedIn) { redirectToWixLogin(); return; }
+    if (!selectedTrack) { showError(translations[currentLang].errorNoTrack); return; }
+    
+    var type = document.getElementById('separationType').value;
+    var cost = type === 'separate_vocal' ? 2 : 5;
+    if (userCredits < cost) { showError(translations[currentLang].insufficientCredits); return; }
 
-            // Kredi düşme (Ayrı bir API endpoint'iniz olduğunu varsayıyoruz)
-            var creditSuccess = await useCredits(cost, type);
-            if (!creditSuccess) return;
+    // Kredi kontrolü ve düşümü
+    var creditSuccess = await useCredits(cost, type);
+    if (!creditSuccess) return;
 
-            document.getElementById('loadingOverlay').classList.add('active');
-            startTimer();
-            
-            try {
-                var res = await fetch(API_BASE_URL + '/api/stem', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                    body: JSON.stringify({ taskId: selectedTrack.taskId, audioId: selectedTrack.id, type: type })
-                });
-                var data = await res.json();
-                var newTaskId = data.data ? data.data.taskId : data.taskId;
-                pollStemStatus(newTaskId, type);
-            } catch (err) { 
-                stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); 
-                showError("İşlem başlatılamadı."); 
-            }
+    document.getElementById('loadingOverlay').classList.add('active');
+    startTimer();
+    
+    try {
+        // DOKÜMANTASYON UYUMU:
+        // selectedTrack.taskId -> KIE'nin beklediği ana görev ID'si
+        // selectedTrack.id -> KIE'nin beklediği audioId (ses dosyası ID'si)
+        var res = await fetch(API_BASE_URL + '/api/stem', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': 'Bearer ' + authToken 
+            },
+            body: JSON.stringify({ 
+                taskId: selectedTrack.taskId, // Orijinal Task ID
+                audioId: selectedTrack.id,     // Ses dosyası ID (audioId)
+                type: type 
+            })
         });
+        
+        var data = await res.json();
+        
+        // Yanıt kontrolü
+        if (data.code === 200 && (data.data && data.data.taskId)) {
+            var newTaskId = data.data.taskId;
+            pollStemStatus(newTaskId, type);
+        } else {
+            throw new Error(data.msg || "Başlatılamadı");
+        }
+    } catch (err) { 
+        stopTimer(); 
+        document.getElementById('loadingOverlay').classList.remove('active'); 
+        showError("İşlem başlatılamadı: " + err.message); 
+    }
+});
 
         async function pollStemStatus(taskId, type) {
             var attempts = 0;
