@@ -93,26 +93,22 @@ module.exports = async (req, res) => {
             }
         }
 
-        // 5. Kie.ai'ye gidecek paketi hazırlıyoruz
-        const payload = {
-            taskId: taskId,
-            audioId: audioId,
-            type: type,
-            callBackUrl: callBackUrl || "https://google.com"
-        };
+// api/stem.js içinde ilgili bölümü şu şekilde revize et:
+const payload = {
+    taskId: taskId,    // BAZ AI'dan gelen orijinal taskId
+    audioId: audioId,  // Seçilen şarkının audioId'si
+    type: type,        // 'separate_vocal' veya 'split_stem'
+    callBackUrl: callBackUrl || "https://google.com" // Opsiyonel
+};
 
-        console.log("Stem API - Kie.ai'ye giden istek:", payload);
-
-        // 6. Kie.ai API İsteği - Vocal Separation endpoint
-        const response = await fetch('https://api.kie.ai/api/v1/vocal-removal/generate', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${process.env.KIE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
+const response = await fetch('https://api.kie.ai/api/v1/vocal-removal/generate', {
+    method: 'POST',
+    headers: {
+        'Authorization': `Bearer ${process.env.KIE_API_KEY}`,
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+});
         const data = await response.json();
 
         // 7. Hata Kontrolü
