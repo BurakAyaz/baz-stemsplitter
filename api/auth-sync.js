@@ -142,16 +142,30 @@ module.exports = async (req, res) => {
                          user.credits > 0 && 
                          (!user.expiresAt || new Date(user.expiresAt) > new Date());
         
+        // Son güncelleme zamanını kontrol et
+        const lastUpdated = user.updatedAt ? new Date(user.updatedAt) : null;
+        const needsUpdate = !lastUpdated || (Date.now() - lastUpdated.getTime() > 60000); // 1 dakikadan eski ise
+        
+        if (needsUpdate) {
+            // Güncelle
+            await usersCollection.updateOne(
+                { wixUserId: decoded.userId },
+                { $set: { lastSyncAt: new Date() } }
+            );
+        }
+        
+        console.log('Auth sync success for user:', decoded.userId, 'Credits:', user.credits);
+        
         // Başarılı response
         return res.status(200).json({
             success: true,
             user: {
                 id: user._id.toString(),
                 wixUserId: user.wixUserId,
-                email: user.email,
-                displayName: user.displayName,
-                plan: user.planId,
-                planId: user.planId,
+                email: user.email || decoded.email || '',
+                displayName: user.displayName || decoded.displayName || '',
+                plan: user.planId || 'none',
+                planId: user.planId || 'none',
                 credits: user.credits || 0,
                 available: user.credits || 0,
                 totalCredits: user.totalCredits || 0,
@@ -162,7 +176,9 @@ module.exports = async (req, res) => {
                 expiresAt: user.expiresAt,
                 daysRemaining: getDaysRemaining(user.expiresAt),
                 isActive: isActive,
-                totalSongsGenerated: user.totalSongsGenerated || 0
+                totalSongsGenerated: user.totalSongsGenerated || 0,
+                tracksCount: (user.tracks || []).length,
+                stemHistoryCount: (user.stemHistory || []).length
             }
         });
         
