@@ -1,4 +1,4 @@
-// api/user-data.js - Kullanıcı Verileri API'si (şarkılar, loglar, ayarlar)
+// api/user-data.js - Kullanıcı Verileri API'si (görseller, tracks, loglar, ayarlar)
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -75,11 +75,12 @@ module.exports = async (req, res) => {
                         plan: 'free',
                         planExpiry: null,
                         tracks: [],
-                        stemHistory: [],
                         generatedLyrics: [],
                         personas: [],
                         activityLog: [],
+                        visuals: [], // Görsel galerisi
                         totalSongsGenerated: 0,
+                        totalImagesGenerated: 0,
                         totalCreditsUsed: 0,
                         settings: {}
                     }
@@ -93,11 +94,12 @@ module.exports = async (req, res) => {
                     plan: user.planId || 'free',
                     planExpiry: user.expiresAt,
                     tracks: user.tracks || [],
-                    stemHistory: user.stemHistory || [],
                     generatedLyrics: user.generatedLyrics || [],
                     personas: user.personas || [],
                     activityLog: user.activityLog || [],
+                    visuals: user.visuals || [], // Görsel galerisi
                     totalSongsGenerated: user.totalSongsGenerated || 0,
+                    totalImagesGenerated: user.totalImagesGenerated || 0,
                     totalCreditsUsed: user.totalUsed || 0,
                     settings: user.settings || {}
                 }
@@ -152,15 +154,40 @@ module.exports = async (req, res) => {
                     }));
                     break;
                 
-                // Stem geçmişi ekle
-                case 'add_stem_history':
-                    if (!data.stemResult) {
-                        return res.status(400).json({ error: 'Stem result verisi gerekli' });
+                // Yeni görsel ekle
+                case 'add_visual':
+                    if (!data.visual) {
+                        return res.status(400).json({ error: 'Visual verisi gerekli' });
                     }
-                    pushData.stemHistory = {
-                        ...data.stemResult,
+                    pushData.visuals = {
+                        ...data.visual,
                         createdAt: new Date()
                     };
+                    break;
+                
+                // Görsel sil
+                case 'remove_visual':
+                    if (!data.taskId) {
+                        return res.status(400).json({ error: 'Task ID gerekli' });
+                    }
+                    await usersCollection.updateOne(
+                        { wixUserId: decoded.userId },
+                        { 
+                            $pull: { visuals: { taskId: data.taskId } },
+                            $set: { updatedAt: new Date() }
+                        }
+                    );
+                    return res.status(200).json({ success: true, message: 'Görsel silindi' });
+                
+                // Tüm görselleri güncelle (sync)
+                case 'sync_visuals':
+                    if (!Array.isArray(data.visuals)) {
+                        return res.status(400).json({ error: 'Visuals array gerekli' });
+                    }
+                    updateData.visuals = data.visuals.map(v => ({
+                        ...v,
+                        syncedAt: new Date()
+                    }));
                     break;
                 
                 // Üretilen söz ekle
@@ -215,7 +242,7 @@ module.exports = async (req, res) => {
                 // Tüm verileri senkronize et
                 case 'full_sync':
                     if (data.tracks) updateData.tracks = data.tracks;
-                    if (data.stemHistory) updateData.stemHistory = data.stemHistory;
+                    if (data.visuals) updateData.visuals = data.visuals;
                     if (data.generatedLyrics) updateData.generatedLyrics = data.generatedLyrics;
                     if (data.personas) updateData.personas = data.personas;
                     if (data.settings) updateData.settings = data.settings;
@@ -247,7 +274,7 @@ module.exports = async (req, res) => {
                 message: 'Veriler kaydedildi',
                 data: {
                     tracks: updatedUser.tracks || [],
-                    stemHistory: updatedUser.stemHistory || [],
+                    visuals: updatedUser.visuals || [],
                     generatedLyrics: updatedUser.generatedLyrics || [],
                     personas: updatedUser.personas || [],
                     activityLog: updatedUser.activityLog || []
