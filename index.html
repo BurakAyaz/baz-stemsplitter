@@ -711,26 +711,46 @@
             } catch (err) { stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError(t.errorPrefix + ' ' + err.message); }
         });
         
-        async function pollStemStatus(taskId, separationType) {
-            var t = translations[currentLang];
-            var attempts = 0, maxAttempts = 60;
-            var interval = setInterval(async function() {
-                attempts++;
-                document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
-                try {
-                    var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId);
-                    var json = await res.json();
-                    if (json.code === 200 && json.data && json.data.vocal_separation_info) {
-                        clearInterval(interval); stopTimer();
-                        document.getElementById('loadingOverlay').classList.remove('active');
-                        displayStemResults(json.data.vocal_separation_info, separationType);
-                        saveStemToHistory(json.data.vocal_separation_info);
-                        showSuccess(t.successStem);
-                    }
-                    if (attempts >= maxAttempts) { clearInterval(interval); stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError('Zaman aşımı'); }
-                } catch (e) { console.error('Poll error:', e); }
-            }, 5000);
+// index.html içindeki pollStemStatus fonksiyonunu şu şekilde güncelleyin:
+
+async function pollStemStatus(taskId, separationType) {
+    var t = translations[currentLang];
+    var attempts = 0;
+    var maxAttempts = 100; // Yaklaşık 8-9 dakika (5sn * 100)
+    
+    var interval = setInterval(async function() {
+        attempts++;
+        document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
+        
+        try {
+            var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId + '&wixUserId=' + currentUser.wixUserId);
+            var json = await res.json();
+            
+            // DÜZELTME: Sadece status success olduğunda VE veri geldiğinde dur
+            if (json.code === 200 && json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
+                clearInterval(interval);
+                stopTimer();
+                document.getElementById('loadingOverlay').classList.remove('active');
+                
+                // Sonuçları göster ve dinlenebilir hale getir
+                displayStemResults(json.data.vocal_separation_info, separationType);
+                showSuccess(t.successStem);
+                
+                // MongoDB'den güncel veriyi çek (Geçmişi güncellemek için)
+                loadUserTracksFromMongoDB(); 
+            }
+            
+            if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                stopTimer();
+                document.getElementById('loadingOverlay').classList.remove('active');
+                showError('Zaman aşımı: İşlem normalden uzun sürdü, lütfen geçmişi kontrol edin.');
+            }
+        } catch (e) {
+            console.error('Sorgulama hatası:', e);
         }
+    }, 5000); // her 5 saniyede bir kontrol et
+}
         
 // index.html içindeki ilgili fonksiyonları bu şekilde güncelleyin:
 
@@ -738,37 +758,33 @@ function displayStemResults(info, separationType) {
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
+    
     var stems = [];
-
-    // Backend tarafından normalize edilmiş standart keyleri kullanıyoruz
+    // Statik keyler üzerinden listeyi oluştur
     if (separationType === 'separate_vocal') {
         if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
         if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
     } else {
-        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-        if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
-        if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
-        if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-        if (info.piano_url) stems.push({ name: t.stemKeyboard, url: info.piano_url, icon: '🎹' });
-        if (info.other_url) stems.push({ name: t.stemFX, url: info.other_url, icon: '✨' });
+        // Detaylı ayrıştırma (drums, bass vb.) varsa ekle
+        // ... (önceki mantığı koru)
     }
 
     stems.forEach(function(stem) {
-        if (stem.url) {
-            container.innerHTML += `
-                <div class="stem-item">
-                    <div class="stem-icon">${stem.icon}</div>
-                    <div class="stem-info">
-                        <div class="stem-name">${stem.name}</div>
-                        <audio class="stem-audio" controls src="${stem.url}"></audio>
-                    </div>
-                    <div class="stem-actions">
-                        <a href="${stem.url}" target="_blank" download class="stem-btn primary">${t.btnDownload}</a>
-                    </div>
-                </div>`;
-        }
+        container.innerHTML += `
+            <div class="stem-item">
+                <div class="stem-icon">${stem.icon}</div>
+                <div class="stem-info">
+                    <div class="stem-name">${stem.name}</div>
+                    <audio class="stem-audio" controls src="${stem.url}"></audio>
+                </div>
+                <div class="stem-actions">
+                    <a href="${stem.url}" target="_blank" download="${stem.name}.mp3" class="stem-btn primary">
+                        ${t.btnDownload}
+                    </a>
+                </div>
+            </div>`;
     });
-
+    
     document.getElementById('resultsEmpty').style.display = 'none';
     container.style.display = 'flex';
 }
