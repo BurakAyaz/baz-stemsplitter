@@ -30,41 +30,45 @@ module.exports = async (req, res) => {
         const data = await response.json();
 
         if (data.code === 200 && data.data) {
-            const raw = data.data.response || data.data;
-            const info = raw.vocal_separation_info || raw;
+            // KIE bazen 'response' bazen doğrudan 'data' içinde döner, ikisini de kontrol et
+            const rawInfo = data.data.response || data.data.vocal_separation_info || data.data;
             const status = data.data.status;
 
-            // KIE'den gelen hatalı URL anahtarlarını standartlaştır
-            const vocalUrl = info.vocal_url || info.vocal_ur || info["vocal_ur!"];
-            const instUrl = info.instrumental_url || info.instrumentalI_url || info.instrumental_ur;
+            // Paylaştığınız 3 bilgiyi tek bir objede topluyoruz
+            const vocalUrl = rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"];
+            const instUrl = rawInfo.instrumental_url || rawInfo.instrumentalI_url;
+            const kieId = rawInfo.id || taskId; 
 
-            // KRİTİK: İşlem gerçekten bitti mi kontrolü
-            const hasUrls = !!(vocalUrl || instUrl);
-            const isActuallyComplete = status === 'SUCCESS' && hasUrls;
+            // İşlem bitti mi? (SUCCESS statüsü VE indirme linklerinin varlığı)
+            const isActuallyComplete = status === 'SUCCESS' && (vocalUrl || instUrl);
 
             const normalizedStems = {
+                id: kieId,
                 vocal_url: vocalUrl || null,
                 instrumental_url: instUrl || null,
-                drums_url: info.drums_url || null,
-                bass_url: info.bass_url || null,
-                guitar_url: info.guitar_url || null,
-                piano_url: info.piano_url || null,
-                other_url: info.other_url || null
+                drums_url: rawInfo.drums_url || null,
+                bass_url: rawInfo.bass_url || null,
+                guitar_url: rawInfo.guitar_url || null,
+                piano_url: rawInfo.piano_url || null,
+                other_url: rawInfo.other_url || null
             };
 
-            // MongoDB'ye "stems" bölümü olarak kaydet
+            // MongoDB'ye "tek bir ürün" olarak kaydetme mantığı
             if (isActuallyComplete && wixUserId) {
                 const { db } = await connectToDatabase();
                 
-                // Bu taskId daha önce stemHistory dizisine eklenmiş mi kontrol et
-                const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
-                const isAlreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
+                // Aynı taskId ile mükerrer kaydı önle
+                const existing = await db.collection('users').findOne({ 
+                    wixUserId: wixUserId, 
+                    'stemHistory.taskId': taskId 
+                });
 
-                if (!isAlreadySaved) {
+                if (!existing) {
                     const stemEntry = {
                         taskId: taskId,
+                        kieId: kieId,
                         type: normalizedStems.drums_url ? 'split_stem' : 'separate_vocal',
-                        stems: normalizedStems, // İstenen "stems" yapısı
+                        stems: normalizedStems, // Üç bilgi burada tek üründe toplandı
                         createdAt: new Date()
                     };
                     
@@ -77,7 +81,7 @@ module.exports = async (req, res) => {
                             $set: { updatedAt: new Date() }
                         }
                     );
-                    console.log(`StemHistory kaydedildi: ${taskId}`);
+                    console.log(`StemHistory başarıyla kaydedildi: ${taskId}`);
                 }
             }
 

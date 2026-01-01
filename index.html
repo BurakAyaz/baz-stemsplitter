@@ -759,37 +759,46 @@ async function pollStemStatus(tid, type) {
 // index.html içindeki ilgili fonksiyonları bu şekilde güncelleyin:
 
 // index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
+// index.html içindeki fonksiyonu bu tam kodla değiştirin
 function displayStemResults(info, separationType) {
+    if (!info) return;
+    
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
+    
+    // Gelen info objesi artık normalize edilmiş 'stems' yapısındadır
     var stems = [];
 
-    // Backend'den normalize edilmiş keyler geliyor
-    const map = [
-        { key: 'vocal_url', label: t.stemVocal, icon: '🎤' },
-        { key: 'instrumental_url', label: t.stemInstrumental, icon: '🎸' },
-        { key: 'drums_url', label: t.stemDrums, icon: '🥁' },
-        { key: 'bass_url', label: t.stemBass, icon: '🎸' },
-        { key: 'guitar_url', label: t.stemGuitar, icon: '🎸' }
-    ];
+    // Vokal & Enstrümantal veya Stem Split ayrımı
+    if (separationType === 'separate_vocal' || !info.drums_url) {
+        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+        if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+    } else {
+        // 12 Stem veya Detaylı Ayrıştırma durumu
+        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+        if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
+        if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
+        if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
+        if (info.piano_url) stems.push({ name: t.stemKeyboard, url: info.piano_url, icon: '🎹' });
+    }
 
-    map.forEach(item => {
-        if (info[item.key]) {
-            container.innerHTML += `
-                <div class="stem-item">
-                    <div class="stem-icon">${item.icon}</div>
-                    <div class="stem-info">
-                        <div class="stem-name">${item.label}</div>
-                        <audio class="stem-audio" controls src="${info[item.key]}"></audio>
-                    </div>
-                    <div class="stem-actions">
-                        <a href="${info[item.key]}" target="_blank" download class="stem-btn primary">${t.btnDownload}</a>
-                    </div>
-                </div>`;
-        }
+    stems.forEach(function(stem) {
+        container.innerHTML += `
+            <div class="stem-item">
+                <div class="stem-icon">${stem.icon}</div>
+                <div class="stem-info">
+                    <div class="stem-name">${stem.name}</div>
+                    <audio class="stem-audio" controls src="${stem.url}"></audio>
+                </div>
+                <div class="stem-actions">
+                    <a href="${stem.url}" target="_blank" download="${info.id || 'stem'}.mp3" class="stem-btn primary">
+                        ${t.btnDownload}
+                    </a>
+                </div>
+            </div>`;
     });
-
+    
     document.getElementById('resultsEmpty').style.display = 'none';
     container.style.display = 'flex';
 }
