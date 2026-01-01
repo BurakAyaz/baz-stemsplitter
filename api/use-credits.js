@@ -1,4 +1,5 @@
 // api/use-credits.js - Kredi Harcama API'si
+// Referans ile tam uyumlu
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -64,14 +65,14 @@ module.exports = async (req, res) => {
         }
         
         // Harcama miktarı (varsayılan 1)
-        const { amount = 1, action = 'song_generate', songId = null } = req.body;
+        const { amount = 1, action = 'cover_design', songId = null } = req.body;
         
-        // Stem işlemleri için kredi miktarlarını otomatik ayarla
+        // Action tipine göre kredi miktarını belirle
         let finalAmount = amount;
-        if (action === 'stem_vocal' || action === 'separate_vocal') {
-            finalAmount = 2; // Vokal + Enstrüman = 2 kredi
-        } else if (action === 'stem_12' || action === 'split_stem') {
-            finalAmount = 5; // 12 Enstrüman = 5 kredi
+        if (action === 'cover_design' || action === 'photo_design') {
+            finalAmount = 1; // Görsel oluşturma = 1 kredi
+        } else if (action === 'song_generate') {
+            finalAmount = 1; // Şarkı oluşturma = 1 kredi
         }
         
         const { db } = await connectToDatabase();
@@ -97,18 +98,23 @@ module.exports = async (req, res) => {
         // Krediyi düş
         const newCredits = user.credits - finalAmount;
         const newTotalUsed = (user.totalUsed || 0) + finalAmount;
-        const newSongsGenerated = (user.totalSongsGenerated || 0) + 1;
+        
+        // Action tipine göre sayaçları güncelle
+        let updateFields = {
+            credits: newCredits,
+            totalUsed: newTotalUsed,
+            updatedAt: new Date()
+        };
+        
+        if (action === 'cover_design' || action === 'photo_design') {
+            updateFields.totalImagesGenerated = (user.totalImagesGenerated || 0) + 1;
+        } else if (action === 'song_generate') {
+            updateFields.totalSongsGenerated = (user.totalSongsGenerated || 0) + 1;
+        }
         
         await usersCollection.updateOne(
             { wixUserId: decoded.userId },
-            { 
-                $set: {
-                    credits: newCredits,
-                    totalUsed: newTotalUsed,
-                    totalSongsGenerated: newSongsGenerated,
-                    updatedAt: new Date()
-                }
-            }
+            { $set: updateFields }
         );
         
         // İşlem kaydı oluştur
@@ -133,7 +139,8 @@ module.exports = async (req, res) => {
                 creditsUsed: finalAmount,
                 remainingCredits: newCredits,
                 totalUsed: newTotalUsed,
-                totalSongsGenerated: newSongsGenerated
+                totalSongsGenerated: updateFields.totalSongsGenerated || user.totalSongsGenerated || 0,
+                totalImagesGenerated: updateFields.totalImagesGenerated || user.totalImagesGenerated || 0
             }
         });
         

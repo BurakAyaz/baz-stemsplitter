@@ -1,7 +1,8 @@
 // api/stem.js - Vocal & Instrument Stem Separation API Endpoint
+// Auth sistemi entegre edildi
+
 const { MongoClient } = require('mongodb');
 
-// MongoDB bağlantısı (singleton)
 let cachedClient = null;
 let cachedDb = null;
 
@@ -9,14 +10,18 @@ async function connectToDatabase() {
     if (cachedClient && cachedDb) {
         return { client: cachedClient, db: cachedDb };
     }
+    
     const uri = process.env.MONGODB_URI;
     if (!uri) return null;
+    
     try {
         const client = new MongoClient(uri);
         await client.connect();
         const db = client.db('bazai');
+        
         cachedClient = client;
         cachedDb = db;
+        
         return { client, db };
     } catch (e) {
         console.error('MongoDB connection error:', e);
@@ -24,7 +29,7 @@ async function connectToDatabase() {
     }
 }
 
-// Token çözümleme
+// Token decode
 function decodeToken(token) {
     try {
         let decoded = token;
@@ -39,7 +44,7 @@ function decodeToken(token) {
 }
 
 module.exports = async (req, res) => {
-    // CORS ayarları
+    // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -48,26 +53,35 @@ module.exports = async (req, res) => {
         return res.status(200).end();
     }
 
+    // 1. Sadece POST isteği kabul et
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Sadece POST isteği kabul edilir.' });
     }
 
+    // 2. API Key Kontrolü
     if (!process.env.KIE_API_KEY) {
-        return res.status(500).json({ error: 'Sunucu hatası: KIE_API_KEY eksik.' });
+        return res.status(500).json({ error: 'Sunucu hatası: API Key eksik (Vercel Ayarlarını Kontrol Et).' });
     }
 
     try {
         const { taskId, audioId, type, callBackUrl } = req.body;
 
-        // 1. Validasyon: KIE her iki ID'yi de zorunlu tutar
+        // 3. Validasyon
         if (!taskId || !audioId) {
             return res.status(400).json({ 
                 error: 'taskId ve audioId zorunludur.',
-                details: 'Lütfen listeden bir şarkı seçtiğinizden emin olun.'
+                details: 'BAZ AI\'da oluşturulmuş bir şarkı seçmelisiniz.'
             });
         }
 
-        // 2. Auth ve Kullanıcı Tanımlama
+        if (!type || !['separate_vocal', 'split_stem'].includes(type)) {
+            return res.status(400).json({ 
+                error: 'Geçersiz type parametresi.',
+                details: 'separate_vocal veya split_stem olmalı.'
+            });
+        }
+
+        // 4. Opsiyonel: Kullanıcı bilgisini logla (auth varsa)
         let userId = null;
         const authHeader = req.headers.authorization;
         if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -75,20 +89,21 @@ module.exports = async (req, res) => {
             const decoded = decodeToken(token);
             if (decoded && decoded.userId) {
                 userId = decoded.userId;
+                console.log(`Stem request from user: ${userId}`);
             }
         }
 
-        // 3. KIE API İsteği (Dokümantasyona Göre Güncellendi)
-        // 
+        // 5. Kie.ai'ye gidecek paketi hazırlıyoruz
         const payload = {
-            taskId: taskId,    // Şarkının ana görev ID'si
-            audioId: audioId,  // Şarkının ses dosyası ID'si
-            type: type || 'separate_vocal',
-            callBackUrl: callBackUrl || "https://google.com" // Boş gönderilmemelidir
+            taskId: taskId,
+            audioId: audioId,
+            type: type,
+            callBackUrl: callBackUrl || "https://google.com"
         };
 
-        console.log("KIE API Tetikleniyor, Payload:", JSON.stringify(payload));
+        console.log("Stem API - Kie.ai'ye giden istek:", payload);
 
+        // 6. Kie.ai API İsteği - Vocal Separation endpoint
         const response = await fetch('https://api.kie.ai/api/v1/vocal-removal/generate', {
             method: 'POST',
             headers: {
@@ -100,16 +115,14 @@ module.exports = async (req, res) => {
 
         const data = await response.json();
 
+        // 7. Hata Kontrolü
         if (!response.ok) {
-            console.error("KIE API Yanıt Hatası:", data);
-            return res.status(response.status).json({
-                error: 'KIE API hatası',
-                details: data.msg || data.error || 'İşlem başlatılamadı'
-            });
+            console.error("Stem API Hatası:", data);
+            throw new Error(data.msg || data.error || JSON.stringify(data));
         }
 
-        // 4. Başarılı İşlemden Sonra MongoDB Loglama
-        if (userId) {
+        // 8. Başarılı - Activity log ekle (opsiyonel)
+        if (userId && process.env.MONGODB_URI) {
             try {
                 const dbConnection = await connectToDatabase();
                 if (dbConnection) {
@@ -119,29 +132,28 @@ module.exports = async (req, res) => {
                         {
                             $push: {
                                 activityLog: {
-                                    action: 'stem_separation_start',
+                                    action: 'stem_separation',
                                     type: type,
-                                    sourceTaskId: taskId,
-                                    newTaskId: data.data?.taskId || data.taskId,
+                                    taskId: taskId,
+                                    newTaskId: data.data?.taskId,
                                     timestamp: new Date()
                                 }
-                            },
-                            $set: { updatedAt: new Date() }
+                            }
                         }
                     );
                 }
-            } catch (dbError) {
-                console.error('MongoDB logging error:', dbError);
+            } catch (logError) {
+                console.error('Activity log error:', logError);
+                // Log hatası ana işlemi durdurmasın
             }
         }
 
-        // 5. Yanıtı Döndür
         return res.status(200).json(data);
 
     } catch (error) {
-        console.error("Stem Proxy Sunucu Hatası:", error);
+        console.error("Stem Proxy Hatası:", error);
         return res.status(500).json({ 
-            error: 'Stem ayrıştırma isteği sırasında bir hata oluştu', 
+            error: 'Stem ayrıştırma işlemi başlatılamadı', 
             details: error.message 
         });
     }
