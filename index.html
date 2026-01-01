@@ -760,7 +760,6 @@ async function pollStemStatus(tid, type) {
 // index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
 // index.html içindeki fonksiyonu bu tam kodla değiştirin
 function displayStemResults(info, separationType) {
-    // Eğer info yoksa veya URL'ler eksikse gösterme (processing durumunda kalmasını sağlar)
     if (!info || !info.vocal_url || !info.instrumental_url) return;
     
     var t = translations[currentLang];
@@ -768,10 +767,11 @@ function displayStemResults(info, separationType) {
     container.innerHTML = '';
     var stems = [];
 
-    // Verileri listeye ekle
+    // Vokal ve Enstrümantal bilgilerini listeye ekle
     stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
     stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
     
+    // Varsa diğer enstrümanları ekle
     if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
     if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
 
@@ -784,7 +784,7 @@ function displayStemResults(info, separationType) {
                     <audio class="stem-audio" controls src="${stem.url}"></audio>
                 </div>
                 <div class="stem-actions">
-                    <a href="${stem.url}" target="_blank" download="${info.id || 'stem'}.mp3" class="stem-btn primary">
+                    <a href="${stem.url}" target="_blank" download="${info.musicId || 'stem'}.mp3" class="stem-btn primary">
                         ${t.btnDownload}
                     </a>
                 </div>

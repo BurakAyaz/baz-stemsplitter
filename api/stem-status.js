@@ -19,59 +19,58 @@ module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { taskId, wixUserId } = req.query; 
+        const { taskId, wixUserId } = req.query;
         if (!taskId) return res.status(400).json({ error: 'taskId gerekli' });
 
         const response = await fetch(`https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${process.env.KIE_API_KEY}`, 'Content-Type': 'application/json' }
         });
-
         const data = await response.json();
 
         if (data.code === 200 && data.data) {
-            // Dokümantasyona göre data.data doğrudan sonucu içeriyor
-            const rawInfo = data.data.response || data.data.vocal_separation_info || data.data;
+            const raw = data.data.response || data.data.vocal_separation_info || data.data;
             const status = data.data.status;
 
-            // 3 KRİTİK BİLGİYİ TOPLUYORUZ
-            const vocalUrl = rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"];
-            const instUrl = rawInfo.instrumental_url || rawInfo.instrumentalI_url;
-            // API yanıtındaki ID, müzik üretilirken kullanılan orijinal taskId'dir
-            const originalTaskId = data.data.taskId || taskId; 
+            // Logdaki 3 kritik veriyi normalize ediyoruz
+            const vocalUrl = raw.vocal_url || raw.vocal_ur || raw["vocal_ur!"];
+            const instUrl = raw.instrumental_url || raw.instrumentalI_url;
+            const musicId = raw.musicId || raw.id || taskId; 
 
-            // İşlem Tamam mı? (SUCCESS durumu ve her iki URL'nin varlığı şart)
+            // İşlem gerçekten bitti mi? (SUCCESS statüsü VE URL'lerin varlığı)
             const isActuallyComplete = status === 'SUCCESS' && vocalUrl && instUrl;
 
+            // Tek bir üründe toplanan ana veri yapısı
             const normalizedStems = {
-                taskId: originalTaskId,
+                musicId: musicId,
                 vocal_url: vocalUrl,
                 instrumental_url: instUrl,
-                type: rawInfo.drums_url ? 'split_stem' : 'separate_vocal'
+                drums_url: raw.drums_url || null,
+                bass_url: raw.bass_url || null,
+                type: raw.drums_url ? 'split_stem' : 'separate_vocal'
             };
 
+            // MongoDB Kayıt Mantığı
             if (isActuallyComplete && wixUserId) {
                 const { db } = await connectToDatabase();
                 
-                // Belgenizdeki 'stemHistory' dizisine butaskId daha önce eklendi mi?
-                const user = await db.collection('users').findOne({ wixUserId });
-                const alreadyExists = user?.stemHistory?.some(h => h.taskId === originalTaskId);
+                // Mükerrer kaydı taskId üzerinden kontrol et
+                const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
+                const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
 
-                if (!alreadyExists) {
+                if (!alreadySaved) {
+                    const stemEntry = {
+                        taskId: taskId, 
+                        musicId: musicId, 
+                        stems: normalizedStems, // Tek ürün birleştirildi
+                        createdAt: new Date(),
+                        type: normalizedStems.type
+                    };
+                    
                     await db.collection('users').updateOne(
-                        { wixUserId },
+                        { wixUserId: wixUserId },
                         { 
-                            $push: { 
-                                stemHistory: { 
-                                    $each: [{
-                                        taskId: originalTaskId,
-                                        stems: normalizedStems,
-                                        createdAt: new Date(),
-                                        status: 'success'
-                                    }], 
-                                    $position: 0 
-                                } 
-                            },
+                            $push: { stemHistory: { $each: [stemEntry], $position: 0, $slice: 50 } },
                             $set: { updatedAt: new Date() }
                         }
                     );
@@ -82,7 +81,7 @@ module.exports = async (req, res) => {
                 code: 200,
                 msg: 'success',
                 data: {
-                    taskId: originalTaskId,
+                    taskId: taskId,
                     status: isActuallyComplete ? 'success' : 'processing',
                     vocal_separation_info: isActuallyComplete ? normalizedStems : null
                 }
