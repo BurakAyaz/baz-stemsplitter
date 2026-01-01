@@ -102,8 +102,6 @@ module.exports = async (req, res) => {
             }
         );
         
-        console.log(`💰 Kredi eklendi: ${wixUserId} - Miktar: ${creditsToAdd} - Yeni bakiye: ${user.credits + creditsToAdd}`);
-        
         return res.status(200).json({
             success: true,
             message: 'Kredi eklendi',

@@ -114,13 +114,8 @@ module.exports = async (req, res) => {
                 purchasedAt: now,
                 expiresAt: expiresAt,
                 totalSongsGenerated: 0,
-                totalImagesGenerated: 0,
-                visuals: [], // Görsel galerisi için boş dizi
                 tracks: [],
-                generatedLyrics: [],
-                personas: [],
-                activityLog: [],
-                settings: {},
+                stemHistory: [],
                 createdAt: now,
                 updatedAt: now
             };
@@ -128,7 +123,7 @@ module.exports = async (req, res) => {
             await usersCollection.insertOne(newUser);
             user = newUser;
             
-            console.log('✨ Yeni kullanıcı oluşturuldu:', planId, 'Kredi:', plan.credits);
+            console.log('New user created with plan:', planId, 'Credits:', plan.credits);
         } else {
             // Mevcut kullanıcıyı güncelle
             const updateData = {
@@ -144,23 +139,18 @@ module.exports = async (req, res) => {
             if (email) updateData.email = email;
             if (displayName) updateData.displayName = displayName;
             
-            // Visuals dizisi yoksa ekle
-            if (!Array.isArray(user.visuals)) {
-                updateData.visuals = [];
-            }
-            
             await usersCollection.updateOne(
                 { wixUserId: wixUserId },
                 { $set: updateData }
             );
             
-            console.log('💰 Kullanıcı güncellendi:', planId, 'Yeni kredi:', user.credits + plan.credits);
+            console.log('User updated with plan:', planId, 'New credits:', user.credits + plan.credits);
         }
         
         // İşlem kaydı oluştur
         const transaction = {
             wixUserId: wixUserId,
-            orderId: orderId || null,
+            oderId: orderId || null,
             type: 'purchase',
             planId: planId.toLowerCase(),
             planName: plan.name,

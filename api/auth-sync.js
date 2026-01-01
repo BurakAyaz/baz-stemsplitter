@@ -1,5 +1,4 @@
 // api/auth-sync.js - Vercel Serverless Function
-// Referans ile tam uyumlu + visuals dizisi desteği
 const { MongoClient } = require('mongodb');
 
 // MongoDB bağlantısı (singleton)
@@ -128,28 +127,14 @@ module.exports = async (req, res) => {
                 purchasedAt: null,
                 expiresAt: null,
                 totalSongsGenerated: 0,
-                totalImagesGenerated: 0,
-                visuals: [], // Görsel galerisi için boş dizi
                 tracks: [],
-                generatedLyrics: [],
-                personas: [],
-                activityLog: [],
-                settings: {},
+                stemHistory: [],
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
             
             const result = await usersCollection.insertOne(newUser);
             user = { ...newUser, _id: result.insertedId };
-        } else {
-            // Mevcut kullanıcıda visuals yoksa ekle
-            if (!Array.isArray(user.visuals)) {
-                await usersCollection.updateOne(
-                    { wixUserId: decoded.userId },
-                    { $set: { visuals: [] } }
-                );
-                user.visuals = [];
-            }
         }
         
         // Abonelik durumu kontrolü
@@ -158,29 +143,28 @@ module.exports = async (req, res) => {
                          (!user.expiresAt || new Date(user.expiresAt) > new Date());
         
         // Başarılı response
-       // ... (Dosyanın üst kısmı aynı kalacak)
-
-        // Başarılı response - Bu kısmı aşağıdaki ile değiştirin
-        // api/auth-sync.js içindeki başarılı response kısmını bununla değiştir:
-return res.status(200).json({
-    success: true,
-    user: {
-        id: user._id.toString(),
-        wixUserId: user.wixUserId,
-        email: user.email,
-        displayName: user.displayName,
-        plan: user.planId,
-        credits: user.credits || 0,
-        // KRİTİK: Frontend'in listeleme yapması için bu iki alan şart
-        tracks: user.tracks || [],
-        stemHistory: user.stemHistory || [],
-        subscriptionStatus: user.subscriptionStatus || 'none',
-        expiresAt: user.expiresAt,
-        daysRemaining: getDaysRemaining(user.expiresAt),
-        isActive: isActive
-    }
-});
-// ... (Catch bloğu aynı kalacak)
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id.toString(),
+                wixUserId: user.wixUserId,
+                email: user.email,
+                displayName: user.displayName,
+                plan: user.planId,
+                planId: user.planId,
+                credits: user.credits || 0,
+                available: user.credits || 0,
+                totalCredits: user.totalCredits || 0,
+                used: user.totalUsed || 0,
+                features: user.features || [],
+                allowedModels: user.allowedModels || [],
+                subscriptionStatus: user.subscriptionStatus || 'none',
+                expiresAt: user.expiresAt,
+                daysRemaining: getDaysRemaining(user.expiresAt),
+                isActive: isActive,
+                totalSongsGenerated: user.totalSongsGenerated || 0
+            }
+        });
         
     } catch (error) {
         console.error('Auth sync error:', error);
