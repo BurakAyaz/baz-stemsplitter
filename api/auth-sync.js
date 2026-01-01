@@ -1,5 +1,4 @@
 // api/auth-sync.js - Vercel Serverless Function
-// Referans ile tam uyumlu + visuals dizisi desteği
 const { MongoClient } = require('mongodb');
 
 // MongoDB bağlantısı (singleton)
@@ -67,11 +66,15 @@ module.exports = async (req, res) => {
         return res.status(405).json({ error: 'Method not allowed' });
     }
     
+    console.log('=== AUTH-SYNC API CALLED ===');
+    
     try {
         // Token al
         const authHeader = req.headers.authorization;
+        console.log('Auth header:', authHeader ? 'VAR' : 'YOK');
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('Token header eksik');
             return res.status(401).json({
                 error: 'Authentication required',
                 message: 'Token gerekli'
@@ -79,6 +82,7 @@ module.exports = async (req, res) => {
         }
         
         const token = authHeader.split(' ')[1];
+        console.log('Token alındı, uzunluk:', token ? token.length : 0);
         
         if (!token) {
             return res.status(401).json({
@@ -89,31 +93,49 @@ module.exports = async (req, res) => {
         
         // Token'ı çöz
         const decoded = decodeToken(token);
+        console.log('Token decode sonucu:', decoded ? JSON.stringify(decoded) : 'DECODE BAŞARISIZ');
         
         if (!decoded || !decoded.userId) {
+            console.log('Token geçersiz veya userId yok');
             return res.status(401).json({
                 error: 'Invalid token',
-                message: 'Geçersiz token'
+                message: 'Geçersiz token - decode edilemedi'
             });
         }
         
         // Token süresi kontrolü (7 gün)
         if (decoded.timestamp && Date.now() - decoded.timestamp > 7 * 24 * 60 * 60 * 1000) {
+            console.log('Token süresi dolmuş');
             return res.status(401).json({
                 error: 'Token expired',
                 message: 'Token süresi dolmuş, lütfen tekrar giriş yapın'
             });
         }
         
+        console.log('MongoDB bağlanıyor...');
+        console.log('MONGODB_URI var mı:', process.env.MONGODB_URI ? 'EVET' : 'HAYIR');
+        
         // MongoDB bağlan
         const { db } = await connectToDatabase();
         const usersCollection = db.collection('users');
         
+        console.log('MongoDB bağlandı, kullanıcı aranıyor:', decoded.userId);
+        
         // Kullanıcıyı bul
         let user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        console.log('Kullanıcı bulundu mu:', user ? 'EVET' : 'HAYIR');
+        
+        if (user) {
+            console.log('Mevcut kullanıcı bilgileri:', {
+                credits: user.credits,
+                planId: user.planId,
+                subscriptionStatus: user.subscriptionStatus
+            });
+        }
         
         // Yoksa oluştur
         if (!user) {
+            console.log('Kullanıcı yok, yeni oluşturuluyor...');
             const newUser = {
                 wixUserId: decoded.userId,
                 email: decoded.email || '',
@@ -128,28 +150,14 @@ module.exports = async (req, res) => {
                 purchasedAt: null,
                 expiresAt: null,
                 totalSongsGenerated: 0,
-                totalImagesGenerated: 0,
-                visuals: [], // Görsel galerisi için boş dizi
                 tracks: [],
-                generatedLyrics: [],
-                personas: [],
-                activityLog: [],
-                settings: {},
+                stemHistory: [],
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
             
             const result = await usersCollection.insertOne(newUser);
             user = { ...newUser, _id: result.insertedId };
-        } else {
-            // Mevcut kullanıcıda visuals yoksa ekle
-            if (!Array.isArray(user.visuals)) {
-                await usersCollection.updateOne(
-                    { wixUserId: decoded.userId },
-                    { $set: { visuals: [] } }
-                );
-                user.visuals = [];
-            }
         }
         
         // Abonelik durumu kontrolü
@@ -157,30 +165,45 @@ module.exports = async (req, res) => {
                          user.credits > 0 && 
                          (!user.expiresAt || new Date(user.expiresAt) > new Date());
         
+        // Son güncelleme zamanını kontrol et
+        const lastUpdated = user.updatedAt ? new Date(user.updatedAt) : null;
+        const needsUpdate = !lastUpdated || (Date.now() - lastUpdated.getTime() > 60000); // 1 dakikadan eski ise
+        
+        if (needsUpdate) {
+            // Güncelle
+            await usersCollection.updateOne(
+                { wixUserId: decoded.userId },
+                { $set: { lastSyncAt: new Date() } }
+            );
+        }
+        
+        console.log('Auth sync success for user:', decoded.userId, 'Credits:', user.credits);
+        
         // Başarılı response
-       // ... (Dosyanın üst kısmı aynı kalacak)
-
-        // Başarılı response - Bu kısmı aşağıdaki ile değiştirin
-        // api/auth-sync.js içindeki başarılı response kısmını bununla değiştir:
-return res.status(200).json({
-    success: true,
-    user: {
-        id: user._id.toString(),
-        wixUserId: user.wixUserId,
-        email: user.email,
-        displayName: user.displayName,
-        plan: user.planId,
-        credits: user.credits || 0,
-        // KRİTİK: Frontend'in listeleme yapması için bu iki alan şart
-        tracks: user.tracks || [],
-        stemHistory: user.stemHistory || [],
-        subscriptionStatus: user.subscriptionStatus || 'none',
-        expiresAt: user.expiresAt,
-        daysRemaining: getDaysRemaining(user.expiresAt),
-        isActive: isActive
-    }
-});
-// ... (Catch bloğu aynı kalacak)
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id.toString(),
+                wixUserId: user.wixUserId,
+                email: user.email || decoded.email || '',
+                displayName: user.displayName || decoded.displayName || '',
+                plan: user.planId || 'none',
+                planId: user.planId || 'none',
+                credits: user.credits || 0,
+                available: user.credits || 0,
+                totalCredits: user.totalCredits || 0,
+                used: user.totalUsed || 0,
+                features: user.features || [],
+                allowedModels: user.allowedModels || [],
+                subscriptionStatus: user.subscriptionStatus || 'none',
+                expiresAt: user.expiresAt,
+                daysRemaining: getDaysRemaining(user.expiresAt),
+                isActive: isActive,
+                totalSongsGenerated: user.totalSongsGenerated || 0,
+                tracksCount: (user.tracks || []).length,
+                stemHistoryCount: (user.stemHistory || []).length
+            }
+        });
         
     } catch (error) {
         console.error('Auth sync error:', error);
