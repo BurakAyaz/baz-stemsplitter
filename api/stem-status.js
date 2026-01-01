@@ -91,24 +91,32 @@ module.exports = async (req, res) => {
             throw new Error(data.msg || data.error || JSON.stringify(data));
         }
 
-        if (data.code === 200 && data.data) {
-            const status = data.data.status;
-            
-            // KIE'den gelen veriyi paylaştığın logdaki hatalı keyleri de kapsayacak şekilde yakala
-            const rawInfo = data.data.response?.vocal_separation_info || data.data.vocal_separation_info || data.data.response || {};
-            
-            // Yazım hatalarını normalize et (instrumentalI_url ve vocal_ur gibi)
-            const normalizedStems = {
-                vocal_url: rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"],
-                instrumental_url: rawInfo.instrumental_url || rawInfo.instrumentalI_url || rawInfo.instrumental_ur,
-                drums_url: rawInfo.drums_url,
-                bass_url: rawInfo.bass_url,
-                guitar_url: rawInfo.guitar_url,
-                piano_url: rawInfo.piano_url,
-                other_url: rawInfo.other_url,
-                backing_vocals_url: rawInfo.backing_vocals_url
-            };
+       // api/stem-status.js içindeki veri yakalama mantığı:
+if (data.code === 200 && data.data) {
+    // API bazen 'response' içinde bazen doğrudan 'data' içinde gönderiyor
+    const raw = data.data.response || data.data;
+    const info = raw.vocal_separation_info || raw;
 
+    // Yazım hatalarını ve alternatif anahtarları normalize et
+    const normalizedStems = {
+        vocal_url: info.vocal_url || info.vocal_ur || info["vocal_ur!"],
+        instrumental_url: info.instrumental_url || info.instrumentalI_url || info.instrumental_ur,
+        drums_url: info.drums_url,
+        bass_url: info.bass_url,
+        guitar_url: info.guitar_url,
+        piano_url: info.piano_url || info.keyboard_url,
+        other_url: info.other_url || info.synth_url
+    };
+
+    // MongoDB'ye "stems" altında kaydet
+    const stemResult = {
+        taskId: taskId,
+        stems: normalizedStems,
+        status: data.data.status === 'SUCCESS' ? 'success' : 'processing',
+        createdAt: new Date()
+    };
+    // ... MongoDB kayıt işlemleri ...
+}
             const isComplete = status === 'SUCCESS' || (normalizedStems.vocal_url || normalizedStems.instrumental_url);
             
             if (isComplete && userId) {
