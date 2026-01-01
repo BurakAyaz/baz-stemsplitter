@@ -761,26 +761,24 @@ async function pollStemStatus(tid, type) {
 // index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
 // index.html içindeki fonksiyonu bu tam kodla değiştirin
 function displayStemResults(info, separationType) {
-    if (!info) return;
+    if (!info || !info.vocal_url || !info.instrumental_url) return;
     
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
     
-    // Gelen info objesi artık normalize edilmiş 'stems' yapısındadır
     var stems = [];
 
-    // Vokal & Enstrümantal veya Stem Split ayrımı
+    // Verileri topluyoruz
     if (separationType === 'separate_vocal' || !info.drums_url) {
-        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-        if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+        stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+        stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
     } else {
-        // 12 Stem veya Detaylı Ayrıştırma durumu
+        // Detaylı ayrıştırma durumu
         if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
         if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
         if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
         if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-        if (info.piano_url) stems.push({ name: t.stemKeyboard, url: info.piano_url, icon: '🎹' });
     }
 
     stems.forEach(function(stem) {
@@ -802,7 +800,6 @@ function displayStemResults(info, separationType) {
     document.getElementById('resultsEmpty').style.display = 'none';
     container.style.display = 'flex';
 }
-
 // Geçmişten tıklama olayı
 function showHistoryItem(index) {
     var item = stemHistory[index];
