@@ -631,35 +631,56 @@ document.getElementById('stemForm').addEventListener('submit', async function(e)
             }, 5000);
         }
 
-        function displayStemResults(info, type) {
-            var t = translations[currentLang];
-            var container = document.getElementById('stemsContainer');
-            container.innerHTML = '';
-            
-            // KIE API'deki yazım hatalı veya MongoDB'deki temiz keyleri normalize et
-            var vocal = info.vocal_url || info.vocal_ur || info["vocal_ur!"];
-            var inst = info.instrumental_url || info.instrumentalI_url || info.instrumental_ur;
+     function displayStemResults(info, type) {
+    var t = translations[currentLang];
+    var container = document.getElementById('stemsContainer');
+    container.innerHTML = '';
+    
+    // Normalize etme: KIE'nin rastgele döndürdüğü hatalı keyleri yakalar
+    var vocal = info.vocal_url || info.vocal_ur || info["vocal_ur!"];
+    var inst = info.instrumental_url || info.instrumentalI_url || info.instrumental_ur;
 
-            var stems = [];
-            if (type === 'separate_vocal' || !info.drums_url) {
-                if (vocal) stems.push({ name: t.stemVocal, url: vocal, icon: '🎤' });
-                if (inst) stems.push({ name: t.stemInstrumental, url: inst, icon: '🎸' });
-            } else {
-                if (vocal) stems.push({ name: t.stemVocal, url: vocal, icon: '🎤' });
-                if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
-                if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
-                if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-                if (info.piano_url) stems.push({ name: t.stemKeyboard, url: info.piano_url, icon: '🎹' });
-                if (info.other_url) stems.push({ name: t.stemFX, url: info.other_url, icon: '✨' });
-            }
+    var stems = [];
+    
+    // Vokal ve Enstrümantal (2 Stem)
+    if (type === 'separate_vocal' || !info.drums_url) {
+        if (vocal) stems.push({ name: t.stemVocal, url: vocal, icon: '🎤' });
+        if (inst) stems.push({ name: t.stemInstrumental, url: inst, icon: '🎸' });
+    } 
+    // Detaylı Ayrıştırma (Split)
+    else {
+        if (vocal) stems.push({ name: t.stemVocal, url: vocal, icon: '🎤' });
+        if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
+        if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
+        if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
+        if (info.piano_url || info.keyboard_url) stems.push({ name: t.stemKeyboard, url: info.piano_url || info.keyboard_url, icon: '🎹' });
+        if (info.other_url || info.synth_url) stems.push({ name: t.stemFX, url: info.other_url || info.synth_url, icon: '✨' });
+    }
 
-            stems.forEach(function(s) {
-                if (!s.url) return;
-                container.innerHTML += '<div class="stem-item"><div class="stem-icon">' + s.icon + '</div><div class="stem-info"><div class="stem-name">' + s.name + '</div><audio class="stem-audio" controls src="' + s.url + '"></audio></div><div class="stem-actions"><a href="' + s.url + '" target="_blank" download class="stem-btn primary">' + t.btnDownload + '</a></div></div>';
-            });
-            document.getElementById('resultsEmpty').style.display = 'none';
-            container.style.display = 'flex';
-        }
+    if (stems.length === 0) {
+        document.getElementById('resultsEmpty').style.display = 'flex';
+        container.style.display = 'none';
+        return;
+    }
+
+    stems.forEach(function(s) {
+        if (!s.url) return;
+        container.innerHTML += `
+            <div class="stem-item">
+                <div class="stem-icon">${s.icon}</div>
+                <div class="stem-info">
+                    <div class="stem-name">${s.name}</div>
+                    <audio class="stem-audio" controls src="${s.url}"></audio>
+                </div>
+                <div class="stem-actions">
+                    <a href="${s.url}" target="_blank" download class="stem-btn primary">${t.btnDownload}</a>
+                </div>
+            </div>`;
+    });
+    
+    document.getElementById('resultsEmpty').style.display = 'none';
+    container.style.display = 'flex';
+}
 
         // ==================== YARDIMCI ====================
         function startTimer() { timerSeconds = 0; timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000); }
