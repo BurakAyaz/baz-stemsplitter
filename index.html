@@ -727,7 +727,7 @@ async function pollStemStatus(tid, type) {
         try {
             // WixUserId'nin doğru alındığından emin olun
             const uId = currentUser.wixUserId || currentUser.id;
-            const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${uId}`);
+const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${uId}`);
             const json = await res.json();
             
             // Eğer status success ise ve veri geldiyse durdur ve göster

@@ -30,19 +30,17 @@ module.exports = async (req, res) => {
         const data = await response.json();
 
         if (data.code === 200 && data.data) {
-            // KIE'nin farklı seviyelerdeki veri yapısını kontrol et
             const rawInfo = data.data.response || data.data.vocal_separation_info || data.data;
             const status = data.data.status;
 
-            // Paylaştığınız 3 bilgiyi yakalıyoruz
+            // KIE'den gelen 3 bilgiyi yakalıyoruz
             const vocalUrl = rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"];
             const instUrl = rawInfo.instrumental_url || rawInfo.instrumentalI_url;
             const kieId = rawInfo.id || taskId; 
 
-            // KRİTİK: Sadece statü SUCCESS yetmez, URL'lerin ikisi de gelmiş olmalı
+            // İşlem gerçekten bitti mi kontrolü (URL'ler gelmeden bitti saymıyoruz)
             const isActuallyComplete = status === 'SUCCESS' && vocalUrl && instUrl;
 
-            // Tek bir üründe toplanan stems objesi
             const normalizedStems = {
                 id: kieId,
                 vocal_url: vocalUrl,
@@ -53,31 +51,24 @@ module.exports = async (req, res) => {
                 piano_url: rawInfo.piano_url || null
             };
 
-            // MongoDB'ye Kayıt (Sadece URL'ler tamamsa)
+            // MongoDB'ye "tek bir ürün" olarak kayıt
             if (isActuallyComplete && wixUserId) {
                 const { db } = await connectToDatabase();
-                
-                // Mükerrer kaydı taskId üzerinden kontrol et
-                const existing = await db.collection('users').findOne({ 
-                    wixUserId: wixUserId, 
-                    'stemHistory.taskId': taskId 
-                });
+                const existing = await db.collection('users').findOne({ wixUserId: wixUserId, 'stemHistory.taskId': taskId });
 
                 if (!existing) {
                     const stemEntry = {
-                        taskId: taskId,
-                        kieId: kieId,
+                        taskId: taskId, // Sorguladığımız ID
+                        kieId: kieId,   // Dosya bazlı ID
                         type: rawInfo.drums_url ? 'split_stem' : 'separate_vocal',
-                        stems: normalizedStems, // Tüm 3 bilgi burada
+                        stems: normalizedStems,
                         createdAt: new Date()
                     };
                     
                     await db.collection('users').updateOne(
                         { wixUserId: wixUserId },
                         { 
-                            $push: { 
-                                stemHistory: { $each: [stemEntry], $position: 0, $slice: 50 } 
-                            },
+                            $push: { stemHistory: { $each: [stemEntry], $position: 0, $slice: 50 } },
                             $set: { updatedAt: new Date() }
                         }
                     );
@@ -96,7 +87,6 @@ module.exports = async (req, res) => {
         }
         return res.status(200).json(data);
     } catch (error) {
-        console.error("Backend Hatası:", error);
         return res.status(500).json({ error: error.message });
     }
 };
