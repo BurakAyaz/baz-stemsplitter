@@ -2,7 +2,7 @@
 <html lang="tr" data-lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAZ AI Stem Separator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,11 +16,11 @@
             --border: #262626; --border-focus: #2596be; --success: #22c55e; --error: #ef4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { min-height: 100%; overflow-x: hidden; overflow-y: auto; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.4; }
+        html, body { height: 100%; overflow: hidden; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; line-height: 1.4; }
         
         /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; min-height: 50px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
         .logo-img { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
         .header-right { display: flex; align-items: center; gap: 10px; }
@@ -30,43 +30,45 @@
         .lang-btn:hover:not(.active) { color: var(--text-primary); }
         
         /* Kredi Sistemi */
-        .credit-display { display: flex; align-items: center; gap: 10px; padding: 4px 12px; background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05)); border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; }
+        .credit-display { display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: linear-gradient(135deg, rgba(37, 150, 190, 0.2), rgba(37, 150, 190, 0.05)); border: 1px solid rgba(37, 150, 190, 0.4); border-radius: 10px; margin-right: 12px; }
         .credit-info { display: flex; align-items: center; gap: 6px; }
-        .credit-icon { font-size: 14px; font-weight: 700; color: var(--accent); }
-        .credit-count { font-size: 18px; font-weight: 700; color: #2596be; min-width: 28px; text-align: center; }
-        .credit-label { font-size: 9px; color: #a0a0a0; text-transform: uppercase; }
+        .credit-icon { font-size: 16px; font-weight: 700; color: var(--accent); }
+        .credit-count { font-size: 20px; font-weight: 700; color: #2596be; min-width: 30px; text-align: center; }
+        .credit-label { font-size: 10px; color: #a0a0a0; text-transform: uppercase; }
         .credit-details { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
         .plan-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; background: #6b7280; color: white; border-radius: 4px; text-transform: uppercase; }
-        .plan-badge.temel, .plan-badge.starter { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .plan-badge.temel { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .plan-badge.uzman { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .plan-badge.pro { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .plan-badge.deneme, .plan-badge.test { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .plan-badge.none, .plan-badge.free { background: #4b5563; }
+        .plan-badge.deneme { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .plan-badge.test { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .plan-badge.none { background: #4b5563; }
         .days-left { font-size: 9px; color: #6b7280; }
         .days-left.warning { color: #f59e0b; }
         .days-left.danger { color: #ef4444; }
+        .change-plan-btn { display: flex; align-items: center; gap: 4px; padding: 6px 10px; background: rgba(37, 150, 190, 0.2); border: 1px solid rgba(37, 150, 190, 0.4); color: #2596be; border-radius: 6px; font-size: 10px; font-weight: 500; text-decoration: none; transition: all 0.2s; margin-left: 8px; }
+        .change-plan-btn:hover { background: #2596be; color: white; }
         
         /* Login Button */
-        .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+        .login-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: linear-gradient(135deg, #2596be, #1d7a9c); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-right: 10px; text-decoration: none; }
         .login-btn:hover { background: linear-gradient(135deg, #3ab4e0, #2596be); transform: translateY(-1px); }
-        .login-btn svg { width: 16px; height: 16px; }
         
         /* User Menu */
         .user-menu { position: relative; }
         .user-btn { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
         .user-btn:hover { background: var(--bg-hover); }
         .user-avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 180px; display: none; z-index: 1000; overflow: hidden; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-width: 200px; display: none; z-index: 1000; overflow: hidden; }
         .user-dropdown.active { display: block; }
         .user-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: var(--text-primary); text-decoration: none; font-size: 13px; transition: background 0.2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left; }
         .user-dropdown-item:hover { background: var(--bg-hover); }
-        .user-dropdown-item svg { width: 16px; height: 16px; }
         .user-dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
         
         /* Main Layout */
-        .main-container { display: flex; min-height: calc(100vh - 50px); }
-        .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
-        .results-section { flex: 1; padding: 16px; background: var(--bg-primary); }
+        .main-container { display: flex; height: calc(100vh - 45px); overflow: hidden; }
+        .sidebar { width: 380px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 12px 16px; overflow-y: auto; flex-shrink: 0; }
+        .results-section { flex: 1; padding: 16px; background: var(--bg-primary); overflow-y: auto; position: relative; }
+        @media (max-width: 900px) { .main-container { flex-direction: column; } .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; } .results-section { max-height: 50vh; } }
         
         /* Form Elements */
         .section-title { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -82,22 +84,31 @@
         .submit-btn { width: 100%; padding: 12px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .submit-btn:hover { background: var(--accent-light); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .credit-badge { display: inline-block; padding: 2px 8px; background: rgba(255, 255, 255, 0.15); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; margin-left: 8px; border: 1px solid rgba(255, 255, 255, 0.2); }
-        
+       .credit-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.15); /* Arka planı biraz daha belirgin yapabilirsin */
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
         /* Results */
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .results-title { font-size: 16px; font-weight: 600; color: var(--accent); }
-        .results-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 250px; text-align: center; color: var(--text-muted); }
+        .results-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; text-align: center; color: var(--text-muted); }
         .results-empty svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.3; color: var(--accent); }
         .results-empty p { font-size: 14px; max-width: 300px; }
         .stems-container { display: flex; flex-direction: column; gap: 12px; }
         .stem-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; transition: all 0.2s; }
         .stem-item:hover { border-color: var(--accent); }
-        .stem-icon { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-        .stem-info { flex: 1; min-width: 0; }
+        .stem-icon { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .stem-info { flex: 1; }
         .stem-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
         .stem-audio { width: 100%; height: 36px; margin-top: 6px; }
-        .stem-btn { padding: 8px 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-primary); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .stem-btn { padding: 8px 14px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-primary); border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 4px; }
         .stem-btn:hover { background: var(--bg-hover); border-color: var(--accent); }
         .stem-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
         .stem-btn.primary:hover { background: var(--accent-light); }
@@ -129,16 +140,16 @@
         .message.success { display: block; background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: #4ade80; }
         
         /* Track List */
-        .track-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+        .track-list { max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
         .track-option { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--border); }
         .track-option:last-child { border-bottom: none; }
         .track-option:hover { background: var(--bg-hover); }
-        .track-option.selected { background: rgba(37, 150, 190, 0.2); }
+        .track-option.selected { background: rgba(37, 150, 190, 0.2); border-color: var(--accent); }
         .track-option-icon { font-size: 16px; }
-        .track-option-info { flex: 1; min-width: 0; }
-        .track-option-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-option-info { flex: 1; }
+        .track-option-title { font-size: 12px; font-weight: 500; }
         .track-option-meta { font-size: 10px; color: var(--text-muted); }
-        .track-option-check { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .track-option-check { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .track-option.selected .track-option-check { background: var(--accent); border-color: var(--accent); }
         .track-option.selected .track-option-check::after { content: '✓'; color: white; font-size: 10px; }
         .empty-tracks { padding: 24px; text-align: center; color: var(--text-muted); }
@@ -156,20 +167,6 @@
         .credit-warning-text p { color: #a0a0a0; font-size: 11px; }
         .credit-warning-btn { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500; transition: background 0.2s; border: none; cursor: pointer; }
         .credit-warning-btn:hover { background: #dc2626; }
-        
-        /* Mobile */
-        @media (max-width: 900px) {
-            .header { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
-            .credit-display { order: 3; width: 100%; justify-content: center; margin-top: 4px; }
-            .main-container { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-            .results-section { min-height: 300px; }
-        }
-        @media (max-width: 480px) {
-            .login-btn span { display: none; }
-            .user-btn span { display: none; }
-            .lang-btn { padding: 3px 6px; font-size: 10px; }
-        }
     </style>
 </head>
 <body>
@@ -186,7 +183,6 @@
     <header class="header">
         <div class="logo">
             <div class="logo-img">🎵</div>
-            <span>BAZ Stem</span>
         </div>
         <div class="header-right">
             <!-- Kredi Göstergesi -->
@@ -194,16 +190,25 @@
                 <div class="credit-info">
                     <span class="credit-icon">K</span>
                     <span class="credit-count" id="creditCount">0</span>
+                    <span class="credit-label">Kredi</span>
                 </div>
                 <div class="credit-details">
                     <span class="plan-badge" id="planBadge">-</span>
                     <span class="days-left" id="daysLeft"></span>
                 </div>
+                <a href="https://www.burakayaz.com/abonelik-sat%C4%B1n-al" class="change-plan-btn" id="changePlanBtn" title="Planı Değiştir" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    Planı Değiştir
+                </a>
             </div>
             
-            <!-- Login Butonu -->
+            <!-- Login Butonu - Direkt Wix'e yönlendirir -->
             <a href="#" class="login-btn" id="loginBtn" onclick="redirectToWixLogin(); return false;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
@@ -219,12 +224,12 @@
                 </button>
                 <div class="user-dropdown" id="userDropdown">
                     <button class="user-dropdown-item" onclick="showAccountInfo()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
                         Hesap Bilgileri
                     </button>
                     <div class="user-dropdown-divider"></div>
                     <button class="user-dropdown-item" onclick="logout()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                         Çıkış Yap
                     </button>
                 </div>
@@ -251,7 +256,7 @@
                         <p id="creditWarningMsg">Stem ayrıştırma için giriş yapmanız gerekiyor.</p>
                     </div>
                 </div>
-                <button id="creditWarningBtn" class="credit-warning-btn">Giriş Yap →</button>
+                <button id="creditWarningBtn" class="credit-warning-btn" onclick="handleCreditWarningClick()">Giriş Yap →</button>
             </div>
             
             <div class="message" id="errorMsg"></div>
@@ -261,7 +266,7 @@
                 <div class="form-group">
                     <label class="form-label" id="labelSelectTrack">Şarkılarım</label>
                     <div class="track-list" id="trackList">
-                        <div class="empty-tracks">
+                        <div class="empty-tracks" id="emptyTracks">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                             <p id="emptyTracksText">Henüz şarkınız yok veya giriş yapmadınız</p>
                         </div>
@@ -279,12 +284,11 @@
                 </div>
                 
                 <div class="info-box"><strong id="infoTitle">Stem Ayrıştırma Nedir?</strong><p id="infoDesc">Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır.</p></div>
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span>🎵</span>
-                    <span id="submitText">Ayrıştırmayı Başlat</span>
-                    <span class="credit-badge" id="creditCost">2 Kredi</span>
-                </button>
-            </form>
+<button type="submit" class="submit-btn" id="submitBtn">
+    <span>🎵</span>
+    <span id="submitText">Ayrıştırmayı Başlat</span>
+    <span class="credit-badge" id="creditCost">2 Kredi</span> 
+</button>            </form>
         </div>
         <div class="results-section">
             <div class="results-header"><h2 class="results-title" id="resultsTitle">Sonuçlar</h2></div>
@@ -293,36 +297,28 @@
                 <p id="emptyResultsText">Stem ayrıştırma sonuçlarınız burada görünecek.</p>
             </div>
             <div class="stems-container" id="stemsContainer" style="display: none;"></div>
-            <div class="history-section" id="historySection" style="display: none;">
-                <h3 class="history-title" id="historyTitle">Geçmiş Ayrıştırmalar</h3>
-                <div id="historyList"></div>
-            </div>
+            <div class="history-section" id="historySection" style="display: none;"><h3 class="history-title" id="historyTitle">Geçmiş Ayrıştırmalar</h3><div id="historyList"></div></div>
         </div>
     </div>
     <script>
         // ==================== GLOBAL DEĞİŞKENLER ====================
         var currentLang = 'tr';
+        var authToken = localStorage.getItem('bazai_token') || null;
+        var currentUser = null;
+        var userCredits = 0;
+        var userPlan = 'none';
+        var isLoggedIn = false;
         var userTracks = [];
         var selectedTrack = null;
         var stemHistory = [];
         var timerInterval = null;
         var timerSeconds = 0;
         
-        // ==================== KREDİ SİSTEMİ DEĞİŞKENLERİ ====================
-        var authToken = localStorage.getItem('bazai_token') || null;
-        var currentUser = null;
-        var userCredits = 0;
-        var userPlan = 'none';
-        var isLoggedIn = false;
-        
-        // Wix URL'leri
+        // API ve Wix URL'leri
+        var API_BASE_URL = window.location.origin;
         var WIX_SITE_URL = 'https://www.burakayaz.com';
         var WIX_LOGIN_URL = WIX_SITE_URL + '/stem-redirect';
         var WIX_PRICING_URL = WIX_SITE_URL + '/abonelik-sat%C4%B1n-al';
-        
-        // Kredi sorgulama interval'ı (ms)
-        var creditCheckInterval = null;
-        var CREDIT_CHECK_INTERVAL = 30000; // 30 saniye
         
         // ==================== ÇEVİRİLER ====================
         var translations = {
@@ -342,7 +338,6 @@
                 stemBackingVocals: 'Arka Vokal', errorPrefix: 'Hata:', errorNoTrack: 'Lütfen bir şarkı seçin',
                 successStem: 'Stem ayrıştırma tamamlandı!', loadingTracks: 'Şarkılar yükleniyor...',
                 creditCost2: '2 Kredi', creditCost5: '5 Kredi', insufficientCredits: 'Yetersiz kredi',
-                noCreditsLeft: 'Krediniz kalmadı! Paket satın alın.',
                 loginBtn: 'Giriş Yap',
                 warningLoginTitle: 'Giriş Yapın', warningLoginMsg: 'Stem ayrıştırma için giriş yapmanız gerekiyor.',
                 warningCreditTitle: 'Krediniz Bitti', warningCreditMsg: 'Stem ayrıştırma için yeni paket satın alın.',
@@ -365,7 +360,6 @@
                 stemBackingVocals: 'Backing Vocals', errorPrefix: 'Error:', errorNoTrack: 'Please select a song',
                 successStem: 'Stem separation completed!', loadingTracks: 'Loading songs...',
                 creditCost2: '2 Credits', creditCost5: '5 Credits', insufficientCredits: 'Insufficient credits',
-                noCreditsLeft: 'No credits left! Please purchase a package.',
                 loginBtn: 'Login',
                 warningLoginTitle: 'Login Required', warningLoginMsg: 'You need to login for stem separation.',
                 warningCreditTitle: 'Out of Credits', warningCreditMsg: 'Purchase a package for stem separation.',
@@ -374,117 +368,42 @@
             }
         };
         
-        // ==================== KREDİ SİSTEMİ FONKSİYONLARI ====================
-        
-        // Sayfa yüklendiğinde auth kontrolü
-        document.addEventListener('DOMContentLoaded', function() {
-            setLanguage('tr');
-            checkAuthStatus();
-            startCreditCheck();
-        });
-        
-        // Periyodik kredi kontrolü
-        function startCreditCheck() {
-            if (creditCheckInterval) {
-                clearInterval(creditCheckInterval);
-            }
-            creditCheckInterval = setInterval(function() {
-                if (isLoggedIn && authToken) {
-                    refreshCredits();
-                }
-            }, CREDIT_CHECK_INTERVAL);
+        // ==================== AUTH SİSTEMİ ====================
+        function redirectToWixLogin() {
+            var returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = WIX_LOGIN_URL + '?returnUrl=' + returnUrl;
         }
         
-        // Kredileri yenile (sessiz)
-        async function refreshCredits() {
-            try {
-                var response = await fetch('/api/auth-sync', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + authToken
-                    }
-                });
-                
-                if (response.ok) {
-                    var data = await response.json();
-                    if (data.success && data.user) {
-                        var newCredits = data.user.credits || data.user.available || 0;
-                        var newPlan = data.user.plan || data.user.planId || 'none';
-                        
-                        if (newCredits !== userCredits || newPlan !== userPlan) {
-                            userCredits = newCredits;
-                            userPlan = newPlan;
-                            currentUser = data.user;
-                            updateCreditDisplay();
-                            checkCreditWarning();
-                            console.log('Kredi güncellendi:', userCredits, 'Plan:', userPlan);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('Kredi yenileme hatası (sessiz):', error);
-            }
-        }
-        
-        // Auth durumunu kontrol et
         async function checkAuthStatus() {
-            console.log('=== checkAuthStatus başladı ===');
-            
             var urlParams = new URLSearchParams(window.location.search);
             var tokenFromUrl = urlParams.get('token');
             
-            console.log('URL\'den token:', tokenFromUrl ? 'VAR' : 'YOK');
-            console.log('localStorage\'dan token:', authToken ? 'VAR' : 'YOK');
-            
             if (tokenFromUrl) {
-                console.log('URL\'den token alındı, kaydediliyor...');
                 authToken = tokenFromUrl;
                 localStorage.setItem('bazai_token', tokenFromUrl);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
             
             if (authToken) {
-                console.log('Token mevcut, syncUserData çağrılıyor...');
                 await syncUserData();
             } else {
-                console.log('Token yok, logged out state gösteriliyor');
                 showLoggedOutState();
-                loadUserData();
             }
         }
         
-        // Kullanıcı verilerini sync et
         async function syncUserData() {
-            console.log('=== syncUserData başladı ===');
-            console.log('Token:', authToken ? (authToken.substring(0, 30) + '...') : 'YOK');
-            
             try {
-                console.log('API çağrısı yapılıyor: /api/auth-sync');
-                var response = await fetch('/api/auth-sync', {
+                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + authToken
-                    }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
                 });
                 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-                
                 if (!response.ok) {
-                    var errorText = await response.text();
-                    console.error('API Hata response:', errorText);
-                    if (response.status === 401) {
-                        console.log('401 hatası - logout yapılıyor');
-                        logout();
-                        return;
-                    }
-                    throw new Error('Sync failed: ' + response.status + ' - ' + errorText);
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error('Sync failed');
                 }
                 
                 var data = await response.json();
-                console.log('Auth sync response DATA:', JSON.stringify(data, null, 2));
                 
                 if (data.success && data.user) {
                     currentUser = data.user;
@@ -492,30 +411,20 @@
                     userPlan = data.user.plan || data.user.planId || 'none';
                     isLoggedIn = true;
                     
-                    console.log('✓ Giriş başarılı');
-                    console.log('  - Email:', currentUser.email);
-                    console.log('  - Kredi:', userCredits);
-                    console.log('  - Plan:', userPlan);
-                    console.log('  - Kalan gün:', currentUser.daysRemaining);
-                    
                     showLoggedInState();
                     updateCreditDisplay();
                     checkCreditWarning();
-                    await loadUserData();
+                    await loadUserTracksFromMongoDB();
+                    loadStemHistory();
                 } else {
-                    console.log('API başarılı ama user yok:', data);
                     showLoggedOutState();
-                    await loadUserData();
                 }
             } catch (error) {
-                console.error('!!! syncUserData HATA:', error);
-                console.error('Hata detayı:', error.message);
+                console.error('User sync error:', error);
                 showLoggedOutState();
-                await loadUserData();
             }
         }
         
-        // Giriş yapılmış durum
         function showLoggedInState() {
             document.getElementById('loginBtn').style.display = 'none';
             document.getElementById('creditDisplay').style.display = 'flex';
@@ -528,7 +437,6 @@
             }
         }
         
-        // Giriş yapılmamış durum
         function showLoggedOutState() {
             isLoggedIn = false;
             currentUser = null;
@@ -539,9 +447,9 @@
             document.getElementById('creditDisplay').style.display = 'none';
             document.getElementById('userMenu').style.display = 'none';
             checkCreditWarning();
+            renderTrackList();
         }
         
-        // Kredi göstergesini güncelle
         function updateCreditDisplay() {
             var creditCount = document.getElementById('creditCount');
             var planBadge = document.getElementById('planBadge');
@@ -549,15 +457,11 @@
             
             creditCount.textContent = userCredits;
             
-            if (userCredits <= 5) {
-                creditCount.style.color = '#ef4444';
-            } else if (userCredits <= 15) {
-                creditCount.style.color = '#f59e0b';
-            } else {
-                creditCount.style.color = '#2596be';
-            }
+            if (userCredits <= 5) { creditCount.style.color = '#ef4444'; }
+            else if (userCredits <= 15) { creditCount.style.color = '#f59e0b'; }
+            else { creditCount.style.color = '#2596be'; }
             
-            var planNames = { 'none': 'Ücretsiz', 'temel': 'Temel', 'uzman': 'Uzman', 'pro': 'Pro', 'deneme': 'Deneme', 'test': 'Test', 'free': 'Ücretsiz', 'starter': 'Temel' };
+            var planNames = { 'none': 'Ücretsiz', 'temel': 'Temel', 'uzman': 'Uzman', 'pro': 'Pro', 'deneme': 'Deneme', 'test': 'Test', 'free': 'Ücretsiz' };
             planBadge.textContent = planNames[userPlan] || userPlan;
             planBadge.className = 'plan-badge ' + userPlan;
             
@@ -569,22 +473,17 @@
                 } else if (userPlan !== 'none' && userPlan !== 'free') {
                     daysLeft.textContent = 'Süre doldu!';
                     daysLeft.className = 'days-left danger';
-                } else {
-                    daysLeft.textContent = '';
-                }
-            } else {
-                daysLeft.textContent = '';
-            }
+                } else { daysLeft.textContent = ''; }
+            } else { daysLeft.textContent = ''; }
         }
         
-        // Kredi uyarısını kontrol et
         function checkCreditWarning() {
+            var t = translations[currentLang];
             var warning = document.getElementById('creditWarning');
             var submitBtn = document.getElementById('submitBtn');
             var warningTitle = document.getElementById('creditWarningTitle');
             var warningMsg = document.getElementById('creditWarningMsg');
             var warningBtn = document.getElementById('creditWarningBtn');
-            var t = translations[currentLang];
             
             var showWarning = false;
             
@@ -593,19 +492,16 @@
                 warningTitle.textContent = t.warningLoginTitle;
                 warningMsg.textContent = t.warningLoginMsg;
                 warningBtn.textContent = t.loginBtn + ' →';
-                warningBtn.onclick = function() { redirectToWixLogin(); return false; };
             } else if (userCredits <= 0) {
                 showWarning = true;
                 warningTitle.textContent = t.warningCreditTitle;
                 warningMsg.textContent = t.warningCreditMsg;
                 warningBtn.textContent = t.buyPackage;
-                warningBtn.onclick = function() { window.open(WIX_PRICING_URL, '_blank'); return false; };
             } else if (currentUser && currentUser.daysRemaining !== undefined && currentUser.daysRemaining <= 0 && userPlan !== 'none' && userPlan !== 'free') {
                 showWarning = true;
                 warningTitle.textContent = t.warningExpiredTitle;
                 warningMsg.textContent = t.warningExpiredMsg;
                 warningBtn.textContent = t.renewPackage;
-                warningBtn.onclick = function() { window.open(WIX_PRICING_URL, '_blank'); return false; };
             }
             
             if (showWarning) {
@@ -617,22 +513,19 @@
             }
         }
         
-        function redirectToWixLogin() {
-            var returnUrl = encodeURIComponent(window.location.href);
-            window.location.href = WIX_LOGIN_URL + '?returnUrl=' + returnUrl;
+        function handleCreditWarningClick() {
+            if (!isLoggedIn) { redirectToWixLogin(); }
+            else { window.open(WIX_PRICING_URL, '_blank'); }
+            return false;
         }
         
-        function toggleUserDropdown() {
-            var dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('active');
-        }
-        
+        // User Dropdown
+        function toggleUserDropdown() { document.getElementById('userDropdown').classList.toggle('active'); }
         function logout() {
             authToken = null;
             localStorage.removeItem('bazai_token');
             showLoggedOutState();
         }
-        
         function showAccountInfo() {
             var info = 'Plan: ' + (userPlan || '-').toUpperCase() + '\n';
             info += 'Kredi: ' + userCredits + '\n';
@@ -641,118 +534,20 @@
             document.getElementById('userDropdown').classList.remove('active');
         }
         
-        // Kredi kontrolü (form submit öncesi)
-        function checkCreditsBeforeSubmit(requiredCredits) {
-            if (!isLoggedIn) {
-                redirectToWixLogin();
-                return false;
-            }
-            if (userCredits < requiredCredits) {
-                var t = translations[currentLang];
-                showError(t.noCreditsLeft);
-                return false;
-            }
-            return true;
-        }
-        
-        // Kredi harcama fonksiyonu
-        async function useCreditsForAction(actionType, amount) {
-            if (authToken) {
-                try {
-                    var response = await fetch('/api/use-credits', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + authToken
-                        },
-                        body: JSON.stringify({
-                            amount: amount,
-                            action: actionType
-                        })
-                    });
-                    
-                    var data = await response.json();
-                    
-                    if (data.success) {
-                        userCredits = data.data.remainingCredits;
-                        console.log('Kredi harcandı (' + actionType + '). Kalan:', userCredits);
-                        updateCreditDisplay();
-                        checkCreditWarning();
-                        return true;
-                    } else {
-                        console.error('Kredi kaydetme hatası:', data.error);
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('Kredi API hatası:', error);
-                    return false;
-                }
-            }
-            return false;
-        }
-        
-        // ==================== KULLANICI VERİLERİ ====================
-        
-        async function loadUserData() {
-            if (!authToken) {
-                userTracks = JSON.parse(localStorage.getItem('bazai_tracks') || '[]');
-                stemHistory = JSON.parse(localStorage.getItem('bazai_stem_history') || '[]');
-                renderTrackList();
-                renderHistory();
-                return;
-            }
-            
-            showLoadingTracks();
-            
-            try {
-                var response = await fetch('/api/user-data', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + authToken
-                    }
-                });
-                
-                var data = await response.json();
-                console.log('User data response:', data);
-                
-                if (data.success && data.data) {
-                    userTracks = data.data.tracks || [];
-                    stemHistory = data.data.stemHistory || [];
-                    
-                    // Kredileri de güncelle
-                    if (data.data.credits !== undefined) {
-                        userCredits = data.data.credits;
-                        updateCreditDisplay();
-                    }
-                    
-                    localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
-                    localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
-                    
-                    console.log('Veriler yüklendi - Tracks:', userTracks.length, 'History:', stemHistory.length);
-                    
-                    renderTrackList();
-                    renderHistory();
-                } else {
-                    userTracks = JSON.parse(localStorage.getItem('bazai_tracks') || '[]');
-                    stemHistory = JSON.parse(localStorage.getItem('bazai_stem_history') || '[]');
-                    renderTrackList();
-                    renderHistory();
-                }
-            } catch (error) {
-                console.error('Kullanıcı verileri yüklenemedi:', error);
-                userTracks = JSON.parse(localStorage.getItem('bazai_tracks') || '[]');
-                stemHistory = JSON.parse(localStorage.getItem('bazai_stem_history') || '[]');
-                renderTrackList();
-                renderHistory();
-            }
-        }
-        
         // ==================== DİL DEĞİŞTİRME ====================
-        function updateCreditCost() {
-            var t = translations[currentLang];
-            var separationType = document.getElementById('separationType').value;
-            document.getElementById('creditCost').textContent = separationType === 'separate_vocal' ? t.creditCost2 : t.creditCost5;
-        }
+    function updateCreditCost() {
+    var t = translations[currentLang];
+    var separationType = document.getElementById('separationType').value;
+    
+    // Seçilen tipe göre maliyeti belirle
+    var costText = separationType === 'separate_vocal' ? t.creditCost2 : t.creditCost5;
+    
+    // Butonun yanındaki badge'i güncelle
+    var creditBadge = document.getElementById('creditCost');
+    if (creditBadge) {
+        creditBadge.textContent = costText;
+    }
+}
         
         function setLanguage(lang) {
             currentLang = lang;
@@ -784,7 +579,26 @@
         
         document.getElementById('separationType').addEventListener('change', updateCreditCost);
         
-        // ==================== ŞARKI LİSTESİ ====================
+        // ==================== ŞARKI YÖNETİMİ ====================
+        async function loadUserTracksFromMongoDB() {
+            if (!authToken) { renderTrackList(); return; }
+            showLoadingTracks();
+            try {
+                var response = await fetch(API_BASE_URL + '/api/user-data', {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                var data = await response.json();
+                if (data.success && data.data) {
+                    userTracks = data.data.tracks || [];
+                    stemHistory = data.data.stemHistory || [];
+                    localStorage.setItem('bazai_tracks', JSON.stringify(userTracks));
+                } else { userTracks = []; }
+                renderTrackList();
+                renderHistory();
+            } catch (error) { console.error('Load tracks error:', error); userTracks = []; renderTrackList(); }
+        }
+        
         function showLoadingTracks() {
             var t = translations[currentLang];
             document.getElementById('trackList').innerHTML = '<div class="loading-tracks"><div class="spinner"></div><p>' + t.loadingTracks + '</p></div>';
@@ -806,20 +620,17 @@
             container.innerHTML = html;
         }
         
-        function selectTrack(index) { 
-            selectedTrack = userTracks[index]; 
-            renderTrackList(); 
-        }
+        function selectTrack(index) { selectedTrack = userTracks[index]; renderTrackList(); }
         
         // ==================== STEM GEÇMİŞİ ====================
-        function saveStemToHistory(stemData, trackName, type) {
-            var historyItem = { 
-                id: Date.now(), 
-                trackName: trackName || 'Şarkı', 
-                type: type, 
-                date: new Date().toISOString(), 
-                stems: stemData 
-            };
+        function loadStemHistory() {
+            var saved = localStorage.getItem('bazai_stem_history');
+            if (saved) { try { stemHistory = JSON.parse(saved); } catch (e) { stemHistory = []; } }
+            renderHistory();
+        }
+        
+        function saveStemToHistory(stemData) {
+            var historyItem = { id: Date.now(), trackName: selectedTrack ? selectedTrack.title : 'Şarkı', type: document.getElementById('separationType').value, date: new Date().toISOString(), stems: stemData };
             stemHistory.unshift(historyItem);
             if (stemHistory.length > 20) stemHistory = stemHistory.slice(0, 20);
             localStorage.setItem('bazai_stem_history', JSON.stringify(stemHistory));
@@ -829,65 +640,38 @@
         function renderHistory() {
             var container = document.getElementById('historyList');
             var section = document.getElementById('historySection');
-            
-            if (!stemHistory || stemHistory.length === 0) { 
-                section.style.display = 'none'; 
-                return; 
-            }
-            
+            if (!stemHistory || stemHistory.length === 0) { section.style.display = 'none'; return; }
             section.style.display = 'block';
             var html = '';
-            
             stemHistory.forEach(function(item, index) {
-                var dateVal = item.createdAt || item.date;
-                var date = dateVal ? new Date(dateVal).toLocaleDateString() : '-';
-                var name = item.trackName || 'Şarkı';
+                var date = new Date(item.date).toLocaleDateString();
                 var typeLabel = item.type === 'separate_vocal' ? 'Vokal (2)' : 'Detaylı (12)';
-                
-                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')">' +
-                        '<span class="history-icon">🎛️</span>' +
-                        '<div class="history-info">' +
-                        '<div class="history-name">' + name + '</div>' +
-                        '<div class="history-date">' + date + '</div>' +
-                        '</div><span class="history-type">' + typeLabel + '</span></div>';
+                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')"><span class="history-icon">🎛️</span><div class="history-info"><div class="history-name">' + item.trackName + '</div><div class="history-date">' + date + '</div></div><span class="history-type">' + typeLabel + '</span></div>';
             });
             container.innerHTML = html;
         }
         
-        function showHistoryItem(index) { 
-            var item = stemHistory[index]; 
-            if (item && item.stems) { 
-                displayStemResults(item.stems, item.type); 
-            } 
-        }
+        function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type); } }
         
         // ==================== YARDIMCI FONKSİYONLAR ====================
-        function startTimer() { 
-            timerSeconds = 0; 
-            updateTimerDisplay(); 
-            timerInterval = setInterval(function() { timerSeconds++; updateTimerDisplay(); }, 1000); 
-        }
-        function stopTimer() { 
-            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } 
-        }
-        function updateTimerDisplay() { 
-            var m = Math.floor(timerSeconds / 60); 
-            var s = timerSeconds % 60; 
-            document.getElementById('loadingTimer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); 
-        }
-        function showError(msg) { 
-            var el = document.getElementById('errorMsg'); 
-            el.textContent = msg; 
-            el.classList.add('error'); 
-            el.style.display = 'block'; 
-            setTimeout(function() { el.style.display = 'none'; el.classList.remove('error'); }, 5000); 
-        }
-        function showSuccess(msg) { 
-            var el = document.getElementById('successMsg'); 
-            el.textContent = msg; 
-            el.classList.add('success'); 
-            el.style.display = 'block'; 
-            setTimeout(function() { el.style.display = 'none'; el.classList.remove('success'); }, 5000); 
+        function startTimer() { timerSeconds = 0; updateTimerDisplay(); timerInterval = setInterval(function() { timerSeconds++; updateTimerDisplay(); }, 1000); }
+        function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+        function updateTimerDisplay() { var m = Math.floor(timerSeconds / 60); var s = timerSeconds % 60; document.getElementById('loadingTimer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); }
+        function showError(msg) { var el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('error'); el.style.display = 'block'; setTimeout(function() { el.style.display = 'none'; el.classList.remove('error'); }, 5000); }
+        function showSuccess(msg) { var el = document.getElementById('successMsg'); el.textContent = msg; el.classList.add('success'); el.style.display = 'block'; setTimeout(function() { el.style.display = 'none'; el.classList.remove('success'); }, 5000); }
+        
+        async function useCredits(amount, action) {
+            if (!authToken) return false;
+            try {
+                var response = await fetch(API_BASE_URL + '/api/use-credits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                    body: JSON.stringify({ amount: amount, action: action })
+                });
+                var data = await response.json();
+                if (data.success) { userCredits = data.data.remainingCredits; document.getElementById('creditCount').textContent = userCredits; return true; }
+                return false;
+            } catch (e) { console.error('Use credits error:', e); return false; }
         }
         
         // ==================== STEM AYRIŞTIRMA ====================
@@ -895,30 +679,19 @@
             e.preventDefault();
             var t = translations[currentLang];
             
-            // Şarkı seçildi mi?
-            if (!selectedTrack) { 
-                showError(t.errorPrefix + ' ' + t.errorNoTrack); 
-                return; 
-            }
+            if (!isLoggedIn) { redirectToWixLogin(); return; }
             
-            var separationType = document.getElementById('separationType').value;
-            var creditCost = separationType === 'separate_vocal' ? 2 : 5;
-            
-            // Kredi kontrolü
-            if (!checkCreditsBeforeSubmit(creditCost)) {
-                return;
-            }
-            
-            // Kredi harca
-            var creditSuccess = await useCreditsForAction(separationType, creditCost);
-            if (!creditSuccess) { 
-                showError(t.insufficientCredits); 
-                return; 
-            }
+            if (!selectedTrack) { showError(t.errorPrefix + ' ' + t.errorNoTrack); return; }
             
             var taskId = selectedTrack.taskId;
             var audioId = selectedTrack.audioId || selectedTrack.id;
-            var trackName = selectedTrack.title || 'Şarkı';
+            var separationType = document.getElementById('separationType').value;
+            var creditCost = separationType === 'separate_vocal' ? 2 : 5;
+            
+            if (userCredits < creditCost) { showError(t.insufficientCredits + ' (' + userCredits + '/' + creditCost + ')'); return; }
+            
+            var creditSuccess = await useCredits(creditCost, separationType);
+            if (!creditSuccess) { showError(t.insufficientCredits); return; }
             
             document.getElementById('loadingOverlay').classList.add('active');
             document.getElementById('stemsContainer').style.display = 'none';
@@ -926,87 +699,36 @@
             startTimer();
             
             try {
-                var res = await fetch('/api/stem', {
+                var res = await fetch(API_BASE_URL + '/api/stem', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'Authorization': 'Bearer ' + authToken 
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
                     body: JSON.stringify({ taskId: taskId, audioId: audioId, type: separationType })
                 });
                 var data = await res.json();
-                
-                console.log('Stem API response:', data);
-                
-                if (!res.ok || (data.code !== 200 && !data.taskId && !data.data)) { 
-                    throw new Error(data.msg || data.error || data.details || 'Hata'); 
-                }
-                
-                var newTaskId = data.data ? data.data.taskId : (data.taskId || taskId);
-                pollStemStatus(newTaskId, separationType, trackName);
-                
-            } catch (err) { 
-                stopTimer(); 
-                document.getElementById('loadingOverlay').classList.remove('active'); 
-                showError(t.errorPrefix + ' ' + err.message); 
-            }
+                if (!res.ok || (data.code !== 200 && !data.taskId)) { throw new Error(data.msg || data.error || data.details || 'Hata'); }
+                var newTaskId = data.data ? data.data.taskId : data.taskId;
+                pollStemStatus(newTaskId, separationType);
+            } catch (err) { stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError(t.errorPrefix + ' ' + err.message); }
         });
         
-        async function pollStemStatus(taskId, separationType, trackName) {
+        async function pollStemStatus(taskId, separationType) {
             var t = translations[currentLang];
-            var attempts = 0;
-            var maxAttempts = 60;
-            
+            var attempts = 0, maxAttempts = 60;
             var interval = setInterval(async function() {
                 attempts++;
                 document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
-                
                 try {
-                    var url = '/api/stem-status?taskId=' + taskId;
-                    if (currentUser && (currentUser.wixUserId || currentUser.id)) {
-                        url += '&wixUserId=' + encodeURIComponent(currentUser.wixUserId || currentUser.id);
-                    }
-                    
-                    var res = await fetch(url, {
-                        headers: { 'Authorization': 'Bearer ' + authToken }
-                    });
+                    var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId);
                     var json = await res.json();
-                    
-                    console.log('Poll response (' + attempts + '):', json);
-                    
-                    // Başarılı durumu kontrol et
-                    if (json.code === 200 && json.data) {
-                        var stemInfo = json.data.vocal_separation_info;
-                        var status = json.data.status;
-                        
-                        // Status success veya stemInfo varsa tamamlanmış demektir
-                        if (status === 'success' || status === 'SUCCESS' || (stemInfo && (stemInfo.vocal_url || stemInfo.instrumental_url))) {
-                            clearInterval(interval);
-                            stopTimer();
-                            document.getElementById('loadingOverlay').classList.remove('active');
-                            
-                            if (stemInfo) {
-                                displayStemResults(stemInfo, separationType);
-                                saveStemToHistory(stemInfo, trackName, separationType);
-                                showSuccess(t.successStem);
-                            }
-                            
-                            // Verileri yeniden yükle
-                            loadUserData();
-                            return;
-                        }
+                    if (json.code === 200 && json.data && json.data.vocal_separation_info) {
+                        clearInterval(interval); stopTimer();
+                        document.getElementById('loadingOverlay').classList.remove('active');
+                        displayStemResults(json.data.vocal_separation_info, separationType);
+                        saveStemToHistory(json.data.vocal_separation_info);
+                        showSuccess(t.successStem);
                     }
-                    
-                    // Zaman aşımı kontrolü
-                    if (attempts >= maxAttempts) { 
-                        clearInterval(interval); 
-                        stopTimer(); 
-                        document.getElementById('loadingOverlay').classList.remove('active'); 
-                        showError('Zaman aşımı - lütfen tekrar deneyin'); 
-                    }
-                } catch (e) { 
-                    console.error('Poll error:', e); 
-                }
+                    if (attempts >= maxAttempts) { clearInterval(interval); stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError('Zaman aşımı'); }
+                } catch (e) { console.error('Poll error:', e); }
             }, 5000);
         }
         
@@ -1015,9 +737,6 @@
             var container = document.getElementById('stemsContainer');
             container.innerHTML = '';
             var stems = [];
-            
-            console.log('Displaying stems:', info, 'Type:', separationType);
-            
             if (separationType === 'separate_vocal') {
                 if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
                 if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
@@ -1035,29 +754,18 @@
                 if (info.synth_url) stems.push({ name: t.stemSynth, url: info.synth_url, icon: '🎛️' });
                 if (info.fx_url) stems.push({ name: t.stemFX, url: info.fx_url, icon: '✨' });
             }
-            
-            console.log('Stems found:', stems.length);
-            
-            if (stems.length === 0) {
-                container.innerHTML = '<div class="empty-tracks"><p>Sonuç bulunamadı</p></div>';
-            } else {
-                stems.forEach(function(stem) {
-                    container.innerHTML += '<div class="stem-item">' +
-                        '<div class="stem-icon">' + stem.icon + '</div>' +
-                        '<div class="stem-info">' +
-                            '<div class="stem-name">' + stem.name + '</div>' +
-                            '<audio class="stem-audio" controls src="' + stem.url + '"></audio>' +
-                        '</div>' +
-                        '<div class="stem-actions">' +
-                            '<a href="' + stem.url + '" download class="stem-btn primary">' + t.btnDownload + '</a>' +
-                        '</div>' +
-                    '</div>';
-                });
-            }
-            
+            stems.forEach(function(stem) {
+                container.innerHTML += '<div class="stem-item"><div class="stem-icon">' + stem.icon + '</div><div class="stem-info"><div class="stem-name">' + stem.name + '</div><audio class="stem-audio" controls src="' + stem.url + '"></audio></div><div class="stem-actions"><a href="' + stem.url + '" download class="stem-btn primary">' + t.btnDownload + '</a></div></div>';
+            });
             document.getElementById('resultsEmpty').style.display = 'none';
             container.style.display = 'flex';
         }
+        
+        // ==================== BAŞLATMA ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            setLanguage('tr');
+            checkAuthStatus();
+        });
         
         // Dropdown dışına tıklanınca kapat
         document.addEventListener('click', function(e) {
