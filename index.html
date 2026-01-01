@@ -713,43 +713,45 @@
         
 // index.html içindeki pollStemStatus fonksiyonunu şu şekilde güncelleyin:
 
-async function pollStemStatus(taskId, separationType) {
-    var t = translations[currentLang];
-    var attempts = 0;
-    var maxAttempts = 100; // Yaklaşık 8-9 dakika (5sn * 100)
+// index.html içindeki pollStemStatus fonksiyonunu sadece bu kısımla güncelleyin:
+
+async function pollStemStatus(tid, type) {
+    let attempts = 0;
+    const t = translations[currentLang];
     
-    var interval = setInterval(async function() {
+    const interval = setInterval(async function() {
         attempts++;
-        document.getElementById('loadingStatus').textContent = t.loadingStatus + ' (' + attempts + ')';
+        document.getElementById('loadingStatus').innerText = t.loadingStatus + ' (' + attempts + ')';
         
         try {
-            var res = await fetch(API_BASE_URL + '/api/stem-status?taskId=' + taskId + '&wixUserId=' + currentUser.wixUserId);
-            var json = await res.json();
+            // wixUserId'nin currentUser içinde olduğundan ve doğru gittiğinden emin olun
+            const userId = currentUser.wixUserId || currentUser.id;
+            const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${userId}`);
+            const json = await res.json();
             
-            // DÜZELTME: Sadece status success olduğunda VE veri geldiğinde dur
-            if (json.code === 200 && json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
+            if (json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
                 clearInterval(interval);
                 stopTimer();
                 document.getElementById('loadingOverlay').classList.remove('active');
                 
-                // Sonuçları göster ve dinlenebilir hale getir
-                displayStemResults(json.data.vocal_separation_info, separationType);
+                // Sonuçları göster
+                displayStemResults(json.data.vocal_separation_info, type);
                 showSuccess(t.successStem);
                 
-                // MongoDB'den güncel veriyi çek (Geçmişi güncellemek için)
-                loadUserTracksFromMongoDB(); 
-            }
-            
-            if (attempts >= maxAttempts) {
-                clearInterval(interval);
-                stopTimer();
-                document.getElementById('loadingOverlay').classList.remove('active');
-                showError('Zaman aşımı: İşlem normalden uzun sürdü, lütfen geçmişi kontrol edin.');
+                // MongoDB'den yeni stemHistory'i de içeren güncel veriyi çek
+                await syncUserData(); 
             }
         } catch (e) {
-            console.error('Sorgulama hatası:', e);
+            console.error("Polling error:", e);
         }
-    }, 5000); // her 5 saniyede bir kontrol et
+        
+        if (attempts > 120) { // 10 dakika
+            clearInterval(interval);
+            stopTimer();
+            document.getElementById('loadingOverlay').classList.remove('active');
+            showError("Zaman aşımı hatası.");
+        }
+    }, 5000);
 }
         
 // index.html içindeki ilgili fonksiyonları bu şekilde güncelleyin:
