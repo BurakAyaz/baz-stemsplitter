@@ -761,25 +761,20 @@ const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId
 // index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
 // index.html içindeki fonksiyonu bu tam kodla değiştirin
 function displayStemResults(info, separationType) {
+    // Eğer info yoksa veya URL'ler eksikse gösterme (processing durumunda kalmasını sağlar)
     if (!info || !info.vocal_url || !info.instrumental_url) return;
     
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
-    
     var stems = [];
 
-    // Verileri topluyoruz
-    if (separationType === 'separate_vocal' || !info.drums_url) {
-        stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-        stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
-    } else {
-        // Detaylı ayrıştırma durumu
-        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-        if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
-        if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
-        if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-    }
+    // Verileri listeye ekle
+    stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+    stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+    
+    if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
+    if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
 
     stems.forEach(function(stem) {
         container.innerHTML += `

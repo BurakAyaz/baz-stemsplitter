@@ -33,12 +33,12 @@ module.exports = async (req, res) => {
             const rawInfo = data.data.response || data.data.vocal_separation_info || data.data;
             const status = data.data.status;
 
-            // KIE'den gelen 3 bilgiyi yakalıyoruz
+            // KIE'den gelen 3 kritik veriyi yakala
             const vocalUrl = rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"];
             const instUrl = rawInfo.instrumental_url || rawInfo.instrumentalI_url;
             const kieId = rawInfo.id || taskId; 
 
-            // İşlem gerçekten bitti mi kontrolü (URL'ler gelmeden bitti saymıyoruz)
+            // KRİTİK: URL'ler hazır değilse işlem bitmiş sayılmaz
             const isActuallyComplete = status === 'SUCCESS' && vocalUrl && instUrl;
 
             const normalizedStems = {
@@ -47,21 +47,25 @@ module.exports = async (req, res) => {
                 instrumental_url: instUrl,
                 drums_url: rawInfo.drums_url || null,
                 bass_url: rawInfo.bass_url || null,
-                guitar_url: rawInfo.guitar_url || null,
-                piano_url: rawInfo.piano_url || null
+                guitar_url: rawInfo.guitar_url || null
             };
 
             // MongoDB'ye "tek bir ürün" olarak kayıt
             if (isActuallyComplete && wixUserId) {
                 const { db } = await connectToDatabase();
-                const existing = await db.collection('users').findOne({ wixUserId: wixUserId, 'stemHistory.taskId': taskId });
+                
+                // Sorgulanan taskId üzerinden kontrol et
+                const existing = await db.collection('users').findOne({ 
+                    wixUserId: wixUserId, 
+                    'stemHistory.taskId': taskId 
+                });
 
                 if (!existing) {
                     const stemEntry = {
-                        taskId: taskId, // Sorguladığımız ID
-                        kieId: kieId,   // Dosya bazlı ID
+                        taskId: taskId, // Polling yapılan ID
+                        kieId: kieId,   // API'den dönen dosya ID'si
                         type: rawInfo.drums_url ? 'split_stem' : 'separate_vocal',
-                        stems: normalizedStems,
+                        stems: normalizedStems, // 3 veri tek üründe toplandı
                         createdAt: new Date()
                     };
                     
@@ -87,6 +91,7 @@ module.exports = async (req, res) => {
         }
         return res.status(200).json(data);
     } catch (error) {
+        console.error("Backend Hatası:", error);
         return res.status(500).json({ error: error.message });
     }
 };
