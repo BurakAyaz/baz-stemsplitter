@@ -429,18 +429,26 @@
         
         // Auth durumunu kontrol et
         async function checkAuthStatus() {
+            console.log('=== checkAuthStatus başladı ===');
+            
             var urlParams = new URLSearchParams(window.location.search);
             var tokenFromUrl = urlParams.get('token');
             
+            console.log('URL\'den token:', tokenFromUrl ? 'VAR' : 'YOK');
+            console.log('localStorage\'dan token:', authToken ? 'VAR' : 'YOK');
+            
             if (tokenFromUrl) {
+                console.log('URL\'den token alındı, kaydediliyor...');
                 authToken = tokenFromUrl;
                 localStorage.setItem('bazai_token', tokenFromUrl);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
             
             if (authToken) {
+                console.log('Token mevcut, syncUserData çağrılıyor...');
                 await syncUserData();
             } else {
+                console.log('Token yok, logged out state gösteriliyor');
                 showLoggedOutState();
                 loadUserData();
             }
@@ -448,7 +456,11 @@
         
         // Kullanıcı verilerini sync et
         async function syncUserData() {
+            console.log('=== syncUserData başladı ===');
+            console.log('Token:', authToken ? (authToken.substring(0, 30) + '...') : 'YOK');
+            
             try {
+                console.log('API çağrısı yapılıyor: /api/auth-sync');
                 var response = await fetch('/api/auth-sync', {
                     method: 'POST',
                     headers: {
@@ -457,16 +469,22 @@
                     }
                 });
                 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 if (!response.ok) {
+                    var errorText = await response.text();
+                    console.error('API Hata response:', errorText);
                     if (response.status === 401) {
+                        console.log('401 hatası - logout yapılıyor');
                         logout();
                         return;
                     }
-                    throw new Error('Sync failed');
+                    throw new Error('Sync failed: ' + response.status + ' - ' + errorText);
                 }
                 
                 var data = await response.json();
-                console.log('Auth sync response:', data);
+                console.log('Auth sync response DATA:', JSON.stringify(data, null, 2));
                 
                 if (data.success && data.user) {
                     currentUser = data.user;
@@ -474,18 +492,24 @@
                     userPlan = data.user.plan || data.user.planId || 'none';
                     isLoggedIn = true;
                     
-                    console.log('Giriş başarılı - Kredi:', userCredits, 'Plan:', userPlan);
+                    console.log('✓ Giriş başarılı');
+                    console.log('  - Email:', currentUser.email);
+                    console.log('  - Kredi:', userCredits);
+                    console.log('  - Plan:', userPlan);
+                    console.log('  - Kalan gün:', currentUser.daysRemaining);
                     
                     showLoggedInState();
                     updateCreditDisplay();
                     checkCreditWarning();
                     await loadUserData();
                 } else {
+                    console.log('API başarılı ama user yok:', data);
                     showLoggedOutState();
                     await loadUserData();
                 }
             } catch (error) {
-                console.error('User sync error:', error);
+                console.error('!!! syncUserData HATA:', error);
+                console.error('Hata detayı:', error.message);
                 showLoggedOutState();
                 await loadUserData();
             }

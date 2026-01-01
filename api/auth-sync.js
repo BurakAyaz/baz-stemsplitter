@@ -66,11 +66,15 @@ module.exports = async (req, res) => {
         return res.status(405).json({ error: 'Method not allowed' });
     }
     
+    console.log('=== AUTH-SYNC API CALLED ===');
+    
     try {
         // Token al
         const authHeader = req.headers.authorization;
+        console.log('Auth header:', authHeader ? 'VAR' : 'YOK');
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('Token header eksik');
             return res.status(401).json({
                 error: 'Authentication required',
                 message: 'Token gerekli'
@@ -78,6 +82,7 @@ module.exports = async (req, res) => {
         }
         
         const token = authHeader.split(' ')[1];
+        console.log('Token alındı, uzunluk:', token ? token.length : 0);
         
         if (!token) {
             return res.status(401).json({
@@ -88,31 +93,49 @@ module.exports = async (req, res) => {
         
         // Token'ı çöz
         const decoded = decodeToken(token);
+        console.log('Token decode sonucu:', decoded ? JSON.stringify(decoded) : 'DECODE BAŞARISIZ');
         
         if (!decoded || !decoded.userId) {
+            console.log('Token geçersiz veya userId yok');
             return res.status(401).json({
                 error: 'Invalid token',
-                message: 'Geçersiz token'
+                message: 'Geçersiz token - decode edilemedi'
             });
         }
         
         // Token süresi kontrolü (7 gün)
         if (decoded.timestamp && Date.now() - decoded.timestamp > 7 * 24 * 60 * 60 * 1000) {
+            console.log('Token süresi dolmuş');
             return res.status(401).json({
                 error: 'Token expired',
                 message: 'Token süresi dolmuş, lütfen tekrar giriş yapın'
             });
         }
         
+        console.log('MongoDB bağlanıyor...');
+        console.log('MONGODB_URI var mı:', process.env.MONGODB_URI ? 'EVET' : 'HAYIR');
+        
         // MongoDB bağlan
         const { db } = await connectToDatabase();
         const usersCollection = db.collection('users');
         
+        console.log('MongoDB bağlandı, kullanıcı aranıyor:', decoded.userId);
+        
         // Kullanıcıyı bul
         let user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        console.log('Kullanıcı bulundu mu:', user ? 'EVET' : 'HAYIR');
+        
+        if (user) {
+            console.log('Mevcut kullanıcı bilgileri:', {
+                credits: user.credits,
+                planId: user.planId,
+                subscriptionStatus: user.subscriptionStatus
+            });
+        }
         
         // Yoksa oluştur
         if (!user) {
+            console.log('Kullanıcı yok, yeni oluşturuluyor...');
             const newUser = {
                 wixUserId: decoded.userId,
                 email: decoded.email || '',
