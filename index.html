@@ -717,76 +717,62 @@
 
 async function pollStemStatus(tid, type) {
     let attempts = 0;
-    const t = translations[currentLang];
-    
     const interval = setInterval(async function() {
         attempts++;
-        document.getElementById('loadingStatus').innerText = t.loadingStatus + ' (' + attempts + ')';
-        
+        document.getElementById('loadingStatus').innerText = translations[currentLang].loadingStatus + ' (' + attempts + ')';
         try {
-            // wixUserId'nin currentUser içinde olduğundan ve doğru gittiğinden emin olun
-            const userId = currentUser.wixUserId || currentUser.id;
-            const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${userId}`);
+            // CURRENTUSER'dan wixUserId alındığından emin olun
+            const uId = currentUser.wixUserId || currentUser.id;
+            const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${uId}`);
             const json = await res.json();
             
             if (json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
                 clearInterval(interval);
                 stopTimer();
                 document.getElementById('loadingOverlay').classList.remove('active');
-                
-                // Sonuçları göster
                 displayStemResults(json.data.vocal_separation_info, type);
-                showSuccess(t.successStem);
-                
-                // MongoDB'den yeni stemHistory'i de içeren güncel veriyi çek
-                await syncUserData(); 
+                showSuccess(translations[currentLang].successStem);
+                loadUserTracksFromMongoDB(); // Listeyi yenile
             }
-        } catch (e) {
-            console.error("Polling error:", e);
-        }
-        
-        if (attempts > 120) { // 10 dakika
-            clearInterval(interval);
-            stopTimer();
-            document.getElementById('loadingOverlay').classList.remove('active');
-            showError("Zaman aşımı hatası.");
-        }
+        } catch (e) { console.error("Poll error", e); }
+        if (attempts > 120) clearInterval(interval);
     }, 5000);
 }
         
 // index.html içindeki ilgili fonksiyonları bu şekilde güncelleyin:
 
+// index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
 function displayStemResults(info, separationType) {
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
-    
     var stems = [];
-    // Statik keyler üzerinden listeyi oluştur
-    if (separationType === 'separate_vocal') {
-        if (info.vocal_url) stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-        if (info.instrumental_url) stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
-    } else {
-        // Detaylı ayrıştırma (drums, bass vb.) varsa ekle
-        // ... (önceki mantığı koru)
-    }
 
-    stems.forEach(function(stem) {
-        container.innerHTML += `
-            <div class="stem-item">
-                <div class="stem-icon">${stem.icon}</div>
-                <div class="stem-info">
-                    <div class="stem-name">${stem.name}</div>
-                    <audio class="stem-audio" controls src="${stem.url}"></audio>
-                </div>
-                <div class="stem-actions">
-                    <a href="${stem.url}" target="_blank" download="${stem.name}.mp3" class="stem-btn primary">
-                        ${t.btnDownload}
-                    </a>
-                </div>
-            </div>`;
+    // Backend'den normalize edilmiş keyler geliyor
+    const map = [
+        { key: 'vocal_url', label: t.stemVocal, icon: '🎤' },
+        { key: 'instrumental_url', label: t.stemInstrumental, icon: '🎸' },
+        { key: 'drums_url', label: t.stemDrums, icon: '🥁' },
+        { key: 'bass_url', label: t.stemBass, icon: '🎸' },
+        { key: 'guitar_url', label: t.stemGuitar, icon: '🎸' }
+    ];
+
+    map.forEach(item => {
+        if (info[item.key]) {
+            container.innerHTML += `
+                <div class="stem-item">
+                    <div class="stem-icon">${item.icon}</div>
+                    <div class="stem-info">
+                        <div class="stem-name">${item.label}</div>
+                        <audio class="stem-audio" controls src="${info[item.key]}"></audio>
+                    </div>
+                    <div class="stem-actions">
+                        <a href="${info[item.key]}" target="_blank" download class="stem-btn primary">${t.btnDownload}</a>
+                    </div>
+                </div>`;
+        }
     });
-    
+
     document.getElementById('resultsEmpty').style.display = 'none';
     container.style.display = 'flex';
 }

@@ -1,4 +1,3 @@
-// api/stem-status.js - MongoDB ve Normalize Düzenlemesi
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -21,14 +20,12 @@ module.exports = async (req, res) => {
 
     try {
         const { taskId, wixUserId } = req.query;
-
         if (!taskId) return res.status(400).json({ error: 'taskId gerekli' });
 
         const response = await fetch(`https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${process.env.KIE_API_KEY}`, 'Content-Type': 'application/json' }
         });
-
         const data = await response.json();
 
         if (data.code === 200 && data.data) {
@@ -36,11 +33,11 @@ module.exports = async (req, res) => {
             const info = raw.vocal_separation_info || raw;
             const status = data.data.status;
 
-            // KIE loglarındaki hatalı keyleri normalize et
+            // KIE hatalı log yazımlarını normalize et
             const vocalUrl = info.vocal_url || info.vocal_ur || info["vocal_ur!"];
             const instUrl = info.instrumental_url || info.instrumentalI_url || info.instrumental_ur;
 
-            // URL varlığı kontrolü
+            // KRİTİK: Hem statü SUCCESS olmalı hem de en az bir URL gelmiş olmalı
             const hasUrls = !!(vocalUrl || instUrl);
             const isActuallyComplete = status === 'SUCCESS' && hasUrls;
 
@@ -54,32 +51,20 @@ module.exports = async (req, res) => {
                 other_url: info.other_url || null
             };
 
-            // MongoDB Kayıt
             if (isActuallyComplete && wixUserId) {
                 const { db } = await connectToDatabase();
-                
-                // Screenshot'a göre 'stemHistory' dizisini kontrol et ve yoksa oluştur
-                const existing = await db.collection('users').findOne({ 
-                    wixUserId: wixUserId, 
-                    'stemHistory.taskId': taskId 
-                });
-
+                // 'stemHistory' dizisini kontrol et ve taskId yoksa ekle
+                const existing = await db.collection('users').findOne({ wixUserId, 'stemHistory.taskId': taskId });
                 if (!existing) {
                     const stemEntry = {
-                        taskId: taskId,
+                        taskId,
                         type: normalizedStems.drums_url ? 'split_stem' : 'separate_vocal',
                         stems: normalizedStems,
                         createdAt: new Date()
                     };
-                    
                     await db.collection('users').updateOne(
-                        { wixUserId: wixUserId },
-                        { 
-                            $push: { 
-                                stemHistory: { $each: [stemEntry], $position: 0, $slice: 50 } 
-                            },
-                            $set: { updatedAt: new Date() }
-                        }
+                        { wixUserId },
+                        { $push: { stemHistory: { $each: [stemEntry], $position: 0, $slice: 50 } } }
                     );
                 }
             }
@@ -88,7 +73,7 @@ module.exports = async (req, res) => {
                 code: 200,
                 msg: 'success',
                 data: {
-                    taskId: taskId,
+                    taskId,
                     status: isActuallyComplete ? 'success' : 'processing',
                     vocal_separation_info: isActuallyComplete ? normalizedStems : null
                 }
@@ -96,7 +81,6 @@ module.exports = async (req, res) => {
         }
         return res.status(200).json(data);
     } catch (error) {
-        console.error("Backend Hatası:", error);
         return res.status(500).json({ error: error.message });
     }
 };
