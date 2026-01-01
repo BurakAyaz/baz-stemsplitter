@@ -1,7 +1,4 @@
 // api/stem-status.js - Get Vocal Separation Details API Endpoint
-// KIE API: GET /api/v1/vocal-removal/record-info
-// MongoDB entegrasyonu ile stem sonuçlarını kaydeder
-
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
@@ -30,7 +27,6 @@ async function connectToDatabase() {
     }
 }
 
-// Token decode
 function decodeToken(token) {
     try {
         let decoded = token;
@@ -69,7 +65,6 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'taskId parametresi gerekli.' });
         }
 
-        // Authorization header'dan da wixUserId alabiliriz
         let userId = wixUserId;
         const authHeader = req.headers.authorization;
         if (!userId && authHeader && authHeader.startsWith('Bearer ')) {
@@ -80,9 +75,7 @@ module.exports = async (req, res) => {
             }
         }
 
-        console.log(`Stem Status Check - TaskId: ${taskId}, UserId: ${userId}`);
-
-        // Kie.ai API - Get Vocal Separation Details
+        // KIE API - Vocal Separation Details
         const response = await fetch(`https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`, {
             method: 'GET',
             headers: {
@@ -93,58 +86,48 @@ module.exports = async (req, res) => {
 
         const data = await response.json();
 
-        console.log('Stem Status API Response:', JSON.stringify(data, null, 2));
-
         if (!response.ok) {
             console.error("Stem Status API Hatası:", data);
             throw new Error(data.msg || data.error || JSON.stringify(data));
         }
 
-        // KIE API Response Format:
-        // {
-        //   "code": 200,
-        //   "msg": "success",
-        //   "data": {
-        //     "taskId": "xxx",
-        //     "status": "SUCCESS" | "PENDING" | "PROCESSING" | "FAILED",
-        //     "response": {
-        //       "vocal_separation_info": {
-        //         "vocal_url": "...",
-        //         "instrumental_url": "...",
-        //         // veya split_stem için:
-        //         // "drums_url", "bass_url", "guitar_url", etc.
-        //       }
-        //     }
-        //   }
-        // }
-
-        // Başarılı ve sonuç hazırsa MongoDB'ye kaydet
         if (data.code === 200 && data.data) {
             const status = data.data.status;
-            const vocalSepInfo = data.data.response?.vocal_separation_info || data.data.vocal_separation_info;
             
-            // Status SUCCESS veya vocal_separation_info varsa tamamlanmış demektir
-            const isComplete = status === 'SUCCESS' || (vocalSepInfo && (vocalSepInfo.vocal_url || vocalSepInfo.instrumental_url));
+            // KIE'den gelen veriyi paylaştığın logdaki hatalı keyleri de kapsayacak şekilde yakala
+            const rawInfo = data.data.response?.vocal_separation_info || data.data.vocal_separation_info || data.data.response || {};
             
-            if (isComplete && vocalSepInfo && userId) {
-                // MongoDB'ye kaydet
+            // Yazım hatalarını normalize et (instrumentalI_url ve vocal_ur gibi)
+            const normalizedStems = {
+                vocal_url: rawInfo.vocal_url || rawInfo.vocal_ur || rawInfo["vocal_ur!"],
+                instrumental_url: rawInfo.instrumental_url || rawInfo.instrumentalI_url || rawInfo.instrumental_ur,
+                drums_url: rawInfo.drums_url,
+                bass_url: rawInfo.bass_url,
+                guitar_url: rawInfo.guitar_url,
+                piano_url: rawInfo.piano_url,
+                other_url: rawInfo.other_url,
+                backing_vocals_url: rawInfo.backing_vocals_url
+            };
+
+            const isComplete = status === 'SUCCESS' || (normalizedStems.vocal_url || normalizedStems.instrumental_url);
+            
+            if (isComplete && userId) {
                 try {
                     const dbConnection = await connectToDatabase();
                     if (dbConnection) {
                         const { db } = dbConnection;
                         
-                        // Aynı taskId ile kayıt var mı kontrol et
                         const existingHistory = await db.collection('users').findOne({
                             wixUserId: userId,
                             'stemHistory.taskId': taskId
                         });
                         
                         if (!existingHistory) {
-                            // Yeni stem sonucunu kaydet
+                            // "stems" bölümü altında temiz veriyi kaydet
                             const stemResult = {
                                 taskId: taskId,
-                                type: vocalSepInfo.instrumental_url && !vocalSepInfo.drums_url ? 'separate_vocal' : 'split_stem',
-                                stems: vocalSepInfo,
+                                type: normalizedStems.drums_url ? 'split_stem' : 'separate_vocal',
+                                stems: normalizedStems, 
                                 status: 'success',
                                 createdAt: new Date()
                             };
@@ -156,35 +139,31 @@ module.exports = async (req, res) => {
                                         stemHistory: {
                                             $each: [stemResult],
                                             $position: 0,
-                                            $slice: 50 // Max 50 kayıt tut
+                                            $slice: 50 
                                         }
                                     },
                                     $set: { updatedAt: new Date() }
                                 }
                             );
-                            
                             console.log(`Stem result saved to MongoDB for user: ${userId}`);
                         }
                     }
                 } catch (dbError) {
                     console.error('MongoDB save error:', dbError);
-                    // DB hatası ana response'u etkilemesin
                 }
             }
             
-            // Frontend'in beklediği format
             return res.status(200).json({
                 code: 200,
                 msg: 'success',
                 data: {
-                    taskId: data.data.taskId || taskId,
+                    taskId: taskId,
                     status: isComplete ? 'success' : (status || 'processing'),
-                    vocal_separation_info: vocalSepInfo || null
+                    vocal_separation_info: normalizedStems // Normalize edilmiş veri gidiyor
                 }
             });
         }
 
-        // Ham veriyi döndür
         return res.status(200).json(data);
 
     } catch (error) {
