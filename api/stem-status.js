@@ -1,5 +1,5 @@
-// api/stem-status.js - Get Vocal Separation Details
-// KIE API endpoint: GET /api/v1/vocal-removal/record-info?taskId=xxx
+// api/stem-status.js - Stem Status Check
+// Önce MongoDB'deki callback sonucuna bakar, yoksa KIE API'yi sorgular
 
 const { MongoClient } = require('mongodb');
 
@@ -27,15 +27,71 @@ module.exports = async (req, res) => {
     const { taskId, wixUserId } = req.query;
     if (!taskId) return res.status(400).json({ error: 'taskId gerekli' });
 
-    console.log('=== STEM-STATUS API CALLED ===');
+    console.log('=== STEM-STATUS CHECK ===');
     console.log('taskId:', taskId);
     console.log('wixUserId:', wixUserId);
 
     try {
-        // KIE API'yi çağır
-        const kieUrl = `https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`;
-        console.log('KIE API URL:', kieUrl);
+        const { db } = await connectToDatabase();
+
+        // 1. Önce MongoDB stemResults collection'ına bak (callback sonucu)
+        const stemResult = await db.collection('stemResults').findOne({ taskId: taskId });
         
+        console.log('MongoDB stemResult:', stemResult ? 'BULUNDU' : 'YOK');
+
+        if (stemResult && stemResult.status === 'success' && stemResult.stems) {
+            console.log('✓ Callback sonucu bulundu!');
+            console.log('Vocal URL:', stemResult.stems.vocal_url);
+            console.log('Instrumental URL:', stemResult.stems.instrumental_url);
+
+            // Kullanıcının stemHistory'sine kaydet (eğer henüz kaydedilmediyse)
+            if (wixUserId) {
+                const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
+                const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
+
+                if (!alreadySaved) {
+                    console.log('Kullanıcı stemHistory\'sine kaydediliyor...');
+                    
+                    const stemEntry = {
+                        taskId: taskId,
+                        stems: stemResult.stems,
+                        type: stemResult.type || 'separate_vocal',
+                        createdAt: stemResult.completedAt || new Date()
+                    };
+
+                    await db.collection('users').updateOne(
+                        { wixUserId: wixUserId },
+                        {
+                            $push: {
+                                stemHistory: {
+                                    $each: [stemEntry],
+                                    $position: 0,
+                                    $slice: 50
+                                }
+                            },
+                            $set: { updatedAt: new Date() }
+                        }
+                    );
+                    console.log('✓ stemHistory güncellendi');
+                }
+            }
+
+            // Başarılı response döndür
+            return res.status(200).json({
+                code: 200,
+                msg: 'success',
+                data: {
+                    taskId: taskId,
+                    status: 'success',
+                    vocal_separation_info: stemResult.stems
+                }
+            });
+        }
+
+        // 2. MongoDB'de yoksa veya pending ise, KIE API'yi sorgula
+        console.log('MongoDB\'de sonuç yok, KIE API sorgulanıyor...');
+        
+        const kieUrl = `https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=${taskId}`;
         const response = await fetch(kieUrl, {
             method: 'GET',
             headers: {
@@ -44,122 +100,80 @@ module.exports = async (req, res) => {
             }
         });
 
-        const rawData = await response.json();
-        console.log('KIE API RAW Response:', JSON.stringify(rawData, null, 2));
+        const kieData = await response.json();
+        console.log('KIE API Response:', JSON.stringify(kieData));
 
-        // KIE API Response Formatı (record-info endpoint):
-        // {
-        //   "code": 200,
-        //   "msg": "success",
-        //   "data": {
-        //     "taskId": "xxx",
-        //     "status": "SUCCESS" | "PENDING" | "PROCESSING",
-        //     "response": {
-        //       "id": "xxx",
-        //       "instrumental_url": "https://...",
-        //       "vocal_url": "https://..."
-        //     }
-        //   }
-        // }
+        if (kieData.code === 200 && kieData.data) {
+            const status = kieData.data.status;
+            const responseData = kieData.data.response;
 
-        if (rawData.code === 200 && rawData.data) {
-            const taskData = rawData.data;
-            const status = taskData.status;
-            
-            // Response içindeki vocal separation bilgisi
-            // Bazen "response" içinde, bazen doğrudan "data" içinde olabilir
-            let stemInfo = null;
-            
-            // Önce response içinde ara
-            if (taskData.response) {
-                stemInfo = taskData.response;
-            }
-            // Yoksa doğrudan data içinde ara
-            else if (taskData.vocal_url || taskData.instrumental_url) {
-                stemInfo = taskData;
-            }
-            
-            console.log('Status:', status);
-            console.log('Stem Info:', stemInfo ? JSON.stringify(stemInfo) : 'YOK');
-
-            // URL'lerin varlığını kontrol et
-            const hasVocal = stemInfo && stemInfo.vocal_url;
-            const hasInstrumental = stemInfo && stemInfo.instrumental_url;
-            
-            // İşlem tamamlandı mı?
-            const isComplete = (status === 'SUCCESS' || status === 'success') && hasVocal && hasInstrumental;
-            
-            console.log('Is Complete:', isComplete, '| hasVocal:', hasVocal, '| hasInstrumental:', hasInstrumental);
-
-            if (isComplete) {
-                // Normalize edilmiş stem bilgisi
-                const normalizedStems = {
-                    id: stemInfo.id || taskId,
-                    vocal_url: stemInfo.vocal_url,
-                    instrumental_url: stemInfo.instrumental_url,
-                    // Ek stemler (split_stem için)
-                    drums_url: stemInfo.drums_url || null,
-                    bass_url: stemInfo.bass_url || null,
-                    guitar_url: stemInfo.guitar_url || null,
-                    keyboard_url: stemInfo.keyboard_url || null,
-                    strings_url: stemInfo.strings_url || null,
-                    brass_url: stemInfo.brass_url || null,
-                    woodwinds_url: stemInfo.woodwinds_url || null,
-                    percussion_url: stemInfo.percussion_url || null,
-                    synth_url: stemInfo.synth_url || null,
-                    fx_url: stemInfo.fx_url || null,
-                    backing_vocals_url: stemInfo.backing_vocals_url || null
+            // KIE API'den gelen veriler
+            if ((status === 'SUCCESS' || status === 'success') && responseData) {
+                const stems = {
+                    id: responseData.id,
+                    vocal_url: responseData.vocal_url,
+                    instrumental_url: responseData.instrumental_url,
+                    drums_url: responseData.drums_url || null,
+                    bass_url: responseData.bass_url || null,
+                    guitar_url: responseData.guitar_url || null,
+                    keyboard_url: responseData.keyboard_url || null,
+                    strings_url: responseData.strings_url || null,
+                    brass_url: responseData.brass_url || null,
+                    woodwinds_url: responseData.woodwinds_url || null,
+                    percussion_url: responseData.percussion_url || null,
+                    synth_url: responseData.synth_url || null,
+                    fx_url: responseData.fx_url || null,
+                    backing_vocals_url: responseData.backing_vocals_url || null
                 };
 
                 // MongoDB'ye kaydet
-                if (wixUserId) {
-                    try {
-                        const { db } = await connectToDatabase();
-                        
-                        // Mükerrer kayıt kontrolü
-                        const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
-                        const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
-
-                        if (!alreadySaved) {
-                            console.log('MongoDB\'ye kaydediliyor...');
-                            const stemEntry = {
-                                taskId: taskId,
-                                musicId: normalizedStems.id,
-                                stems: normalizedStems,
-                                type: normalizedStems.drums_url ? 'split_stem' : 'separate_vocal',
-                                createdAt: new Date()
-                            };
-
-                            await db.collection('users').updateOne(
-                                { wixUserId: wixUserId },
-                                {
-                                    $push: {
-                                        stemHistory: {
-                                            $each: [stemEntry],
-                                            $position: 0,
-                                            $slice: 50
-                                        }
-                                    },
-                                    $set: { updatedAt: new Date() }
-                                }
-                            );
-                            console.log('MongoDB kayıt başarılı');
-                        } else {
-                            console.log('Bu taskId zaten kaydedilmiş, atlanıyor');
+                await db.collection('stemResults').updateOne(
+                    { taskId: taskId },
+                    {
+                        $set: {
+                            status: 'success',
+                            stems: stems,
+                            type: stems.drums_url ? 'split_stem' : 'separate_vocal',
+                            completedAt: new Date()
                         }
-                    } catch (dbError) {
-                        console.error('MongoDB hatası:', dbError);
+                    },
+                    { upsert: true }
+                );
+
+                // Kullanıcı stemHistory'sine kaydet
+                if (wixUserId) {
+                    const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
+                    const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
+
+                    if (!alreadySaved) {
+                        await db.collection('users').updateOne(
+                            { wixUserId: wixUserId },
+                            {
+                                $push: {
+                                    stemHistory: {
+                                        $each: [{
+                                            taskId: taskId,
+                                            stems: stems,
+                                            type: stems.drums_url ? 'split_stem' : 'separate_vocal',
+                                            createdAt: new Date()
+                                        }],
+                                        $position: 0,
+                                        $slice: 50
+                                    }
+                                },
+                                $set: { updatedAt: new Date() }
+                            }
+                        );
                     }
                 }
 
-                // Başarılı response döndür
                 return res.status(200).json({
                     code: 200,
                     msg: 'success',
                     data: {
                         taskId: taskId,
                         status: 'success',
-                        vocal_separation_info: normalizedStems
+                        vocal_separation_info: stems
                     }
                 });
             }
@@ -176,12 +190,15 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Hata durumu
-        console.log('KIE API error response:', rawData);
+        // KIE API'den de sonuç yok
         return res.status(200).json({
-            code: rawData.code || 500,
-            msg: rawData.msg || 'error',
-            data: rawData.data || null
+            code: 200,
+            msg: 'processing',
+            data: {
+                taskId: taskId,
+                status: 'processing',
+                vocal_separation_info: null
+            }
         });
 
     } catch (error) {

@@ -93,17 +93,26 @@ module.exports = async (req, res) => {
             }
         }
 
-        // 5. Kie.ai'ye gidecek paketi hazırlıyoruz
+        // 5. Callback URL'ini belirle - Vercel deployment URL'i kullan
+        // VERCEL_URL environment variable'ı Vercel tarafından otomatik set edilir
+        const baseUrl = process.env.VERCEL_URL 
+            ? `https://${process.env.VERCEL_URL}` 
+            : (process.env.BASE_URL || 'https://baz-stemsplitter.vercel.app');
+        
+        const callbackUrl = `${baseUrl}/api/stem-callback`;
+        
+        // 6. Kie.ai'ye gidecek paketi hazırlıyoruz
         const payload = {
             taskId: taskId,
             audioId: audioId,
             type: type,
-            callBackUrl: callBackUrl || "https://google.com"
+            callBackUrl: callbackUrl
         };
 
         console.log("Stem API - Kie.ai'ye giden istek:", payload);
+        console.log("Callback URL:", callbackUrl);
 
-        // 6. Kie.ai API İsteği - Vocal Separation endpoint
+        // 7. Kie.ai API İsteği - Vocal Separation endpoint
         const response = await fetch('https://api.kie.ai/api/v1/vocal-removal/generate', {
             method: 'POST',
             headers: {
@@ -115,13 +124,38 @@ module.exports = async (req, res) => {
 
         const data = await response.json();
 
-        // 7. Hata Kontrolü
+        // 8. Hata Kontrolü
         if (!response.ok) {
             console.error("Stem API Hatası:", data);
             throw new Error(data.msg || data.error || JSON.stringify(data));
         }
 
-        // 8. Başarılı - Activity log ekle (opsiyonel)
+        // 9. Stem task'ı MongoDB'ye kaydet (polling için)
+        if (data.data && data.data.taskId) {
+            try {
+                const dbConnection = await connectToDatabase();
+                if (dbConnection) {
+                    const { db } = dbConnection;
+                    
+                    // stemResults collection'ına pending olarak kaydet
+                    await db.collection('stemResults').insertOne({
+                        taskId: data.data.taskId,
+                        originalTaskId: taskId,
+                        audioId: audioId,
+                        type: type,
+                        status: 'pending',
+                        wixUserId: userId,
+                        createdAt: new Date()
+                    });
+                    
+                    console.log('Stem task saved to MongoDB:', data.data.taskId);
+                }
+            } catch (dbError) {
+                console.error('MongoDB save error:', dbError);
+            }
+        }
+
+        // 10. Başarılı - Activity log ekle (opsiyonel)
         if (userId && process.env.MONGODB_URI) {
             try {
                 const dbConnection = await connectToDatabase();
