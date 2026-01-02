@@ -72,8 +72,12 @@ module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+    console.log('========================================');
     console.log('=== KIE CALLBACK RECEIVED ===');
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Headers:', JSON.stringify(req.headers));
     console.log('Body:', JSON.stringify(req.body, null, 2));
+    console.log('========================================');
 
     try {
         const { code, msg, data } = req.body;

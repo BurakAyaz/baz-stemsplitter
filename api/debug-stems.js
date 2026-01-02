@@ -25,10 +25,24 @@ module.exports = async (req, res) => {
     
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const { taskId } = req.query;
+    const { taskId, action } = req.query;
 
     try {
         const { db } = await connectToDatabase();
+
+        // Collections listesi
+        if (action === 'collections') {
+            const collections = await db.listCollections().toArray();
+            return res.status(200).json({
+                collections: collections.map(c => c.name)
+            });
+        }
+
+        // stemResults collection'ındaki tüm kayıtları say
+        if (action === 'count') {
+            const count = await db.collection('stemResults').countDocuments();
+            return res.status(200).json({ stemResultsCount: count });
+        }
 
         if (taskId) {
             // Belirli bir task'ı getir
@@ -46,14 +60,21 @@ module.exports = async (req, res) => {
                 .limit(10)
                 .toArray();
             
+            // Collection var mı kontrol et
+            const collections = await db.listCollections({ name: 'stemResults' }).toArray();
+            const collectionExists = collections.length > 0;
+            
             return res.status(200).json({
+                collectionExists: collectionExists,
                 count: recentResults.length,
                 results: recentResults.map(r => ({
                     taskId: r.taskId,
                     status: r.status,
                     type: r.type,
                     hasStems: !!r.stems,
-                    vocalUrl: r.stems?.vocal_url ? 'VAR' : 'YOK',
+                    vocalUrl: r.stems?.vocal_url ? r.stems.vocal_url.substring(0, 50) + '...' : 'YOK',
+                    wixUserId: r.wixUserId,
+                    email: r.email,
                     createdAt: r.createdAt,
                     completedAt: r.completedAt
                 }))

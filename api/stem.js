@@ -137,57 +137,65 @@ module.exports = async (req, res) => {
             throw new Error(data.msg || data.error || JSON.stringify(data));
         }
 
-        // 9. Stem task'ı MongoDB'ye kaydet (polling için)
-        if (data.data && data.data.taskId) {
+        // 9. Stem task'ı MongoDB'ye kaydet (polling için) - ÖNCELİKLİ
+        const newTaskId = data.data?.taskId;
+        console.log('KIE API response taskId:', newTaskId);
+        
+        if (newTaskId) {
             try {
                 const dbConnection = await connectToDatabase();
                 if (dbConnection) {
                     const { db } = dbConnection;
                     
                     // stemResults collection'ına pending olarak kaydet
-                    await db.collection('stemResults').insertOne({
-                        taskId: data.data.taskId,
+                    const stemDoc = {
+                        taskId: newTaskId,
                         originalTaskId: taskId,
                         audioId: audioId,
                         type: type,
                         status: 'pending',
-                        wixUserId: userId,
-                        email: userEmail, // Email de kaydet
-                        createdAt: new Date()
-                    });
+                        wixUserId: userId || '',
+                        email: userEmail || '',
+                        createdAt: new Date(),
+                        callbackUrl: callbackUrl
+                    };
                     
-                    console.log('Stem task saved to MongoDB:', data.data.taskId, 'email:', userEmail);
-                }
-            } catch (dbError) {
-                console.error('MongoDB save error:', dbError);
-            }
-        }
-
-        // 10. Başarılı - Activity log ekle (opsiyonel)
-        if (userId && process.env.MONGODB_URI) {
-            try {
-                const dbConnection = await connectToDatabase();
-                if (dbConnection) {
-                    const { db } = dbConnection;
-                    await db.collection('users').updateOne(
-                        { wixUserId: userId },
-                        {
-                            $push: {
-                                activityLog: {
-                                    action: 'stem_separation',
-                                    type: type,
-                                    taskId: taskId,
-                                    newTaskId: data.data?.taskId,
-                                    timestamp: new Date()
+                    console.log('Saving to stemResults:', JSON.stringify(stemDoc));
+                    
+                    const insertResult = await db.collection('stemResults').insertOne(stemDoc);
+                    console.log('stemResults insert result:', insertResult.insertedId);
+                    
+                    // Ayrıca activity log'a da ekle
+                    if (userId) {
+                        await db.collection('users').updateOne(
+                            { $or: [{ wixUserId: userId }, { email: userEmail }] },
+                            {
+                                $push: {
+                                    activityLog: {
+                                        $each: [{
+                                            action: 'stem_separation',
+                                            type: type,
+                                            taskId: taskId,
+                                            newTaskId: newTaskId,
+                                            timestamp: new Date()
+                                        }],
+                                        $position: 0,
+                                        $slice: 100
+                                    }
                                 }
                             }
-                        }
-                    );
+                        );
+                        console.log('Activity log updated');
+                    }
+                } else {
+                    console.error('Database connection failed!');
                 }
-            } catch (logError) {
-                console.error('Activity log error:', logError);
-                // Log hatası ana işlemi durdurmasın
+            } catch (dbError) {
+                console.error('MongoDB save error:', dbError.message);
+                console.error('Full error:', dbError);
             }
+        } else {
+            console.error('No taskId in KIE API response!');
         }
 
         return res.status(200).json(data);
