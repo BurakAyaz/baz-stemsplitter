@@ -1,5 +1,5 @@
 // api/stem-status.js - Stem Status Check
-// Önce MongoDB'deki callback sonucuna bakar, yoksa KIE API'yi sorgular
+// ÖNCE MongoDB'deki callback sonucuna bakar, YOKSA KIE API'yi sorgular
 
 const { MongoClient } = require('mongodb');
 
@@ -34,10 +34,13 @@ module.exports = async (req, res) => {
     try {
         const { db } = await connectToDatabase();
 
-        // 1. Önce MongoDB stemResults collection'ına bak (callback sonucu)
+        // 1. ÖNCE MongoDB stemResults collection'ına bak (callback sonucu)
+        console.log('MongoDB stemResults sorgulanıyor...');
         const stemResult = await db.collection('stemResults').findOne({ taskId: taskId });
         
-        console.log('MongoDB stemResult:', stemResult ? 'BULUNDU' : 'YOK');
+        console.log('MongoDB stemResult:', stemResult ? JSON.stringify(stemResult).substring(0, 200) : 'YOK');
+        console.log('stemResult status:', stemResult?.status);
+        console.log('stemResult stems:', stemResult?.stems ? 'VAR' : 'YOK');
 
         if (stemResult && stemResult.status === 'success' && stemResult.stems) {
             console.log('✓ Callback sonucu bulundu!');

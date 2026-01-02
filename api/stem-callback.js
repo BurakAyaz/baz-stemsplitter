@@ -19,41 +19,30 @@ async function connectToDatabase() {
     return { client, db };
 }
 
-// Cloudinary'ye URL'den dosya yükle
-async function uploadToCloudinary(url, publicId, resourceType = 'video') {
-    if (!url || !process.env.CLOUDINARY_CLOUD_NAME) {
-        console.log('Cloudinary config missing or no URL');
-        return url; // Orijinal URL'i döndür
+// Cloudinary'ye URL'den dosya yükle (unsigned preset ile)
+async function uploadToCloudinary(url, filename) {
+    if (!url) return null;
+    
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'Unsigned';
+    
+    if (!cloudName) {
+        console.log('Cloudinary config missing, returning original URL');
+        return url;
     }
     
     try {
-        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-        const apiKey = process.env.CLOUDINARY_API_KEY;
-        const apiSecret = process.env.CLOUDINARY_API_SECRET;
+        console.log(`Uploading to Cloudinary: ${filename}`);
         
-        if (!apiKey || !apiSecret) {
-            console.log('Cloudinary credentials missing');
-            return url;
-        }
+        // Cloudinary unsigned upload
+        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
         
-        // Cloudinary upload URL
-        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-        
-        // Timestamp ve signature oluştur
-        const timestamp = Math.round(Date.now() / 1000);
-        const crypto = require('crypto');
-        const signatureString = `folder=baz-stems&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
-        const signature = crypto.createHash('sha1').update(signatureString).digest('hex');
-        
-        // FormData oluştur
         const formData = new URLSearchParams();
         formData.append('file', url);
-        formData.append('public_id', publicId);
+        formData.append('upload_preset', uploadPreset);
         formData.append('folder', 'baz-stems');
-        formData.append('timestamp', timestamp.toString());
-        formData.append('api_key', apiKey);
-        formData.append('signature', signature);
-        formData.append('resource_type', resourceType);
+        formData.append('public_id', filename);
+        formData.append('resource_type', 'video'); // audio için video kullanılır
         
         const response = await fetch(uploadUrl, {
             method: 'POST',
@@ -67,11 +56,11 @@ async function uploadToCloudinary(url, publicId, resourceType = 'video') {
             return result.secure_url;
         } else {
             console.error('Cloudinary upload failed:', result);
-            return url;
+            return url; // Hata durumunda orijinal URL'i döndür
         }
     } catch (error) {
         console.error('Cloudinary upload error:', error);
-        return url; // Hata durumunda orijinal URL'i döndür
+        return url;
     }
 }
 
@@ -106,49 +95,52 @@ module.exports = async (req, res) => {
         console.log('Original Vocal URL:', stemInfo.vocal_url);
         console.log('Original Instrumental URL:', stemInfo.instrumental_url);
 
-        // Cloudinary'ye yükle (eğer config varsa)
+        const { db } = await connectToDatabase();
+
+        // Mevcut pending kaydı bul (email bilgisi için)
+        const pendingTask = await db.collection('stemResults').findOne({ taskId: taskId });
+        const userEmail = pendingTask?.email;
+        const wixUserId = pendingTask?.wixUserId;
+
+        // Timestamp for unique filenames
         const timestamp = Date.now();
+
+        // Cloudinary'ye yükle
         const vocalUrl = await uploadToCloudinary(
             stemInfo.vocal_url, 
-            `vocal_${taskId}_${timestamp}`,
-            'video' // audio için video resource type kullanılır
+            `vocal_${taskId.slice(-8)}_${timestamp}`
         );
         const instrumentalUrl = await uploadToCloudinary(
             stemInfo.instrumental_url, 
-            `instrumental_${taskId}_${timestamp}`,
-            'video'
+            `instrumental_${taskId.slice(-8)}_${timestamp}`
         );
 
-        // Split stem için diğer URL'leri de yükle
+        // 12 Stem için diğer URL'leri de yükle
         let additionalStems = {};
-        if (stemInfo.drums_url) {
-            additionalStems.drums_url = await uploadToCloudinary(stemInfo.drums_url, `drums_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.bass_url) {
-            additionalStems.bass_url = await uploadToCloudinary(stemInfo.bass_url, `bass_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.guitar_url) {
-            additionalStems.guitar_url = await uploadToCloudinary(stemInfo.guitar_url, `guitar_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.keyboard_url) {
-            additionalStems.keyboard_url = await uploadToCloudinary(stemInfo.keyboard_url, `keyboard_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.strings_url) {
-            additionalStems.strings_url = await uploadToCloudinary(stemInfo.strings_url, `strings_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.brass_url) {
-            additionalStems.brass_url = await uploadToCloudinary(stemInfo.brass_url, `brass_${taskId}_${timestamp}`, 'video');
-        }
-        if (stemInfo.backing_vocals_url) {
-            additionalStems.backing_vocals_url = await uploadToCloudinary(stemInfo.backing_vocals_url, `backing_${taskId}_${timestamp}`, 'video');
+        const stemTypes = [
+            'drums_url', 'bass_url', 'guitar_url', 'keyboard_url',
+            'strings_url', 'brass_url', 'woodwinds_url', 'percussion_url',
+            'synth_url', 'fx_url', 'backing_vocals_url', 'origin_url'
+        ];
+
+        for (const stemType of stemTypes) {
+            if (stemInfo[stemType]) {
+                const stemName = stemType.replace('_url', '');
+                additionalStems[stemType] = await uploadToCloudinary(
+                    stemInfo[stemType], 
+                    `${stemName}_${taskId.slice(-8)}_${timestamp}`
+                );
+            }
         }
 
         console.log('Cloudinary Vocal URL:', vocalUrl);
         console.log('Cloudinary Instrumental URL:', instrumentalUrl);
 
-        // MongoDB'ye kaydet
-        const { db } = await connectToDatabase();
-        
+        // Stem tipini belirle
+        const isSplitStem = stemInfo.drums_url || stemInfo.bass_url || stemInfo.guitar_url;
+        const stemType = isSplitStem ? 'split_stem' : 'separate_vocal';
+
+        // Stem sonuçlarını hazırla
         const stems = {
             vocal_url: vocalUrl,
             instrumental_url: instrumentalUrl,
@@ -158,17 +150,15 @@ module.exports = async (req, res) => {
             keyboard_url: additionalStems.keyboard_url || null,
             strings_url: additionalStems.strings_url || null,
             brass_url: additionalStems.brass_url || null,
-            woodwinds_url: stemInfo.woodwinds_url || null,
-            percussion_url: stemInfo.percussion_url || null,
-            synth_url: stemInfo.synth_url || null,
-            fx_url: stemInfo.fx_url || null,
+            woodwinds_url: additionalStems.woodwinds_url || null,
+            percussion_url: additionalStems.percussion_url || null,
+            synth_url: additionalStems.synth_url || null,
+            fx_url: additionalStems.fx_url || null,
             backing_vocals_url: additionalStems.backing_vocals_url || null,
-            origin_url: stemInfo.origin_url || null,
-            // Orijinal URL'leri de sakla (backup)
-            original_vocal_url: stemInfo.vocal_url,
-            original_instrumental_url: stemInfo.instrumental_url
+            origin_url: additionalStems.origin_url || null
         };
 
+        // stemResults collection'ını güncelle
         await db.collection('stemResults').updateOne(
             { taskId: taskId },
             {
@@ -176,7 +166,7 @@ module.exports = async (req, res) => {
                     taskId: taskId,
                     status: 'success',
                     stems: stems,
-                    type: stemInfo.drums_url ? 'split_stem' : 'separate_vocal',
+                    type: stemType,
                     completedAt: new Date(),
                     rawCallback: req.body
                 }
@@ -184,7 +174,42 @@ module.exports = async (req, res) => {
             { upsert: true }
         );
 
-        console.log('Stem result saved to MongoDB with Cloudinary URLs');
+        console.log('Stem result saved to MongoDB');
+
+        // Kullanıcının stemHistory'sine kaydet
+        if (wixUserId || userEmail) {
+            // Kullanıcıyı bul
+            let userQuery = {};
+            if (wixUserId) userQuery.wixUserId = wixUserId;
+            else if (userEmail) userQuery.email = userEmail;
+
+            const user = await db.collection('users').findOne(userQuery);
+
+            if (user) {
+                const stemEntry = {
+                    taskId: taskId,
+                    stems: stems,
+                    type: stemType,
+                    createdAt: new Date()
+                };
+
+                // stemHistory'ye ekle
+                await db.collection('users').updateOne(
+                    userQuery,
+                    {
+                        $push: {
+                            stemHistory: {
+                                $each: [stemEntry],
+                                $position: 0,
+                                $slice: 50 // Son 50 kaydı tut
+                            }
+                        },
+                        $set: { updatedAt: new Date() }
+                    }
+                );
+                console.log('User stemHistory updated');
+            }
+        }
 
         return res.status(200).json({ status: 'received' });
 

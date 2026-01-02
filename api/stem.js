@@ -95,13 +95,18 @@ module.exports = async (req, res) => {
             }
         }
 
-        // 5. Callback URL'ini belirle - Vercel deployment URL'i kullan
-        // VERCEL_URL environment variable'ı Vercel tarafından otomatik set edilir
-        const baseUrl = process.env.VERCEL_URL 
-            ? `https://${process.env.VERCEL_URL}` 
-            : (process.env.BASE_URL || 'https://baz-stemsplitter.vercel.app');
+        // 5. Callback URL'ini belirle - Production URL kullan
+        // Vercel preview deployments farklı URL'ler alabilir, sabit URL kullan
+        const baseUrl = process.env.CALLBACK_BASE_URL || 
+                        process.env.BASE_URL || 
+                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+                        'https://stem.burakayaz.com';
         
         const callbackUrl = `${baseUrl}/api/stem-callback`;
+        
+        console.log('=== STEM REQUEST ===');
+        console.log('baseUrl:', baseUrl);
+        console.log('callbackUrl:', callbackUrl);
         
         // 6. Kie.ai'ye gidecek paketi hazırlıyoruz
         const payload = {
