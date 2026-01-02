@@ -1,0 +1,15 @@
+{
+  "name": "baz-ai-stem-separator",
+  "version": "2.0.0",
+  "description": "BAZ AI Stem Separator - Vokal ve Enstrüman Ayrıştırıcı (MongoDB Entegreli)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
