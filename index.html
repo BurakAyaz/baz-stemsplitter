@@ -711,37 +711,52 @@
             } catch (err) { stopTimer(); document.getElementById('loadingOverlay').classList.remove('active'); showError(t.errorPrefix + ' ' + err.message); }
         });
         
-// index.html içindeki pollStemStatus fonksiyonunu şu şekilde güncelleyin:
-
-// index.html içindeki pollStemStatus fonksiyonunu sadece bu kısımla güncelleyin:
-
 async function pollStemStatus(tid, type) {
     let attempts = 0;
     const t = translations[currentLang];
+    
+    console.log('=== POLLING BAŞLADI ===');
+    console.log('TaskId:', tid);
+    console.log('Type:', type);
     
     const interval = setInterval(async function() {
         attempts++;
         document.getElementById('loadingStatus').innerText = `${t.loadingStatus} (${attempts})`;
         
         try {
-            const uId = currentUser.wixUserId || currentUser.id;
-            // Gönderilen tid, müzik üretilirken kullanılan orijinal ID'dir
-            const res = await fetch(`${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${uId}`);
+            const uId = currentUser ? (currentUser.wixUserId || currentUser.id) : '';
+            const url = `${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${encodeURIComponent(uId)}`;
+            
+            console.log('Poll attempt', attempts, '- URL:', url);
+            
+            const res = await fetch(url);
             const json = await res.json();
             
+            console.log('Poll response:', JSON.stringify(json));
+            
             // Backend artık URL'ler dolduğunda success dönecek
-            if (json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
+            if (json.code === 200 && json.data && json.data.status === 'success' && json.data.vocal_separation_info) {
+                console.log('✓ STEM HAZIR! Sonuçlar gösteriliyor...');
+                
                 clearInterval(interval);
                 stopTimer();
                 document.getElementById('loadingOverlay').classList.remove('active');
                 
                 // Sonuçları göster
-                displayStemResults(json.data.vocal_separation_info, type);
+                const stemInfo = json.data.vocal_separation_info;
+                console.log('Stem Info:', JSON.stringify(stemInfo));
+                
+                displayStemResults(stemInfo, type);
                 showSuccess(t.successStem);
                 
                 // Geçmiş listesini güncellemek için verileri tekrar çek
-                await syncUserData(); 
+                await loadUserData();
+                return;
             }
+            
+            // Hala işleniyor
+            console.log('Henüz hazır değil, status:', json.data?.status || 'unknown');
+            
         } catch (e) {
             console.error("Sorgulama hatası:", e);
         }
@@ -755,25 +770,54 @@ async function pollStemStatus(tid, type) {
     }, 5000);
 }
         
-// index.html içindeki ilgili fonksiyonları bu şekilde güncelleyin:
-
-// index.html içindeki displayStemResults fonksiyonunu bununla değiştirin:
-// index.html içindeki fonksiyonu bu tam kodla değiştirin
+// displayStemResults - Stem sonuçlarını göster
 function displayStemResults(info, separationType) {
-    if (!info || !info.vocal_url || !info.instrumental_url) return;
+    console.log('=== displayStemResults ÇAĞRILDI ===');
+    console.log('Info:', JSON.stringify(info));
+    console.log('Type:', separationType);
+    
+    // Null/undefined kontrolü
+    if (!info) {
+        console.error('Stem info boş!');
+        return;
+    }
     
     var t = translations[currentLang];
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
     var stems = [];
 
-    // Vokal ve Enstrümantal bilgilerini listeye ekle
-    stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
-    stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+    // Vokal URL'ini kontrol et
+    if (info.vocal_url) {
+        console.log('Vocal URL bulundu:', info.vocal_url);
+        stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+    }
     
-    // Varsa diğer enstrümanları ekle
+    // Instrumental URL'ini kontrol et
+    if (info.instrumental_url) {
+        console.log('Instrumental URL bulundu:', info.instrumental_url);
+        stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+    }
+    
+    // Split stem için ek kontroller
     if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
     if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
+    if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
+    if (info.keyboard_url) stems.push({ name: t.stemKeyboard, url: info.keyboard_url, icon: '🎹' });
+    if (info.strings_url) stems.push({ name: t.stemStrings, url: info.strings_url, icon: '🎻' });
+    if (info.brass_url) stems.push({ name: t.stemBrass, url: info.brass_url, icon: '🎺' });
+    if (info.woodwinds_url) stems.push({ name: t.stemWoodwinds, url: info.woodwinds_url, icon: '🎷' });
+    if (info.percussion_url) stems.push({ name: t.stemPercussion, url: info.percussion_url, icon: '🪘' });
+    if (info.synth_url) stems.push({ name: t.stemSynth, url: info.synth_url, icon: '🎛️' });
+    if (info.fx_url) stems.push({ name: t.stemFX, url: info.fx_url, icon: '✨' });
+    if (info.backing_vocals_url) stems.push({ name: t.stemBackingVocals, url: info.backing_vocals_url, icon: '🎙️' });
+
+    console.log('Toplam stem sayısı:', stems.length);
+
+    if (stems.length === 0) {
+        container.innerHTML = '<div class="empty-tracks"><p>Sonuç bulunamadı - URL\'ler henüz hazır değil</p></div>';
+        return;
+    }
 
     stems.forEach(function(stem) {
         container.innerHTML += `
@@ -781,10 +825,13 @@ function displayStemResults(info, separationType) {
                 <div class="stem-icon">${stem.icon}</div>
                 <div class="stem-info">
                     <div class="stem-name">${stem.name}</div>
-                    <audio class="stem-audio" controls src="${stem.url}"></audio>
+                    <audio class="stem-audio" controls preload="metadata">
+                        <source src="${stem.url}" type="audio/mpeg">
+                        Tarayıcınız audio elementi desteklemiyor.
+                    </audio>
                 </div>
                 <div class="stem-actions">
-                    <a href="${stem.url}" target="_blank" download="${info.musicId || 'stem'}.mp3" class="stem-btn primary">
+                    <a href="${stem.url}" target="_blank" download class="stem-btn primary">
                         ${t.btnDownload}
                     </a>
                 </div>
@@ -793,13 +840,19 @@ function displayStemResults(info, separationType) {
     
     document.getElementById('resultsEmpty').style.display = 'none';
     container.style.display = 'flex';
+    console.log('Sonuçlar gösterildi!');
 }
 // Geçmişten tıklama olayı
 function showHistoryItem(index) {
+    console.log('showHistoryItem çağrıldı, index:', index);
     var item = stemHistory[index];
+    console.log('History item:', item);
+    
     if (item && item.stems) {
         // MongoDB'ye kaydettiğimiz "stems" objesini doğrudan gönderiyoruz
         displayStemResults(item.stems, item.type);
+    } else {
+        console.error('History item bulunamadı veya stems yok');
     }
 }
         
