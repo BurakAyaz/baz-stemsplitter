@@ -81,15 +81,17 @@ module.exports = async (req, res) => {
             });
         }
 
-        // 4. Opsiyonel: Kullanıcı bilgisini logla (auth varsa)
+        // 4. Kullanıcı bilgisini al (auth varsa)
         let userId = null;
+        let userEmail = null;
         const authHeader = req.headers.authorization;
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.substring(7);
             const decoded = decodeToken(token);
-            if (decoded && decoded.userId) {
+            if (decoded) {
                 userId = decoded.userId;
-                console.log(`Stem request from user: ${userId}`);
+                userEmail = decoded.email;
+                console.log(`Stem request from user: ${userId}, email: ${userEmail}`);
             }
         }
 
@@ -145,10 +147,11 @@ module.exports = async (req, res) => {
                         type: type,
                         status: 'pending',
                         wixUserId: userId,
+                        email: userEmail, // Email de kaydet
                         createdAt: new Date()
                     });
                     
-                    console.log('Stem task saved to MongoDB:', data.data.taskId);
+                    console.log('Stem task saved to MongoDB:', data.data.taskId, 'email:', userEmail);
                 }
             } catch (dbError) {
                 console.error('MongoDB save error:', dbError);

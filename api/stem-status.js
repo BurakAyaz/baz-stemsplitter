@@ -46,33 +46,49 @@ module.exports = async (req, res) => {
 
             // Kullanıcının stemHistory'sine kaydet (eğer henüz kaydedilmediyse)
             if (wixUserId) {
-                const userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
-                const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
+                // Önce wixUserId ile, sonra email ile ara
+                let userDoc = await db.collection('users').findOne({ wixUserId: wixUserId });
+                
+                // wixUserId ile bulunamadıysa, stemResult'tan email ile dene
+                if (!userDoc && stemResult.email) {
+                    userDoc = await db.collection('users').findOne({ email: stemResult.email });
+                }
+                
+                console.log('User found:', userDoc ? 'EVET' : 'HAYIR');
+                
+                if (userDoc) {
+                    const alreadySaved = userDoc?.stemHistory?.some(item => item.taskId === taskId);
 
-                if (!alreadySaved) {
-                    console.log('Kullanıcı stemHistory\'sine kaydediliyor...');
-                    
-                    const stemEntry = {
-                        taskId: taskId,
-                        stems: stemResult.stems,
-                        type: stemResult.type || 'separate_vocal',
-                        createdAt: stemResult.completedAt || new Date()
-                    };
+                    if (!alreadySaved) {
+                        console.log('Kullanıcı stemHistory\'sine kaydediliyor...');
+                        
+                        const stemEntry = {
+                            taskId: taskId,
+                            stems: stemResult.stems,
+                            type: stemResult.type || 'separate_vocal',
+                            createdAt: stemResult.completedAt || new Date()
+                        };
 
-                    await db.collection('users').updateOne(
-                        { wixUserId: wixUserId },
-                        {
-                            $push: {
-                                stemHistory: {
-                                    $each: [stemEntry],
-                                    $position: 0,
-                                    $slice: 50
-                                }
-                            },
-                            $set: { updatedAt: new Date() }
-                        }
-                    );
-                    console.log('✓ stemHistory güncellendi');
+                        // Kullanıcıyı wixUserId veya email ile güncelle
+                        const userQuery = userDoc.wixUserId ? { wixUserId: userDoc.wixUserId } : { email: userDoc.email };
+                        
+                        await db.collection('users').updateOne(
+                            userQuery,
+                            {
+                                $push: {
+                                    stemHistory: {
+                                        $each: [stemEntry],
+                                        $position: 0,
+                                        $slice: 50
+                                    }
+                                },
+                                $set: { updatedAt: new Date() }
+                            }
+                        );
+                        console.log('✓ stemHistory güncellendi');
+                    }
+                } else {
+                    console.log('Kullanıcı bulunamadı, stemHistory kaydedilemedi');
                 }
             }
 
