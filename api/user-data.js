@@ -62,10 +62,28 @@ module.exports = async (req, res) => {
     const usersCollection = db.collection('users');
     
     try {
+        // Kullanıcıyı bul - ÖNCE wixUserId ile, YOKSA email ile
+        let user = null;
+        
+        if (decoded.userId) {
+            user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        }
+        
+        if (!user && decoded.email) {
+            user = await usersCollection.findOne({ email: decoded.email.toLowerCase() });
+            
+            // Email ile bulunduysa wixUserId'yi güncelle
+            if (user && decoded.userId && !user.wixUserId) {
+                await usersCollection.updateOne(
+                    { email: decoded.email.toLowerCase() },
+                    { $set: { wixUserId: decoded.userId, updatedAt: new Date() } }
+                );
+                user.wixUserId = decoded.userId;
+            }
+        }
+        
         // GET - Kullanıcı verilerini getir
         if (req.method === 'GET') {
-            const user = await usersCollection.findOne({ wixUserId: decoded.userId });
-            
             // Kullanıcı yoksa boş veri döndür (hata değil)
             if (!user) {
                 return res.status(200).json({
@@ -75,6 +93,7 @@ module.exports = async (req, res) => {
                         plan: 'free',
                         planExpiry: null,
                         tracks: [],
+                        stemHistory: [],
                         generatedLyrics: [],
                         personas: [],
                         activityLog: [],
@@ -94,6 +113,7 @@ module.exports = async (req, res) => {
                     plan: user.planId || 'free',
                     planExpiry: user.expiresAt,
                     tracks: user.tracks || [],
+                    stemHistory: user.stemHistory || [],
                     generatedLyrics: user.generatedLyrics || [],
                     personas: user.personas || [],
                     activityLog: user.activityLog || [],

@@ -109,8 +109,38 @@ module.exports = async (req, res) => {
         const { db } = await connectToDatabase();
         const usersCollection = db.collection('users');
         
-        // Kullanıcıyı bul
-        let user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        console.log('=== AUTH-SYNC ===');
+        console.log('Token decoded:', JSON.stringify(decoded));
+        
+        // Kullanıcıyı bul - ÖNCE wixUserId ile, YOKSA email ile
+        let user = null;
+        
+        // 1. wixUserId ile ara
+        if (decoded.userId) {
+            user = await usersCollection.findOne({ wixUserId: decoded.userId });
+            console.log('wixUserId ile arama:', decoded.userId, '- Bulundu:', !!user);
+        }
+        
+        // 2. Bulunamadıysa email ile ara
+        if (!user && decoded.email) {
+            user = await usersCollection.findOne({ email: decoded.email.toLowerCase() });
+            console.log('email ile arama:', decoded.email, '- Bulundu:', !!user);
+            
+            // Email ile bulunduysa wixUserId'yi güncelle
+            if (user && decoded.userId && !user.wixUserId) {
+                await usersCollection.updateOne(
+                    { email: decoded.email.toLowerCase() },
+                    { $set: { wixUserId: decoded.userId, updatedAt: new Date() } }
+                );
+                user.wixUserId = decoded.userId;
+                console.log('wixUserId güncellendi');
+            }
+        }
+        
+        console.log('Kullanıcı bulundu mu:', !!user);
+        if (user) {
+            console.log('Kullanıcı kredisi:', user.credits, 'Plan:', user.planId);
+        }
         
         // Yoksa oluştur
         if (!user) {

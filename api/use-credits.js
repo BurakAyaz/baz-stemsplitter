@@ -79,12 +79,32 @@ module.exports = async (req, res) => {
         const usersCollection = db.collection('users');
         const transactionsCollection = db.collection('transactions');
         
-        // Kullanıcıyı bul
-        const user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        // Kullanıcıyı bul - ÖNCE wixUserId ile, YOKSA email ile
+        let user = null;
+        
+        if (decoded.userId) {
+            user = await usersCollection.findOne({ wixUserId: decoded.userId });
+        }
+        
+        if (!user && decoded.email) {
+            user = await usersCollection.findOne({ email: decoded.email.toLowerCase() });
+            
+            // Email ile bulunduysa wixUserId'yi güncelle
+            if (user && decoded.userId && !user.wixUserId) {
+                await usersCollection.updateOne(
+                    { email: decoded.email.toLowerCase() },
+                    { $set: { wixUserId: decoded.userId, updatedAt: new Date() } }
+                );
+                user.wixUserId = decoded.userId;
+            }
+        }
         
         if (!user) {
             return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
         }
+        
+        // Kullanıcıyı güncellerken doğru ID'yi kullan
+        const userQuery = user.wixUserId ? { wixUserId: user.wixUserId } : { email: user.email };
         
         // Kredi kontrolü
         if (user.credits < finalAmount) {
@@ -113,13 +133,14 @@ module.exports = async (req, res) => {
         }
         
         await usersCollection.updateOne(
-            { wixUserId: decoded.userId },
+            userQuery,
             { $set: updateFields }
         );
         
         // İşlem kaydı oluştur
         const transaction = {
-            wixUserId: decoded.userId,
+            wixUserId: user.wixUserId || decoded.userId,
+            email: user.email,
             type: 'usage',
             action: action,
             songId: songId,
