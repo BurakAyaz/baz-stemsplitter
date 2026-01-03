@@ -69,6 +69,7 @@ module.exports = async (req, res) => {
                             taskId: taskId,
                             stems: stemResult.stems,
                             type: stemResult.type || 'separate_vocal',
+                            stemName: stemResult.stemName || '',
                             createdAt: stemResult.completedAt || new Date()
                         };
 
@@ -102,6 +103,7 @@ module.exports = async (req, res) => {
                 data: {
                     taskId: taskId,
                     status: 'success',
+                    stemName: stemResult.stemName || '',
                     vocal_separation_info: stemResult.stems
                 }
             });

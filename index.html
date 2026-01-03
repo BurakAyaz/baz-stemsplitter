@@ -331,7 +331,7 @@
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
-                <span id="loginBtnText">Giriş Yap</span>
+                <span id="loginBtnText">Başlat</span>
             </a>
             
             <!-- Kullanıcı Menüsü -->
@@ -371,11 +371,11 @@
                 <div class="credit-warning-content">
                     <span class="credit-warning-icon">⚠️</span>
                     <div class="credit-warning-text">
-                        <h4 id="creditWarningTitle">Giriş Yapın</h4>
+                        <h4 id="creditWarningTitle">Başlatmak İçin Giriş Yapın</h4>
                         <p id="creditWarningMsg">Stem ayrıştırma için giriş yapmanız gerekiyor.</p>
                     </div>
                 </div>
-                <button id="creditWarningBtn" class="credit-warning-btn" onclick="handleCreditWarningClick()">Giriş Yap →</button>
+                <button id="creditWarningBtn" class="credit-warning-btn" onclick="handleCreditWarningClick()">Başlat →</button>
             </div>
             
             <div class="message" id="errorMsg"></div>
@@ -400,6 +400,12 @@
                         <option value="split_stem">Detaylı Ayrıştırma (12 Stem) - 5 Kredi</option>
                     </select>
                     <p class="form-hint" id="hintSeparationType">Detaylı ayrıştırma daha uzun sürer</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" id="labelStemName">Ayrıştırma İsmi (Opsiyonel)</label>
+                    <input type="text" class="form-input" id="stemName" placeholder="Örn: Şarkım - Remix" maxlength="50">
+                    <p class="form-hint" id="hintStemName">Geçmiş ayrıştırmalarda bu isimle görünür</p>
                 </div>
                 
                 <div class="info-box"><strong id="infoTitle">Stem Ayrıştırma Nedir?</strong><p id="infoDesc">Şarkınızı vokal, bas, davul, gitar gibi ayrı parçalara ayırır.</p></div>
@@ -467,11 +473,12 @@
                 stemBackingVocals: 'Arka Vokal', errorPrefix: 'Hata:', errorNoTrack: 'Lütfen bir şarkı seçin',
                 successStem: 'Stem ayrıştırma tamamlandı!', loadingTracks: 'Şarkılar yükleniyor...',
                 creditCost2: '2 Kredi', creditCost5: '5 Kredi', insufficientCredits: 'Yetersiz kredi',
-                loginBtn: 'Giriş Yap',
-                warningLoginTitle: 'Giriş Yapın', warningLoginMsg: 'Stem ayrıştırma için giriş yapmanız gerekiyor.',
+                loginBtn: 'Başlat',
+                warningLoginTitle: 'Başlatmak İçin Giriş Yapın', warningLoginMsg: 'Stem ayrıştırma için giriş yapmanız gerekiyor.',
                 warningCreditTitle: 'Krediniz Bitti', warningCreditMsg: 'Stem ayrıştırma için yeni paket satın alın.',
                 warningExpiredTitle: 'Paket Süresi Doldu', warningExpiredMsg: 'Paket süreniz doldu, yenilemek için tıklayın.',
-                buyPackage: 'Paket Satın Al →', renewPackage: 'Paketi Yenile →'
+                buyPackage: 'Paket Satın Al →', renewPackage: 'Paketi Yenile →',
+                stemNameLabel: 'Ayrıştırma İsmi', stemNamePlaceholder: 'Örn: Şarkım - Remix'
             },
             en: {
                 sidebarTitle: 'Stem Separation', labelSelectTrack: 'My Songs',
@@ -489,11 +496,12 @@
                 stemBackingVocals: 'Backing Vocals', errorPrefix: 'Error:', errorNoTrack: 'Please select a song',
                 successStem: 'Stem separation completed!', loadingTracks: 'Loading songs...',
                 creditCost2: '2 Credits', creditCost5: '5 Credits', insufficientCredits: 'Insufficient credits',
-                loginBtn: 'Login',
-                warningLoginTitle: 'Login Required', warningLoginMsg: 'You need to login for stem separation.',
+                loginBtn: 'Start',
+                warningLoginTitle: 'Login to Start', warningLoginMsg: 'You need to login for stem separation.',
                 warningCreditTitle: 'Out of Credits', warningCreditMsg: 'Purchase a package for stem separation.',
                 warningExpiredTitle: 'Package Expired', warningExpiredMsg: 'Your package has expired, click to renew.',
-                buyPackage: 'Buy Package →', renewPackage: 'Renew Package →'
+                buyPackage: 'Buy Package →', renewPackage: 'Renew Package →',
+                stemNameLabel: 'Separation Name', stemNamePlaceholder: 'E.g: My Song - Remix'
             }
         };
         
@@ -773,14 +781,15 @@
             section.style.display = 'block';
             var html = '';
             stemHistory.forEach(function(item, index) {
-                var date = new Date(item.date).toLocaleDateString();
+                var date = item.createdAt ? new Date(item.createdAt).toLocaleDateString('tr-TR') : (item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '');
                 var typeLabel = item.type === 'separate_vocal' ? 'Vokal (2)' : 'Detaylı (12)';
-                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')"><span class="history-icon">🎛️</span><div class="history-info"><div class="history-name">' + item.trackName + '</div><div class="history-date">' + date + '</div></div><span class="history-type">' + typeLabel + '</span></div>';
+                var displayName = item.stemName || item.name || item.trackName || 'Stem ' + (index + 1);
+                html += '<div class="history-item" onclick="showHistoryItem(' + index + ')"><span class="history-icon">🎛️</span><div class="history-info"><div class="history-name">' + displayName + '</div><div class="history-date">' + date + '</div></div><span class="history-type">' + typeLabel + '</span></div>';
             });
             container.innerHTML = html;
         }
         
-        function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type); } }
+        function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type, item.stemName || item.name || item.trackName); } }
         
         // ==================== YARDIMCI FONKSİYONLAR ====================
         function startTimer() { timerSeconds = 0; updateTimerDisplay(); timerInterval = setInterval(function() { timerSeconds++; updateTimerDisplay(); }, 1000); }
@@ -815,6 +824,7 @@
             var taskId = selectedTrack.taskId;
             var audioId = selectedTrack.audioId || selectedTrack.id;
             var separationType = document.getElementById('separationType').value;
+            var stemName = document.getElementById('stemName').value.trim() || selectedTrack.title || 'Stem ' + new Date().toLocaleDateString('tr-TR');
             var creditCost = separationType === 'separate_vocal' ? 2 : 5;
             
             if (userCredits < creditCost) { showError(t.insufficientCredits + ' (' + userCredits + '/' + creditCost + ')'); return; }
@@ -832,22 +842,26 @@
                 var res = await fetch(API_BASE_URL + '/api/stem', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                    body: JSON.stringify({ taskId: taskId, audioId: audioId, type: separationType })
+                    body: JSON.stringify({ taskId: taskId, audioId: audioId, type: separationType, stemName: stemName })
                 });
                 var data = await res.json();
                 if (!res.ok || (data.code !== 200 && !data.taskId)) { throw new Error(data.msg || data.error || data.details || 'Hata'); }
                 var newTaskId = data.data ? data.data.taskId : data.taskId;
-                pollStemStatus(newTaskId, separationType);
+                pollStemStatus(newTaskId, separationType, stemName);
+                
+                // İsim alanını temizle
+                document.getElementById('stemName').value = '';
             } catch (err) { stopTimer(); document.getElementById('loadingInline').classList.remove('active'); document.getElementById('resultsEmpty').style.display = 'flex'; showError(t.errorPrefix + ' ' + err.message); }
         });
         
-async function pollStemStatus(tid, type) {
+async function pollStemStatus(tid, type, stemName) {
     let attempts = 0;
     const t = translations[currentLang];
     
     console.log('=== POLLING BAŞLADI ===');
     console.log('TaskId:', tid);
     console.log('Type:', type);
+    console.log('StemName:', stemName);
     
     const interval = setInterval(async function() {
         attempts++;
@@ -855,7 +869,7 @@ async function pollStemStatus(tid, type) {
         
         try {
             const uId = currentUser ? (currentUser.wixUserId || currentUser.id) : '';
-            const url = `${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${encodeURIComponent(uId)}`;
+            const url = `${API_BASE_URL}/api/stem-status?taskId=${tid}&wixUserId=${encodeURIComponent(uId)}&stemName=${encodeURIComponent(stemName || '')}`;
             
             console.log('Poll attempt', attempts, '- URL:', url);
             
@@ -876,7 +890,7 @@ async function pollStemStatus(tid, type) {
                 const stemInfo = json.data.vocal_separation_info;
                 console.log('Stem Info:', JSON.stringify(stemInfo));
                 
-                displayStemResults(stemInfo, type);
+                displayStemResults(stemInfo, type, stemName);
                 showSuccess(t.successStem);
                 
                 // Geçmiş listesini güncellemek için verileri tekrar çek
@@ -902,10 +916,11 @@ async function pollStemStatus(tid, type) {
 }
         
 // displayStemResults - Stem sonuçlarını göster
-function displayStemResults(info, separationType) {
+function displayStemResults(info, separationType, stemName) {
     console.log('=== displayStemResults ÇAĞRILDI ===');
     console.log('Info:', JSON.stringify(info));
     console.log('Type:', separationType);
+    console.log('StemName:', stemName);
     
     // Null/undefined kontrolü
     if (!info) {
@@ -917,31 +932,32 @@ function displayStemResults(info, separationType) {
     var container = document.getElementById('stemsContainer');
     container.innerHTML = '';
     var stems = [];
+    var baseName = stemName || 'Stem';
 
     // Vokal URL'ini kontrol et
     if (info.vocal_url) {
         console.log('Vocal URL bulundu:', info.vocal_url);
-        stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤' });
+        stems.push({ name: t.stemVocal, url: info.vocal_url, icon: '🎤', filename: baseName + ' - Vokal' });
     }
     
     // Instrumental URL'ini kontrol et
     if (info.instrumental_url) {
         console.log('Instrumental URL bulundu:', info.instrumental_url);
-        stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸' });
+        stems.push({ name: t.stemInstrumental, url: info.instrumental_url, icon: '🎸', filename: baseName + ' - Enstrümantal' });
     }
     
-    // Split stem için ek kontroller
-    if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁' });
-    if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸' });
-    if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸' });
-    if (info.keyboard_url) stems.push({ name: t.stemKeyboard, url: info.keyboard_url, icon: '🎹' });
-    if (info.strings_url) stems.push({ name: t.stemStrings, url: info.strings_url, icon: '🎻' });
-    if (info.brass_url) stems.push({ name: t.stemBrass, url: info.brass_url, icon: '🎺' });
-    if (info.woodwinds_url) stems.push({ name: t.stemWoodwinds, url: info.woodwinds_url, icon: '🎷' });
-    if (info.percussion_url) stems.push({ name: t.stemPercussion, url: info.percussion_url, icon: '🪘' });
-    if (info.synth_url) stems.push({ name: t.stemSynth, url: info.synth_url, icon: '🎛️' });
-    if (info.fx_url) stems.push({ name: t.stemFX, url: info.fx_url, icon: '✨' });
-    if (info.backing_vocals_url) stems.push({ name: t.stemBackingVocals, url: info.backing_vocals_url, icon: '🎙️' });
+    // Split stem için ek kontroller (12 kanal)
+    if (info.drums_url) stems.push({ name: t.stemDrums, url: info.drums_url, icon: '🥁', filename: baseName + ' - Davul' });
+    if (info.bass_url) stems.push({ name: t.stemBass, url: info.bass_url, icon: '🎸', filename: baseName + ' - Bas' });
+    if (info.guitar_url) stems.push({ name: t.stemGuitar, url: info.guitar_url, icon: '🎸', filename: baseName + ' - Gitar' });
+    if (info.keyboard_url) stems.push({ name: t.stemKeyboard, url: info.keyboard_url, icon: '🎹', filename: baseName + ' - Klavye' });
+    if (info.strings_url) stems.push({ name: t.stemStrings, url: info.strings_url, icon: '🎻', filename: baseName + ' - Yaylılar' });
+    if (info.brass_url) stems.push({ name: t.stemBrass, url: info.brass_url, icon: '🎺', filename: baseName + ' - Bakır Üflemeli' });
+    if (info.woodwinds_url) stems.push({ name: t.stemWoodwinds, url: info.woodwinds_url, icon: '🎷', filename: baseName + ' - Tahta Üflemeli' });
+    if (info.percussion_url) stems.push({ name: t.stemPercussion, url: info.percussion_url, icon: '🪘', filename: baseName + ' - Perküsyon' });
+    if (info.synth_url) stems.push({ name: t.stemSynth, url: info.synth_url, icon: '🎛️', filename: baseName + ' - Synth' });
+    if (info.fx_url) stems.push({ name: t.stemFX, url: info.fx_url, icon: '✨', filename: baseName + ' - Efektler' });
+    if (info.backing_vocals_url) stems.push({ name: t.stemBackingVocals, url: info.backing_vocals_url, icon: '🎙️', filename: baseName + ' - Arka Vokal' });
 
     console.log('Toplam stem sayısı:', stems.length);
 
@@ -962,7 +978,7 @@ function displayStemResults(info, separationType) {
                     </audio>
                 </div>
                 <div class="stem-actions">
-                    <button onclick="downloadFile('${stem.url}', '${stem.name}.mp3')" class="stem-btn primary">
+                    <button onclick="downloadFile('${stem.url}', '${stem.filename}.mp3')" class="stem-btn primary">
                         ${t.btnDownload}
                     </button>
                 </div>
@@ -1002,7 +1018,7 @@ function showHistoryItem(index) {
     
     if (item && item.stems) {
         // MongoDB'ye kaydettiğimiz "stems" objesini doğrudan gönderiyoruz
-        displayStemResults(item.stems, item.type);
+        displayStemResults(item.stems, item.type, item.stemName || item.name);
     } else {
         console.error('History item bulunamadı veya stems yok');
     }
@@ -1013,7 +1029,17 @@ function showHistoryItem(index) {
             setLanguage('tr');
             checkAuthStatus();
             
-            // Sayfa yüklendiğinde otomatik olarak şarkı listesini yükle
+            // Sayfa yüklendiğinde otomatik olarak Başlat butonuna tıkla (login yoksa)
+            setTimeout(function() {
+                // Eğer kullanıcı giriş yapmamışsa Başlat butonuna otomatik tıkla
+                var loginBtn = document.getElementById('loginBtn');
+                if (loginBtn && loginBtn.style.display !== 'none' && !authToken) {
+                    console.log('Otomatik Başlat butonu tetikleniyor...');
+                    loginBtn.click();
+                }
+            }, 500);
+            
+            // Şarkı listesini yükle
             setTimeout(function() {
                 if (typeof loadUserTracksFromMongoDB === 'function') {
                     loadUserTracksFromMongoDB();

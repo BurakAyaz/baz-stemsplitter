@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { taskId, audioId, type, callBackUrl } = req.body;
+        const { taskId, audioId, type, callBackUrl, stemName } = req.body;
 
         // 3. Validasyon
         if (!taskId || !audioId) {
@@ -91,7 +91,7 @@ module.exports = async (req, res) => {
             if (decoded) {
                 userId = decoded.userId;
                 userEmail = decoded.email;
-                console.log(`Stem request from user: ${userId}, email: ${userEmail}`);
+                console.log(`Stem request from user: ${userId}, email: ${userEmail}, stemName: ${stemName}`);
             }
         }
 
@@ -153,6 +153,7 @@ module.exports = async (req, res) => {
                         originalTaskId: taskId,
                         audioId: audioId,
                         type: type,
+                        stemName: stemName || '',
                         status: 'pending',
                         wixUserId: userId || '',
                         email: userEmail || '',
