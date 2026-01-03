@@ -962,9 +962,9 @@ function displayStemResults(info, separationType) {
                     </audio>
                 </div>
                 <div class="stem-actions">
-                    <a href="${stem.url}" target="_blank" download class="stem-btn primary">
+                    <button onclick="downloadFile('${stem.url}', '${stem.name}.mp3')" class="stem-btn primary">
                         ${t.btnDownload}
-                    </a>
+                    </button>
                 </div>
             </div>`;
     });
@@ -973,6 +973,27 @@ function displayStemResults(info, separationType) {
     container.style.display = 'flex';
     console.log('Sonuçlar gösterildi!');
 }
+
+// Direkt indirme fonksiyonu
+async function downloadFile(url, filename) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+        console.error('İndirme hatası:', error);
+        // Fallback: yeni sekmede aç
+        window.open(url, '_blank');
+    }
+}
+
 // Geçmişten tıklama olayı
 function showHistoryItem(index) {
     console.log('showHistoryItem çağrıldı, index:', index);
@@ -991,6 +1012,13 @@ function showHistoryItem(index) {
         document.addEventListener('DOMContentLoaded', function() {
             setLanguage('tr');
             checkAuthStatus();
+            
+            // Sayfa yüklendiğinde otomatik olarak şarkı listesini yükle
+            setTimeout(function() {
+                if (typeof loadUserTracksFromMongoDB === 'function') {
+                    loadUserTracksFromMongoDB();
+                }
+            }, 1500);
         });
         
         // Dropdown dışına tıklanınca kapat
