@@ -123,13 +123,20 @@ module.exports = async (req, res) => {
         console.log('KIE API Response:', JSON.stringify(kieData));
 
         if (kieData.code === 200 && kieData.data) {
-            const status = kieData.data.status;
-            const responseData = kieData.data.response;
+            // KIE API iki farklı yapı dönebilir:
+            // 1. data.status + data.response (eski)
+            // 2. data.vocal_url doğrudan (yeni)
+            const apiData = kieData.data;
+            const status = apiData.status || (apiData.vocal_url ? 'SUCCESS' : 'PENDING');
+            const responseData = apiData.response || apiData; // response yoksa data'yı kullan
 
-            // KIE API'den gelen veriler
-            if ((status === 'SUCCESS' || status === 'success') && responseData) {
+            console.log('Parsed status:', status);
+            console.log('Has vocal_url:', !!responseData.vocal_url);
+
+            // KIE API'den gelen veriler - SUCCESS veya vocal_url varsa
+            if ((status === 'SUCCESS' || status === 'success' || responseData.vocal_url)) {
                 const stems = {
-                    id: responseData.id,
+                    id: responseData.id || responseData.musicId || taskId,
                     vocal_url: responseData.vocal_url,
                     instrumental_url: responseData.instrumental_url,
                     drums_url: responseData.drums_url || null,
@@ -144,6 +151,8 @@ module.exports = async (req, res) => {
                     fx_url: responseData.fx_url || null,
                     backing_vocals_url: responseData.backing_vocals_url || null
                 };
+                
+                console.log('Stems parsed:', JSON.stringify(stems));
 
                 // MongoDB'ye kaydet
                 await db.collection('stemResults').updateOne(
