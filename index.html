@@ -848,7 +848,14 @@
             container.innerHTML = html;
         }
         
-        function showHistoryItem(index) { var item = stemHistory[index]; if (item && item.stems) { displayStemResults(item.stems, item.type, item.stemName || item.name || item.trackName); } }
+        // showHistoryItem - Geçmişten seçilen öğeyi göster (displayName ile)
+        function showHistoryItem(index) {
+            var item = stemHistory[index];
+            if (item && item.stems) {
+                var displayName = item.stemName || item.name || item.trackName || 'Stem ' + (index + 1);
+                displayStemResults(item.stems, item.type, displayName);
+            }
+        }
         
         // ==================== YARDIMCI FONKSİYONLAR ====================
         function startTimer() { timerSeconds = 0; updateTimerDisplay(); timerInterval = setInterval(function() { timerSeconds++; updateTimerDisplay(); }, 1000); }
@@ -1048,9 +1055,9 @@ function displayStemResults(info, separationType, stemName) {
             </div>`;
     });
     
-    // Şarkı ismini göster
+    // Şarkı ismini göster (her zaman)
     var stemNameDisplay = document.getElementById('currentStemName');
-    if (baseName && baseName !== 'Stem') {
+    if (baseName) {
         stemNameDisplay.textContent = '🎵 ' + baseName;
         stemNameDisplay.style.display = 'block';
     } else {
@@ -1124,20 +1131,6 @@ async function downloadAllStems() {
     btnText.textContent = originalText;
     
     console.log('Toplu indirme tamamlandı!');
-}
-
-// Geçmişten tıklama olayı
-function showHistoryItem(index) {
-    console.log('showHistoryItem çağrıldı, index:', index);
-    var item = stemHistory[index];
-    console.log('History item:', item);
-    
-    if (item && item.stems) {
-        // MongoDB'ye kaydettiğimiz "stems" objesini doğrudan gönderiyoruz
-        displayStemResults(item.stems, item.type, item.stemName || item.name);
-    } else {
-        console.error('History item bulunamadı veya stems yok');
-    }
 }
         
         // ==================== BAŞLATMA ====================
