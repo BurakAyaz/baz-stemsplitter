@@ -106,10 +106,13 @@ module.exports = async (req, res) => {
 
         const { db } = await connectToDatabase();
 
-        // Mevcut pending kaydı bul (email bilgisi için)
+        // Mevcut pending kaydı bul (email ve stemName bilgisi için)
         const pendingTask = await db.collection('stemResults').findOne({ taskId: taskId });
         const userEmail = pendingTask?.email;
         const wixUserId = pendingTask?.wixUserId;
+        const stemName = pendingTask?.stemName || '';
+        
+        console.log('Found pending task with stemName:', stemName);
 
         // Timestamp for unique filenames
         const timestamp = Date.now();
@@ -176,6 +179,7 @@ module.exports = async (req, res) => {
                     status: 'success',
                     stems: stems,
                     type: stemType,
+                    stemName: stemName,
                     completedAt: new Date(),
                     rawCallback: req.body
                 }
@@ -199,6 +203,7 @@ module.exports = async (req, res) => {
                     taskId: taskId,
                     stems: stems,
                     type: stemType,
+                    stemName: stemName,
                     createdAt: new Date()
                 };
 
