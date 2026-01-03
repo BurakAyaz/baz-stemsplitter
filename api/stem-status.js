@@ -123,36 +123,40 @@ module.exports = async (req, res) => {
         console.log('KIE API Response:', JSON.stringify(kieData));
 
         if (kieData.code === 200 && kieData.data) {
-            // KIE API iki farklı yapı dönebilir:
-            // 1. data.status + data.response (eski)
-            // 2. data.vocal_url doğrudan (yeni)
             const apiData = kieData.data;
-            const status = apiData.status || (apiData.vocal_url ? 'SUCCESS' : 'PENDING');
-            const responseData = apiData.response || apiData; // response yoksa data'yı kullan
+            
+            // KIE API yapısı:
+            // successFlag: "PENDING" | "SUCCESS" | "FAILED"
+            // response: { vocalUrl, instrumentalUrl, ... } (camelCase!)
+            const status = apiData.successFlag || apiData.status || 'PENDING';
+            const responseData = apiData.response;
 
-            console.log('Parsed status:', status);
-            console.log('Has vocal_url:', !!responseData.vocal_url);
+            console.log('Parsed status (successFlag):', status);
+            console.log('Response data:', responseData ? JSON.stringify(responseData).substring(0, 100) : 'NULL');
 
-            // KIE API'den gelen veriler - SUCCESS veya vocal_url varsa
-            if ((status === 'SUCCESS' || status === 'success' || responseData.vocal_url)) {
+            // SUCCESS ve response varsa sonuçları işle
+            if ((status === 'SUCCESS' || status === 'success') && responseData) {
+                // KIE API camelCase kullanıyor: vocalUrl, instrumentalUrl
+                // Biz snake_case'e çeviriyoruz: vocal_url, instrumental_url
                 const stems = {
-                    id: responseData.id || responseData.musicId || taskId,
-                    vocal_url: responseData.vocal_url,
-                    instrumental_url: responseData.instrumental_url,
-                    drums_url: responseData.drums_url || null,
-                    bass_url: responseData.bass_url || null,
-                    guitar_url: responseData.guitar_url || null,
-                    keyboard_url: responseData.keyboard_url || null,
-                    strings_url: responseData.strings_url || null,
-                    brass_url: responseData.brass_url || null,
-                    woodwinds_url: responseData.woodwinds_url || null,
-                    percussion_url: responseData.percussion_url || null,
-                    synth_url: responseData.synth_url || null,
-                    fx_url: responseData.fx_url || null,
-                    backing_vocals_url: responseData.backing_vocals_url || null
+                    id: responseData.id || apiData.musicId || taskId,
+                    vocal_url: responseData.vocalUrl || responseData.vocal_url,
+                    instrumental_url: responseData.instrumentalUrl || responseData.instrumental_url,
+                    drums_url: responseData.drumsUrl || responseData.drums_url || null,
+                    bass_url: responseData.bassUrl || responseData.bass_url || null,
+                    guitar_url: responseData.guitarUrl || responseData.guitar_url || null,
+                    keyboard_url: responseData.keyboardUrl || responseData.keyboard_url || null,
+                    strings_url: responseData.stringsUrl || responseData.strings_url || null,
+                    brass_url: responseData.brassUrl || responseData.brass_url || null,
+                    woodwinds_url: responseData.woodwindsUrl || responseData.woodwinds_url || null,
+                    percussion_url: responseData.percussionUrl || responseData.percussion_url || null,
+                    synth_url: responseData.synthUrl || responseData.synth_url || null,
+                    fx_url: responseData.fxUrl || responseData.fx_url || null,
+                    backing_vocals_url: responseData.backingVocalsUrl || responseData.backing_vocals_url || null
                 };
                 
-                console.log('Stems parsed:', JSON.stringify(stems));
+                console.log('Stems parsed - vocal:', stems.vocal_url);
+                console.log('Stems parsed - instrumental:', stems.instrumental_url);
 
                 // MongoDB'ye kaydet
                 await db.collection('stemResults').updateOne(

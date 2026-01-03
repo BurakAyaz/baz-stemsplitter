@@ -88,14 +88,19 @@ module.exports = async (req, res) => {
         }
 
         const taskId = data.task_id;
-        const stemInfo = data.vocal_separation_info;
+        // KIE API "vocal_removal_info" kullanıyor, "vocal_separation_info" değil!
+        const stemInfo = data.vocal_removal_info || data.vocal_separation_info;
+
+        console.log('Task ID:', taskId);
+        console.log('Stem Info key:', data.vocal_removal_info ? 'vocal_removal_info' : 'vocal_separation_info');
+        console.log('Stem Info:', JSON.stringify(stemInfo));
 
         if (!taskId || !stemInfo) {
             console.log('Missing taskId or stemInfo');
+            console.log('Available keys in data:', Object.keys(data));
             return res.status(200).json({ status: 'received', error: 'missing data' });
         }
 
-        console.log('Task ID:', taskId);
         console.log('Original Vocal URL:', stemInfo.vocal_url);
         console.log('Original Instrumental URL:', stemInfo.instrumental_url);
 
