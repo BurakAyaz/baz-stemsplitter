@@ -627,39 +627,40 @@
             }
         }
         
-        async function syncUserData() {
-            try {
-                var response = await fetch(API_BASE_URL + '/api/auth-sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 401) { logout(); return; }
-                    throw new Error('Sync failed');
-                }
-                
-                var data = await response.json();
-                
-                if (data.success && data.user) {
-                    currentUser = data.user;
-                    userCredits = data.user.credits || data.user.available || 0;
-                    userPlan = data.user.plan || data.user.planId || 'none';
-                    isLoggedIn = true;
-                    
-                    showLoggedInState();
-                    updateCreditDisplay();
-                    checkCreditWarning();
-                    await loadUserTracksFromMongoDB();
-                    loadStemHistory();
-                } else {
-                    showLoggedOutState();
-                }
-            } catch (error) {
-                console.error('User sync error:', error);
-                showLoggedOutState();
+// rindex.html içindeki syncUserData veya checkAuthStatus fonksiyonu
+
+async function syncUserData() {
+    try {
+        const response = await fetch('/api/auth-sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: getCookie('wix_auth_token') })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const user = data.user;
+            
+            // Krediyi güncelle (API zaten sıfırlanmış olarak gönderecek)
+            userCredits = user.credits;
+            
+            // Arayüz kontrolleri
+            const creditDisplay = document.getElementById('user-credits-val');
+            if (creditDisplay) creditDisplay.textContent = userCredits;
+
+            // Süre dolmuşsa kullanıcıyı bilgilendir
+            if (new Date(user.expiresAt) < new Date()) {
+                console.warn("Abonelik süreniz doldu, kredileriniz sıfırlandı.");
+                showSubscriptionExpiredUI(); // Varsa uyarı modalını açar
             }
+            
+            updateCreditDisplay();
         }
+    } catch (err) {
+        console.error("Sync hatası:", err);
+    }
+}
         
         function showLoggedInState() {
             document.getElementById('loginBtn').style.display = 'none';
